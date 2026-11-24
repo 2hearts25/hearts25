@@ -1,4 +1,4 @@
-// 1.1.0-P1 shared, branded, localized family emails. Identical copy lives in tour-request-mailer/.
+// 1.1.0-P1 shared, branded, localized family emails (non-English; English uses interest-message.ts / registration-welcome.ts). Identical copy lives in tour-request-mailer/.
 // Family emails never include child names, form free text or other submitted details.
 export type Kind = "registration" | "tour" | "information";
 const center = "Heart to Heart Enrichment Center";
@@ -16,28 +16,6 @@ type Copy = {
   language: string; why: string;
 };
 const copy: Record<string, Copy> = {
-  en: {
-    greeting: "Hi",
-    subject: { registration: "Welcome to Heart to Heart", tour: "Thanks for your interest in Heart to Heart", information: "Thank you for contacting Heart to Heart" },
-    received: {
-      registration: "Thank you for registering with Heart to Heart Enrichment Center. We received your online registration.",
-      tour: "Thank you for reaching out to Heart to Heart Enrichment Center. We received your tour request.",
-      information: "Thank you for contacting Heart to Heart Enrichment Center. We received your request for more information.",
-    },
-    next: {
-      registration: "Our team will contact you about availability, the required enrollment paperwork and your next steps.",
-      tour: "A member of our team will contact you using the phone number you gave us to arrange a time.",
-      information: "A member of our team will follow up using the contact details you gave us.",
-    },
-    note: {
-      registration: "Submitting this registration does not guarantee enrollment. We will confirm once availability and paperwork are complete.",
-      tour: "Your requested time is not confirmed until our team speaks with you.",
-      information: "Please do not reply with Social Security numbers, benefits logins, income documents or medical records.",
-    },
-    linksTitle: "Helpful links", questions: "Questions? Reply to this email or call us at", hours: "Open 6:00 AM–6:00 PM",
-    language: "Preferred language", why: "You are receiving this one-time message because you submitted a form on hearts25.com. We use your information only to respond to you.",
-    links: { programs: "Our programs", support: "Family support and benefits help", tuition: "Tuition and childcare assistance", faq: "Frequently asked questions", safety: "Safety and licensing", contact: "Contact us" },
-  },
   es: {
     greeting: "Hola",
     subject: { registration: "Bienvenidos a Heart to Heart", tour: "Gracias por tu interés en Heart to Heart", information: "Gracias por contactar a Heart to Heart" },
@@ -138,14 +116,14 @@ const escape = (value: string) => value.replace(/[&<>"']/g, char => ({
 })[char] ?? char);
 
 export function familyMessage(kind: Kind, adultName: string, preferred: string) {
-  const language = Object.hasOwn(copy, preferred) ? preferred : "en";
+  const language = Object.hasOwn(copy, preferred) ? preferred : "es";
   const c = copy[language];
   const rtl = language === "ar";
-  const prefix = language === "en" ? "" : "/" + language;
+  const prefix = "/" + language;
   const first = adultName.trim().split(/\s+/u)[0];
   const greeting = c.greeting + (first ? " " + first : "") + ",";
   const links = linkSets[kind].map(([key, slug]) => ({ label: c.links[key], url: site + prefix + "/" + slug + "/" }));
-  const home = site + (prefix ? prefix + "/" : "/");
+  const home = site + prefix + "/";
   const body = [c.received[kind], c.next[kind], c.note[kind]];
   const contact = c.questions + " " + phone + ".";
   const langLine = c.language + ": " + languageNames[language];

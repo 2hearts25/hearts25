@@ -128,7 +128,7 @@ Deno.serve(async request => {
   try {
     const ip = request.headers.get("x-real-ip") ?? undefined;
     const source = await fingerprint(ip);
-    const method = (registering ? "submit_child_registration" : "submit_website_inquiry") + (p0 ? "_p0" : "");
+    const method = (registering ? "submit_child_registration" : "submit_website_inquiry") + (p0 ? "_p1" : "");
     const common = {
       p_preferred_language: locale,
       p_email: email,
@@ -146,10 +146,19 @@ Deno.serve(async request => {
       signal: AbortSignal.timeout(9000),
     });
     if (!response.ok) return reply(503, "unavailable");
-    if (await response.json() !== true) return reply(429, "limited");
+    const outcome = await response.json();
+    let reference = "";
+    if (p0) {
+      // _p1 functions return {ok, reference, duplicate}; a duplicate is an identical submission from the last 10 minutes.
+      if (!outcome || outcome.ok !== true || typeof outcome.reference !== "string") return reply(429, "limited");
+      reference = outcome.reference;
+      if (outcome.duplicate === true) return reply(201, "received");
+    } else if (outcome !== true) {
+      return reply(429, "limited");
+    }
     if (registering && !email.toLowerCase().endsWith(".invalid")) {
       if (resendKey) {
-        const delivery = registrationMailId(key, email, child, age).then(id =>
+        const delivery = (reference ? Promise.resolve(reference) : registrationMailId(key, email, child, age)).then(id =>
           sendRegistrationWelcome({ apiKey: resendKey, from: sender, replyTo: staff }, {
             recipient: email, guardian: name, language: locale, id,
           })
@@ -187,18 +196,16 @@ Deno.serve(async request => {
       if (tour && webhookSecret) {
         deliveries.push(fetch(url+"/functions/v1/tour-request-mailer/webhook/tour-request",{
           method:"POST",headers:{"Content-Type":"application/json","x-webhook-secret":webhookSecret},
-          body:JSON.stringify({form_name:"tour-request",id:crypto.randomUUID(),data:{name,email,phone,tour_window:value("tour_window"),start_month:value("start_month"),language:locale}}),
+          body:JSON.stringify({form_name:"tour-request",id:reference,data:{reference,name,email,phone,tour_window:value("tour_window"),start_month:value("start_month"),language:locale}}),
           signal:AbortSignal.timeout(6500),
         }).then(async result=>{await result.body?.cancel();if(!result.ok) console.warn("tour_notification_failed",result.status);}));
       } else if (!tour) {
-        const day = new Date().toISOString().slice(0,10);
-        const mailId = await registrationMailId(key, email, kind + day + child, locale);
-        const reference = "H2H-" + day.replaceAll("-","") + "-" + mailId.slice(0,6).toUpperCase();
+        const mailId = reference;
         const received = new Date().toLocaleString("en-US",{timeZone:"America/New_York",dateStyle:"medium",timeStyle:"short"});
         deliveries.push(send("staff", mailId, staff, "New Heart to Heart " + (registering ? "registration" : "information request"),
           "Inquiry type: " + typeLabels[kind] + "\nPreferred language: " + languageNames[locale] + " (" + locale + ")\nReceived: " + received + " (Eastern)\nReference: " + reference +
           "\n\nContact details are in the private Supabase records (sign-in required): https://supabase.com/dashboard/project/zebeclcvrdmisnxkwode/editor\n" +
-          (registering ? "Table: website_private.child_registrations" : "Table: website_private.inquiries") + ", newest first.\n" +
+          (registering ? "Table: website_private.child_registrations" : "Table: website_private.inquiries") + ", column: reference (search for the Reference above).\n" +
           "This email intentionally contains no child names or form text."));
         if (!registering) {
           const family = locale === "en" ? interestMessage(name) : familyMessage("information", name, locale);

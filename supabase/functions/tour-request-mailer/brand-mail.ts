@@ -1,4 +1,4 @@
-// 1.1.0-P1 shared, branded, localized family emails. Identical copy lives in tour-request-mailer/.
+// 1.1.0-P1 shared, branded, localized family emails (non-English; English uses interest-message.ts / registration-welcome.ts). Identical copy lives in website-inquiry/.
 // Family emails never include child names, form free text or other submitted details.
 export type Kind = "registration" | "tour" | "information";
 const center = "Heart to Heart Enrichment Center";

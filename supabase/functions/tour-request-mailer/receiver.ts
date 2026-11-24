@@ -7,6 +7,7 @@ const siteId = "2c0a0593-ea18-4f4f-88bc-dd30a5d39ac5";
 const formName = "tour-request";
 const limit = 32768;
 const fields = [
+  ["reference", "Reference", 40],
   ["name", "Name", 200],
   ["phone", "Phone", 80],
   ["email", "Email", 254],
@@ -156,12 +157,15 @@ export function createReceiver(options: Options) {
     const values = Object.fromEntries(fields.map(([key, _, max]) => [key, plain(data[key], max)])) as Values;
     if (!values.name || !values.phone) return response(422, "missing_name_or_phone");
 
+    // A reference issued by website-inquiry identifies one stored submission: it keys both emails, so a retry of the same
+    // submission is never delivered twice while separate requests from the same parent each get their own emails.
+    if (!/^H2H-\d{8}-[0-9A-F]{8}$/.test(values.reference)) values.reference = "";
     async function deliver() {
-      const staffId = hex(await hmac(secret!, get("id") || JSON.stringify(values)));
+      const staffId = hex(await hmac(secret!, values.reference ? "staff:" + values.reference : get("id") || JSON.stringify(values)));
       const tasks = [send("staff", staffId, staff!, staffMessage(values))];
       if (validEmail(values.email)) {
         const address = values.email.toLowerCase();
-        const familyId = hex(await hmac(secret!, address));
+        const familyId = hex(await hmac(secret!, values.reference ? "family:" + values.reference : address));
         tasks.push(send("family", familyId, address, welcome(values)));
       }
       await Promise.all(tasks);

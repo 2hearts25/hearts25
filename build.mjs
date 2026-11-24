@@ -235,6 +235,11 @@ ${safety}
 const dist = new URL('./dist/', import.meta.url);
 const anonKey = process.env.H2H_PUBLIC_ANON_KEY;
 if (!anonKey || !/^[A-Za-z0-9_.-]+$/.test(anonKey)) throw new Error('Set H2H_PUBLIC_ANON_KEY to the project’s public anon JWT before building.');
+{ // Safety guard: the key is shipped to every visitor, so it must be the public anon key, never service_role.
+  let role;
+  try { role = JSON.parse(Buffer.from(anonKey.split('.')[1] ?? '', 'base64url').toString('utf8')).role; } catch { role = undefined; }
+  if (role !== 'anon') throw new Error('H2H_PUBLIC_ANON_KEY must be the public anon key (JWT role "anon"). Refusing to build.');
+}
 await mkdir(dist,{recursive:true});
 await cp(new URL('./public/',import.meta.url),dist,{recursive:true});
 for (const name of ['inquiry.js','analytics.js']) {
