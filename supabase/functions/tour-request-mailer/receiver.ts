@@ -1,4 +1,7 @@
 
+import { familyMessage } from "./brand-mail.ts";
+import { interestMessage } from "./interest-message.ts";
+
 const formId = "6b05b2aec298f9f8127361bd";
 const siteId = "2c0a0593-ea18-4f4f-88bc-dd30a5d39ac5";
 const formName = "tour-request";
@@ -12,6 +15,7 @@ const fields = [
   ["tour_window", "Tour window", 120],
   ["heard_about_us", "Heard about us", 300],
   ["notes", "Notes", 4000],
+  ["language", "Preferred language", 8],
   ["bot-field", "Honeypot", 120],
 ] as const;
 
@@ -28,11 +32,6 @@ type Options = {
 };
 
 const encoder = new TextEncoder();
-const address = "3095 W. 25th Street, Cleveland, OH 44113";
-const phone = "(216) 938-6771";
-const center = "Heart to Heart Enrichment Center";
-const website = "https://hearts25.com";
-const license = "Ohio Child Care Center License #000000300622";
 const validEmail = (value: string) => /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/u.test(value);
 const object = (value: unknown): Record<string, unknown> | undefined =>
   value && typeof value === "object" && !Array.isArray(value)
@@ -41,10 +40,6 @@ const object = (value: unknown): Record<string, unknown> | undefined =>
 const plain = (value: unknown, max: number): string => typeof value === "string"
   ? value.replaceAll("\u0000", "").trim().slice(0, max)
   : Array.isArray(value) ? value.filter(item => typeof item === "string").join(", ").trim().slice(0, max) : "";
-const escape = (value: string) => value.replace(/[&<>"']/g, char => ({
-  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-})[char] ?? char);
-
 async function hmac(secret: string, value: string) {
   const key = await crypto.subtle.importKey(
     "raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
@@ -89,28 +84,17 @@ const response = (status: number, code: string) => Response.json(
 );
 
 function welcome(data: Values) {
-  const first = data.name.split(/\s+/u)[0] || "there";
-  const greeting = "Hi " + first + ",";
-  const paragraphs = [
-    "Thank you for reaching out to Heart to Heart Enrichment Center. We received your tour request and a member of our team will contact you using the phone number you gave us.",
-    "In the meantime, you can reach us at " + phone + ", and you are welcome to look over our programs and enrollment steps at " + website + ".",
-    "We look forward to meeting you and your family.",
-  ];
-  const sign = [center, address, phone, license];
-  return {
-    subject: "Thanks for your interest in Heart to Heart",
-    text: [greeting, ...paragraphs, sign.join("\n")].join("\n\n"),
-    html: [greeting, ...paragraphs].map(paragraph =>
-      "<p>" + escape(paragraph).replace(website, '<a href="' + website + '">' + website + "</a>") + "</p>"
-    ).join("") + "<p>" + sign.map(escape).join("<br>") + "</p>",
-  };
+  return data.language && data.language !== "en" ? familyMessage("tour", data.name, data.language) : interestMessage(data.name);
 }
 
 function staffMessage(data: Values) {
+  const received = new Date().toLocaleString("en-US", { timeZone: "America/New_York", dateStyle: "medium", timeStyle: "short" });
   return {
     subject: "New Heart to Heart tour request",
-    text: "A family requested a tour. Please use the phone number below to follow up.\n\n" +
-      fields.map(([name, label]) => label + ": " + (data[name] || "(blank)")).join("\n"),
+    text: "Inquiry type: Tour request\nReceived: " + received + " (Eastern)\n" +
+      "A family requested a tour. The requested time is not confirmed. Please use the phone number below to follow up.\n\n" +
+      fields.map(([name, label]) => label + ": " + (data[name] || "(blank)")).join("\n") +
+      "\n\nSecure record access (sign-in required): https://supabase.com/dashboard/project/zebeclcvrdmisnxkwode/editor",
   };
 }
 

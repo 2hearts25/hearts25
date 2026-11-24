@@ -7,26 +7,25 @@ const copy = {
   fr: ['Demander une visite','Votre nom','Téléphone','Adresse courriel (facultative)','Tranche d’âge de l’enfant','Mois de début souhaité','Moment souhaité','Le matin','L’après-midi','Les deux','Comment avez-vous connu le centre ?','Notes (facultatives)','Indiquez seulement des renseignements généraux sur vos disponibilités.','Choisissez une option','Je ne sais pas','Envoyer la demande'],
 };
 
-export function netlifyTourForm({language,path,locales,escape}) {
+export function netlifyTourForm({language,path,locales,escape,copy:form,endpoint}) {
   const [title,name,phone,email,age,start,window,morning,afternoon,either,heard,notes,hint,placeholder,unsure,send] = copy[language];
   const option = (value,label) => `<option value="${value}">${escape(label)}</option>`;
   const group = ['infant-toddler','preschool','school-age'].map((value,index) => option(value,locales[language].cards[index][0])).join('');
   return `<section class="inquiry" aria-labelledby="inquiry-heading">
 <h2 id="inquiry-heading">${escape(title)}</h2>
-<form name="tour-request" method="post" action="${path(language,'thank-you')}" data-netlify="true" netlify-honeypot="bot-field" data-netlify-tour>
-<input type="hidden" name="form-name" value="tour-request">
-<div hidden aria-hidden="true"><label>Website<input name="bot-field" tabindex="-1" autocomplete="off"></label></div>
+<form method="post" action="${endpoint}" data-netlify-tour data-inquiry data-kind="tour" data-endpoint="${endpoint}" data-success="${path(language,'thank-you')}" data-invalid="${escape(form.invalid)}" data-error="${escape(form.error)}" data-limited="${escape(form.limited)}" data-sending="${escape(form.sending)}" novalidate>
+<div hidden aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
 <label>${escape(name)}<input name="name" autocomplete="name" maxlength="100" minlength="2" required dir="auto"></label>
 <label>${escape(phone)}<input name="phone" type="tel" autocomplete="tel" maxlength="32" required dir="ltr"></label>
-<label>${escape(email)}<input name="email" type="email" autocomplete="email" maxlength="254" dir="ltr"></label>
+<label>${escape(form.email)}<input name="email" type="email" required autocomplete="email" maxlength="254" dir="ltr"></label>
 <label>${escape(age)}<select name="age_group" required>${option('',placeholder)}${group}${option('unsure',unsure)}</select></label>
 <label>${escape(start)}<input name="start_month" type="month"></label>
 <label>${escape(window)}<select name="tour_window">${option('',placeholder)}${option('morning',morning)}${option('afternoon',afternoon)}${option('either',either)}</select></label>
 <label>${escape(heard)}<input name="heard_about_us" maxlength="100" dir="auto"></label>
 <label>${escape(notes)}<textarea name="notes" maxlength="500" rows="3" dir="auto" aria-describedby="tour-notes-hint"></textarea></label>
 <p id="tour-notes-hint">${escape(hint)}</p>
-<a href="${path(language,'privacy')}">${escape(locales[language].footer[2])}</a>
-<button class="button" type="submit">${escape(send)}</button>
+<input type="hidden" name="language" value="${language}"><label class="consent"><input type="checkbox" name="consent" required>${escape(form.consent)}</label><p class="form-status" role="status" tabindex="-1" hidden></p><a href="${path(language,'privacy')}">${escape(locales[language].footer[2])}</a>
+<button class="button" type="submit" disabled>${escape(send)}</button>
 </form>
 </section>`;
 }
