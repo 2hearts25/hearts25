@@ -1,0 +1,298 @@
+{
+  "es": {
+    "404": {
+      "title": "Página no encontrada",
+      "intro": "Vuelve al inicio o usa el menú para encontrar la información que necesitas."
+    },
+    "thank-you": {
+      "title": "Recibimos tu solicitud",
+      "intro": "El centro se comunicará contigo. Las visitas y las fechas de inicio se confirman por separado."
+    },
+    "programs": {
+      "title": "Explora nuestros programas",
+      "intro": "Cada familia busca algo distinto. Consulta con el centro sobre las opciones y los cupos actuales."
+    },
+    "programs/infants-toddlers": {
+      "title": "Bebés y niños pequeños",
+      "intro": "Pregunta por el cuidado actual para bebés y niños pequeños, y por sus rutinas de adaptación, descanso y juego."
+    },
+    "programs/preschool": {
+      "title": "Preescolar",
+      "intro": "Pregunta por los cupos y por las actividades de aprendizaje, juego y convivencia."
+    },
+    "programs/school-age": {
+      "title": "Cuidado para niños de edad escolar",
+      "intro": "Pregunta por las opciones de cuidado, horarios y cupos actuales."
+    },
+    "our-day": {
+      "title": "Un día en Heart to Heart",
+      "intro": "Durante una visita, puedes conocer el centro y preguntar por la rutina entre la llegada y la salida."
+    },
+    "tuition-assistance": {
+      "title": "Costos y ayuda para el cuidado infantil",
+      "intro": "Llama para consultar las tarifas y la ayuda que acepta el centro. El condado de Cuyahoga puede explicar las opciones y cómo solicitar ayuda."
+    },
+    "family-support": {
+      "title": "Apoyo familiar y recursos comunitarios",
+      "intro": "Consulta al centro sobre la inscripción y explora los recursos públicos de cuidado infantil en Cleveland."
+    },
+    "safety": {
+      "title": "Seguridad y licencia",
+      "intro": "Busca Heart to Heart Enrichment Center o el número de licencia 000000300622 en el registro oficial de Ohio."
+    },
+    "about": {
+      "title": "Acerca de Heart to Heart",
+      "intro": "Somos un centro infantil en West 25th Street, Cleveland. Damos la bienvenida a padres, abuelos y cuidadores que quieran conocernos."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "intro": "Encuentra respuestas iniciales sobre visitas, inscripción y ayuda para el cuidado infantil."
+    },
+    "virtual-tour": {
+      "title": "Visita virtual",
+      "intro": "La visita virtual se habilitará cuando haya fotos aprobadas del centro. Mientras tanto, llama para programar una visita presencial."
+    },
+    "parents": {
+      "title": "Recursos para padres",
+      "intro": "Consulta al centro sobre formularios, políticas y avisos. Los documentos aprobados se añadirán cuando estén disponibles."
+    },
+    "community": {
+      "title": "Comunidad y eventos",
+      "intro": "Pregunta al centro por los próximos eventos o por opciones para compartir información de cuidado infantil con tu organización."
+    },
+    "privacy": {
+      "title": "Privacidad del sitio",
+      "intro": "Usamos los datos de contacto del adulto, el idioma y las preferencias de cuidado que proporciones para responder a tu solicitud."
+    },
+    "accessibility": {
+      "title": "Accesibilidad del sitio",
+      "intro": "Si tienes dificultades para usar este sitio o necesitas la información en otro formato, llama al centro y dinos cómo podemos ayudarte."
+    },
+    "nondiscrimination": {
+      "title": "Declaración de no discriminación",
+      "intro": "Consulta al centro sobre sus prácticas de no discriminación o para hablar de una inquietud."
+    }
+  },
+  "ar": {
+    "404": {
+      "title": "الصفحة غير موجودة",
+      "intro": "عد إلى الصفحة الرئيسية أو استخدم القائمة للعثور على المعلومات."
+    },
+    "thank-you": {
+      "title": "استلمنا طلبك",
+      "intro": "سيتواصل معك المركز. يُؤكَّد موعد الزيارة أو بدء الرعاية على حدة."
+    },
+    "programs": {
+      "title": "استكشف برامج رعاية الأطفال",
+      "intro": "تختلف احتياجات الرعاية من أسرة لأخرى. تواصل مع المركز للاستفسار عن الخيارات والأماكن المتاحة."
+    },
+    "programs/infants-toddlers": {
+      "title": "الرضّع وصغار الأطفال",
+      "intro": "اسأل عن خيارات الرعاية المتاحة للرضّع وصغار الأطفال وروتين اللعب والنوم والتأقلم."
+    },
+    "programs/preschool": {
+      "title": "مرحلة ما قبل المدرسة",
+      "intro": "اسأل عن الأماكن المتاحة وأنشطة اللعب والتعلّم وبناء الصداقات."
+    },
+    "programs/school-age": {
+      "title": "رعاية الأطفال في سن المدرسة",
+      "intro": "اسأل عن خيارات الرعاية والمواعيد والأماكن المتاحة حاليًا."
+    },
+    "our-day": {
+      "title": "يوم في مركز هارت تو هارت",
+      "intro": "خلال الزيارة يمكنك التعرّف على المركز والسؤال عن الروتين من الوصول إلى المغادرة."
+    },
+    "tuition-assistance": {
+      "title": "الرسوم والمساعدة في رعاية الأطفال",
+      "intro": "اتصل للاستفسار عن الرسوم والمساعدات التي يقبلها المركز. يمكن لمقاطعة كاياهوغا شرح طرق التمويل والتقديم."
+    },
+    "family-support": {
+      "title": "دعم الأسرة والموارد المجتمعية",
+      "intro": "اسأل المركز عن التسجيل واطّلع على الموارد العامة لرعاية الأطفال في كليفلاند."
+    },
+    "safety": {
+      "title": "السلامة والترخيص",
+      "intro": "ابحث عن Heart to Heart Enrichment Center أو رقم الترخيص 000000300622 في السجل الرسمي لولاية أوهايو."
+    },
+    "about": {
+      "title": "عن مركز هارت تو هارت",
+      "intro": "نحن مركز لرعاية الأطفال في شارع 25 الغربي في كليفلاند. نرحب بالآباء والأجداد ومقدمي الرعاية لزيارة المركز والتعرّف علينا."
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "intro": "اطّلع على أسئلة شائعة حول الزيارات والتسجيل والمساعدة في رعاية الأطفال."
+    },
+    "virtual-tour": {
+      "title": "جولة افتراضية",
+      "intro": "ستتوفر الجولة الافتراضية بعد اعتماد صور المنشأة. يمكنك حاليًا الاتصال لترتيب زيارة حضورية."
+    },
+    "parents": {
+      "title": "موارد للأهل",
+      "intro": "اسأل المركز عن النماذج والسياسات والإعلانات. سنضيف المستندات المعتمدة عند توفرها."
+    },
+    "community": {
+      "title": "المجتمع والفعاليات",
+      "intro": "اسأل المركز عن الفعاليات المقبلة أو عن مشاركة معلومات رعاية الأطفال مع مؤسستك."
+    },
+    "privacy": {
+      "title": "خصوصية الموقع",
+      "intro": "نستخدم بيانات اتصال الشخص البالغ واللغة وخيارات الرعاية التي تقدمها للرد على طلبك."
+    },
+    "accessibility": {
+      "title": "إمكانية الوصول إلى الموقع",
+      "intro": "إذا واجهت صعوبة في استخدام الموقع أو أردت المعلومات بصيغة مختلفة، فاتصل بالمركز وأخبرنا بما تحتاج إليه."
+    },
+    "nondiscrimination": {
+      "title": "بيان عدم التمييز",
+      "intro": "تواصل مع المركز للسؤال عن ممارسات عدم التمييز أو لمناقشة أي مخاوف."
+    }
+  },
+  "sw": {
+    "404": {
+      "title": "Ukurasa haupatikani",
+      "intro": "Nenda ukurasa wa mwanzo au tumia menyu kupata habari unazotafuta."
+    },
+    "thank-you": {
+      "title": "Tumepokea ombi lako",
+      "intro": "Kituo kitawasiliana nawe. Tarehe ya ziara au kuanza huduma itathibitishwa kando."
+    },
+    "programs": {
+      "title": "Fahamu programu za malezi",
+      "intro": "Kila familia ina mahitaji tofauti. Uliza kituo kuhusu chaguo na nafasi zilizopo."
+    },
+    "programs/infants-toddlers": {
+      "title": "Watoto wachanga na wadogo",
+      "intro": "Uliza kuhusu malezi yanayopatikana na utaratibu wa kucheza, kupumzika na kuzoea mazingira mapya."
+    },
+    "programs/preschool": {
+      "title": "Chekechea",
+      "intro": "Uliza kuhusu nafasi, michezo, ujifunzaji na kujenga urafiki."
+    },
+    "programs/school-age": {
+      "title": "Malezi kwa watoto wa umri wa shule",
+      "intro": "Uliza kuhusu chaguo, ratiba na nafasi zilizopo."
+    },
+    "our-day": {
+      "title": "Siku katika Heart to Heart",
+      "intro": "Wakati wa ziara unaweza kuona kituo na kuuliza kuhusu utaratibu wa siku tangu kuwasili hadi kuondoka."
+    },
+    "tuition-assistance": {
+      "title": "Ada na msaada wa malezi ya watoto",
+      "intro": "Piga simu uulize ada na msaada unaokubaliwa. Kaunti ya Cuyahoga inaweza kueleza jinsi ya kupata ufadhili."
+    },
+    "family-support": {
+      "title": "Msaada kwa familia na huduma za jamii",
+      "intro": "Uliza kituo kuhusu uandikishaji na upate habari kuhusu huduma za umma za malezi ya watoto Cleveland."
+    },
+    "safety": {
+      "title": "Usalama na leseni",
+      "intro": "Tafuta Heart to Heart Enrichment Center au nambari ya leseni 000000300622 kwenye orodha rasmi ya Ohio."
+    },
+    "about": {
+      "title": "Kuhusu Heart to Heart",
+      "intro": "Sisi ni kituo cha malezi kwenye West 25th Street, Cleveland. Wazazi, babu na bibi, na walezi wanakaribishwa kututembelea."
+    },
+    "faq": {
+      "title": "Maswali yanayoulizwa mara kwa mara",
+      "intro": "Pata majibu ya awali kuhusu ziara, uandikishaji na msaada wa malezi."
+    },
+    "virtual-tour": {
+      "title": "Ziara pepe",
+      "intro": "Ziara pepe itapatikana baada ya picha za kituo kuidhinishwa. Kwa sasa piga simu kupanga ziara ya ana kwa ana."
+    },
+    "parents": {
+      "title": "Rasilimali kwa wazazi",
+      "intro": "Uliza kituo kuhusu fomu, sera na matangazo. Nyaraka zilizoidhinishwa zitaongezwa zikipatikana."
+    },
+    "community": {
+      "title": "Jamii na matukio",
+      "intro": "Uliza kituo kuhusu matukio yajayo au jinsi ya kushiriki taarifa za malezi na shirika lako."
+    },
+    "privacy": {
+      "title": "Faragha ya tovuti",
+      "intro": "Tunatumia maelezo ya mawasiliano ya mtu mzima, lugha na mahitaji ya malezi unayotoa ili kujibu ombi lako."
+    },
+    "accessibility": {
+      "title": "Ufikivu wa tovuti",
+      "intro": "Ukipata shida kutumia tovuti au ukihitaji taarifa kwa njia nyingine, piga simu kituoni utuambie jinsi ya kukusaidia."
+    },
+    "nondiscrimination": {
+      "title": "Taarifa ya kutobagua",
+      "intro": "Wasiliana na kituo kuhusu utaratibu wa kutobagua au kueleza wasiwasi wako."
+    }
+  },
+  "fr": {
+    "404": {
+      "title": "Page introuvable",
+      "intro": "Retournez à l’accueil ou utilisez le menu pour trouver les renseignements souhaités."
+    },
+    "thank-you": {
+      "title": "Nous avons reçu votre demande",
+      "intro": "Le centre vous contactera. L’heure de visite et la date de début seront confirmées séparément."
+    },
+    "programs": {
+      "title": "Découvrez nos programmes",
+      "intro": "Chaque famille a des besoins différents. Renseignez-vous auprès du centre sur les options et les places disponibles."
+    },
+    "programs/infants-toddlers": {
+      "title": "Bébés et tout-petits",
+      "intro": "Renseignez-vous sur l’accueil des plus jeunes, les jeux, le repos et l’adaptation aux nouvelles routines."
+    },
+    "programs/preschool": {
+      "title": "Préscolaire",
+      "intro": "Renseignez-vous sur les places disponibles, les jeux, les apprentissages et la vie en groupe."
+    },
+    "programs/school-age": {
+      "title": "Garde des enfants d’âge scolaire",
+      "intro": "Renseignez-vous sur les options, les horaires et les places disponibles."
+    },
+    "our-day": {
+      "title": "Une journée à Heart to Heart",
+      "intro": "Lors d’une visite, découvrez le centre et posez vos questions sur la routine de l’arrivée au départ."
+    },
+    "tuition-assistance": {
+      "title": "Tarifs et aides à la garde d’enfants",
+      "intro": "Appelez pour connaître les tarifs actuels et les aides acceptées. Le comté de Cuyahoga peut expliquer comment demander un financement."
+    },
+    "family-support": {
+      "title": "Soutien aux familles et ressources locales",
+      "intro": "Renseignez-vous sur l’inscription auprès du centre et découvrez les ressources publiques de garde d’enfants à Cleveland."
+    },
+    "safety": {
+      "title": "Sécurité et agrément",
+      "intro": "Recherchez Heart to Heart Enrichment Center ou le numéro 000000300622 dans le registre officiel de l’Ohio."
+    },
+    "about": {
+      "title": "À propos de Heart to Heart",
+      "intro": "Nous sommes un centre de garde sur West 25th Street à Cleveland. Les parents, grands-parents et autres responsables sont les bienvenus."
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "intro": "Trouvez des réponses sur les visites, l’inscription et les aides à la garde d’enfants."
+    },
+    "virtual-tour": {
+      "title": "Visite virtuelle",
+      "intro": "La visite virtuelle sera disponible après l’approbation des photos du centre. En attendant, appelez pour organiser une visite sur place."
+    },
+    "parents": {
+      "title": "Ressources pour les parents",
+      "intro": "Demandez au centre les formulaires, politiques et avis en vigueur. Les documents approuvés seront ajoutés dès qu’ils seront disponibles."
+    },
+    "community": {
+      "title": "Communauté et événements",
+      "intro": "Renseignez-vous auprès du centre sur les prochains événements ou sur les possibilités de partager de l’information avec votre organisme."
+    },
+    "privacy": {
+      "title": "Confidentialité du site",
+      "intro": "Nous utilisons les coordonnées de l’adulte, la langue et les préférences de garde que vous indiquez pour répondre à votre demande."
+    },
+    "accessibility": {
+      "title": "Accessibilité du site",
+      "intro": "Si vous avez des difficultés à utiliser le site ou souhaitez des renseignements dans un autre format, appelez le centre."
+    },
+    "nondiscrimination": {
+      "title": "Déclaration de non-discrimination",
+      "intro": "Contactez le centre pour poser une question sur ses pratiques de non-discrimination ou faire part d’une préoccupation."
+    }
+  }
+}

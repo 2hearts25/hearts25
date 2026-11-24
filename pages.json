@@ -1,0 +1,294 @@
+{
+  "404": {
+    "title": "Page not found",
+    "intro": "Try the homepage or use the menu to find the information you need.",
+    "links": [
+      [
+        "Go to the homepage",
+        ""
+      ]
+    ]
+  },
+  "programs": {
+    "title": "Explore childcare programs",
+    "intro": "Every family needs something different from childcare. Use these questions to start a conversation with the center about current programs and availability.",
+    "sections": [
+      [
+        "Infants & toddlers",
+        "Ask about care for the youngest children, including rest, meals, and communication with families."
+      ],
+      [
+        "Preschool",
+        "Ask how play, early learning, and time with other children fit into the day."
+      ],
+      [
+        "School-age care",
+        "Ask about current before- or after-school options and which schedules are available."
+      ]
+    ],
+    "links": [
+      [
+        "Infants & toddlers",
+        "programs/infants-toddlers"
+      ],
+      [
+        "Preschool",
+        "programs/preschool"
+      ],
+      [
+        "School-age care",
+        "programs/school-age"
+      ]
+    ]
+  },
+  "our-day": {
+    "title": "A day at Heart to Heart",
+    "intro": "A visit gives you a chance to ask what happens between drop-off and pickup and see the spaces where children spend their day.",
+    "sections": [
+      [
+        "Arrival",
+        "Ask how families sign in, say goodbye, and share anything the team should know that day."
+      ],
+      [
+        "Learning and play",
+        "Ask which activities, books, and play choices are available for your child’s age group."
+      ],
+      [
+        "Meals and rest",
+        "Ask about meals, naps, and how staff handle allergies or other individual needs."
+      ],
+      [
+        "Afternoon and pickup",
+        "Ask how pickup works and what updates you can expect about the day."
+      ]
+    ]
+  },
+  "enrollment": {
+    "title": "How enrollment works",
+    "sections": [
+      [
+        "Start with a conversation",
+        "Sign up online to share your contact details, or call the center to discuss your childcare needs."
+      ],
+      [
+        "Visit the center",
+        "Talk with the team and ask about routines, schedules, and what your child needs."
+      ],
+      [
+        "Prepare your paperwork",
+        "Ask the center which documents it needs and how to provide them securely."
+      ],
+      [
+        "Confirm your start",
+        "The center can confirm acceptance and a start date once it has reviewed your enrollment information."
+      ]
+    ]
+  },
+  "tuition-assistance": {
+    "title": "Tuition and childcare assistance",
+    "intro": "Call the center to request current tuition and ask what assistance it accepts. Cuyahoga County can explain funding and application options.",
+    "sections": [
+      [
+        "Publicly Funded Child Care",
+        "Ohio’s Publicly Funded Child Care program (PFCC) may help eligible families pay for care. Your county agency can explain how to apply and determine eligibility."
+      ]
+    ],
+    "links": [
+      [
+        "Cuyahoga County childcare assistance",
+        "county"
+      ],
+      [
+        "Ohio childcare information",
+        "ohio"
+      ]
+    ]
+  },
+  "family-support": {
+    "title": "Family support and community resources",
+    "intro": "Finding childcare can come with questions about cost, paperwork, and local services. Start with the center for childcare and enrollment questions and explore these public resources for additional help.",
+    "sections": [
+      [
+        "Childcare and enrollment",
+        "Call Heart to Heart to ask about enrollment steps and where to start if you’re exploring childcare assistance."
+      ],
+      [
+        "County and state resources",
+        "Cuyahoga County and Ohio provide information about assistance programs. Each program can explain its application process and eligibility."
+      ]
+    ],
+    "links": [
+      [
+        "Explore tuition and assistance",
+        "tuition-assistance"
+      ],
+      [
+        "Cuyahoga County resources",
+        "county"
+      ]
+    ]
+  },
+  "safety": {
+    "title": "Safety and licensing",
+    "intro": "Families can find the center’s Ohio childcare license and inspection records in Ohio Child Care Search. Search for Heart to Heart Enrichment Center or license number 000000300622.",
+    "sections": [
+      [
+        "Questions to bring on a tour",
+        "Ask how the center handles drop-off and pickup, classroom supervision, emergencies, and communication with families."
+      ]
+    ],
+    "links": [
+      [
+        "Open Ohio Child Care Search",
+        "license"
+      ]
+    ]
+  },
+  "about": {
+    "title": "About Heart to Heart",
+    "intro": "Heart to Heart Enrichment Center is a Cleveland childcare center on West 25th Street. We welcome parents, grandparents, and caregivers to come meet us and ask about care for their children.",
+    "sections": [
+      [
+        "Get to know the center",
+        "A visit gives you time to see the space, meet the team, and talk through what your family is looking for."
+      ],
+      [
+        "What families can ask us about",
+        "Care, communication, learning through play, and how we work with families."
+      ]
+    ]
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "intro": "Find a starting point for questions about tours, enrollment, and childcare assistance.",
+    "questions": [
+      [
+        "How do I arrange a tour?",
+        "Call the center to ask about available visit times."
+      ],
+      [
+        "What ages are served, and are there openings?",
+        "Ask the center about its current age groups, schedules, and availability."
+      ],
+      [
+        "How can I find out what care costs?",
+        "Call the center for current tuition and fees. The Tuition and Childcare Assistance page also links to public funding information."
+      ],
+      [
+        "Where can I find licensing and inspection records?",
+        "Search Ohio Child Care Search for Heart to Heart Enrichment Center or license number 000000300622."
+      ],
+      [
+        "When is the center open?",
+        "Call the center to confirm current hours and holiday closures."
+      ],
+      [
+        "Can I tour around my work schedule?",
+        "Use the tour form or call to ask which times are available."
+      ],
+      [
+        "Are meals provided?",
+        "Yes. We provide free meals. Call the center if you have questions about menus or allergies."
+      ],
+      [
+        "Is school pickup available?",
+        "Yes. We provide free school transportation. Call the center to ask about routes and schedules."
+      ],
+      [
+        "What should I bring on the first day?",
+        "Ask the enrollment team for the current checklist for your child’s group."
+      ],
+      [
+        "How do I get started?",
+        "Submit the online enrollment signup or call or visit the center."
+      ]
+    ],
+    "links": [
+      [
+        "Tuition and childcare assistance",
+        "tuition-assistance"
+      ],
+      [
+        "Safety and licensing",
+        "safety"
+      ]
+    ]
+  },
+  "tour": {
+    "title": "Come see Heart to Heart"
+  },
+  "contact": {
+    "title": "Contact and directions"
+  },
+  "virtual-tour": {
+    "title": "Virtual tour",
+    "intro": "A virtual tour will be available once approved photographs of the facility are ready. In the meantime, call to arrange an in-person visit."
+  },
+  "parents": {
+    "title": "Parent resources",
+    "intro": "Contact the center for current family paperwork, policies, and center notices. Approved documents will be added as they become available.",
+    "links": [
+      [
+        "Enrollment",
+        "enrollment"
+      ],
+      [
+        "Childcare assistance",
+        "tuition-assistance"
+      ]
+    ]
+  },
+  "community": {
+    "title": "Community and events",
+    "intro": "Contact Heart to Heart to ask about upcoming family events or to discuss sharing childcare information with your organization."
+  },
+  "privacy": {
+    "title": "Website privacy",
+    "intro": "The website collects the adult contact details, language choice, and basic childcare preferences you provide so Heart to Heart can respond to your inquiry. Website staff with authorized access can review these records.",
+    "sections": [
+      [
+        "Language preferences",
+        "The site saves your selected language in your browser."
+      ],
+      [
+        "Spam prevention",
+        "The site may keep a protected code derived from your connection to limit repeated submissions."
+      ],
+      [
+        "External websites",
+        "Directions and public resources link to other websites. Their privacy practices apply when you open those links."
+      ],
+      [
+        "Questions or corrections",
+        "Call the center if you have a question about how a submission is used or want to correct information you provided."
+      ]
+    ]
+  },
+  "accessibility": {
+    "title": "Website accessibility",
+    "intro": "If you have trouble using this website or need information in a different format, call the center and let us know what would help."
+  },
+  "programs/infants-toddlers": {
+    "title": "Infants & toddlers",
+    "intro": "Ask the center about current care for babies and toddlers. On a visit, you can ask about how caregivers help children settle in, rest, and adjust to new routines.",
+    "age": "infant-toddler"
+  },
+  "programs/preschool": {
+    "title": "Preschool",
+    "intro": "Ask about preschool availability and how children spend their time learning, playing, and making friends.",
+    "age": "preschool"
+  },
+  "programs/school-age": {
+    "title": "School-age care",
+    "intro": "Ask about current care options, schedules, and availability for school-age children.",
+    "age": "school-age"
+  },
+  "nondiscrimination": {
+    "title": "Nondiscrimination statement",
+    "intro": "Draft for owner review. Contact the center to ask about its nondiscrimination practices or to discuss a concern."
+  },
+  "thank-you": {
+    "title": "We received your request",
+    "intro": "The center will follow up using the contact details you provided. A tour time or enrollment start will be confirmed separately."
+  }
+}

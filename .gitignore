@@ -1,0 +1,37 @@
+# Build output (regenerate with `node build.mjs`)
+dist/
+
+# Netlify / Supabase local state (contains site and project links)
+.netlify/
+supabase/.temp/
+supabase/.branches/
+
+# Dependencies and tooling
+node_modules/
+.deno/
+
+# Secrets and environment files (use .env.example as the template)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+supabase/functions/.env
+supabase/.env
+
+# Exported data, backups and personal information
+*.csv
+*.sql.gz
+*.dump
+backups/
+exports/
+registrations/
+*.zip
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

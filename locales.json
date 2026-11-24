@@ -1,0 +1,422 @@
+{
+  "en": {
+    "language": "English",
+    "skip": "Skip to content",
+    "menu": "Menu",
+    "nav": [
+      "Programs",
+      "Our Day",
+      "Enrollment",
+      "Family Support",
+      "Safety",
+      "About",
+      "FAQ",
+      "Contact"
+    ],
+    "tour": "Schedule a tour",
+    "call": "Call the center",
+    "directions": "Get directions",
+    "where": "West 25th Street · Cleveland, Ohio",
+    "home": [
+      "Childcare that feels ",
+      "like home.",
+      "A welcoming place on Cleveland’s West 25th Street for children to learn, play, and build confidence. Come meet us and see if Heart to Heart is right for your family."
+    ],
+    "photos": "AI-generated illustration",
+    "alts": [
+      "Children and an educator paint together around a classroom table.",
+      "Two caregivers and their children greet each other outdoors."
+    ],
+    "quick": [
+      "Ohio Child Care Search",
+      "Tuition & assistance",
+      "3095 W. 25th Street"
+    ],
+    "lead": [
+      "Explore childcare at Heart to Heart",
+      "Find out what to ask about as you look for care.",
+      "View programs"
+    ],
+    "cards": [
+      [
+        "Infants & toddlers",
+        "Ask about care for younger children and what daily routines look like."
+      ],
+      [
+        "Preschool",
+        "Ask about play, early learning, and preparing for the next stage."
+      ],
+      [
+        "School-age care",
+        "Ask about current options and schedules for school-age children."
+      ]
+    ],
+    "family": [
+      "Find support for your family",
+      "Explore childcare assistance and community resources in Cleveland. Bring your questions about enrollment, costs, and what to do next.",
+      "Explore family support"
+    ],
+    "day": [
+      "A day at Heart to Heart",
+      "Ask about activities, rest, meals, and how teachers communicate with families. A visit is a chance to see the spaces for yourself.",
+      "Explore a day here"
+    ],
+    "visit": [
+      "Come see Heart to Heart",
+      "Visit the center on West 25th Street and bring your questions about care, enrollment, and what your child’s day could look like."
+    ],
+    "footer": [
+      "Explore",
+      "For families",
+      "Privacy",
+      "Accessibility",
+      "Virtual tour",
+      "Parent resources",
+      "Community & events"
+    ],
+    "fallback": "This page is available in English while translations are being reviewed.",
+    "tourBody": "Call the center to ask about available tour times. During your visit, you can see the space, meet the team, and ask about care for your child’s age group.",
+    "enrollBody": "Start by calling us or arranging a visit. Ask about availability for your child’s age group, the schedule you need, and what enrollment documents to prepare.",
+    "contactBody": "Call the center for current hours, availability, and help planning your visit.",
+    "careBenefits": [
+      "Free school transportation",
+      "Free meals"
+    ]
+  },
+  "es": {
+    "language": "Español",
+    "skip": "Saltar al contenido",
+    "menu": "Menú",
+    "nav": [
+      "Programas",
+      "Un día aquí",
+      "Inscripción",
+      "Apoyo familiar",
+      "Seguridad",
+      "Nosotros",
+      "Preguntas",
+      "Contacto"
+    ],
+    "tour": "Programar una visita",
+    "call": "Llamar al centro",
+    "directions": "Cómo llegar",
+    "where": "West 25th Street · Cleveland, Ohio",
+    "home": [
+      "Un centro infantil donde ",
+      "sentirse en casa.",
+      "Un lugar acogedor en West 25th Street, Cleveland, donde los niños aprenden, juegan y ganan confianza. Ven a conocernos y descubre si Heart to Heart es lo que busca tu familia."
+    ],
+    "photos": "Ilustración generada con IA",
+    "alts": [
+      "Niños y una maestra pintan juntos en un aula.",
+      "Dos cuidadores se saludan al aire libre con sus hijos."
+    ],
+    "quick": [
+      "Registro de centros de Ohio",
+      "Costos y ayuda",
+      "3095 W. 25th Street"
+    ],
+    "lead": [
+      "Conoce el cuidado infantil en Heart to Heart",
+      "Descubre qué preguntar al buscar cuidado infantil.",
+      "Ver los programas"
+    ],
+    "cards": [
+      [
+        "Bebés y niños pequeños",
+        "Pregunta por el cuidado y las rutinas de los más pequeños."
+      ],
+      [
+        "Preescolar",
+        "Pregunta sobre el juego y el aprendizaje temprano."
+      ],
+      [
+        "Edad escolar",
+        "Pregunta por las opciones y los horarios actuales."
+      ]
+    ],
+    "family": [
+      "Encuentra apoyo para tu familia",
+      "Explora la ayuda para el cuidado infantil y los recursos comunitarios en Cleveland.",
+      "Explorar el apoyo familiar"
+    ],
+    "day": [
+      "Un día en Heart to Heart",
+      "Pregunta por las actividades, el descanso, las comidas y la comunicación con las familias.",
+      "Explorar un día aquí"
+    ],
+    "visit": [
+      "Ven a conocer Heart to Heart",
+      "Visita el centro en West 25th Street y trae tus preguntas sobre el cuidado y la inscripción."
+    ],
+    "footer": [
+      "Explorar",
+      "Para familias",
+      "Privacidad",
+      "Accesibilidad",
+      "Visita virtual",
+      "Recursos para padres",
+      "Comunidad y eventos"
+    ],
+    "fallback": "Esta página se muestra en inglés mientras se revisa la traducción.",
+    "tourBody": "Llama al centro para consultar los horarios de visita. Podrás conocer el espacio y al equipo, y preguntar por el cuidado para la edad de tu hijo o hija.",
+    "enrollBody": "Para comenzar, llámanos o programa una visita. Pregunta por la disponibilidad, los horarios y la documentación necesaria.",
+    "contactBody": "Llama al centro para consultar el horario, la disponibilidad y cómo planear tu visita.",
+    "careBenefits": [
+      "Transporte escolar gratuito",
+      "Comidas gratuitas"
+    ]
+  },
+  "ar": {
+    "language": "العربية",
+    "skip": "انتقل إلى المحتوى",
+    "menu": "القائمة",
+    "nav": [
+      "البرامج",
+      "يوم في المركز",
+      "التسجيل",
+      "دعم الأسرة",
+      "السلامة",
+      "عن المركز",
+      "الأسئلة الشائعة",
+      "اتصل بنا"
+    ],
+    "tour": "رتّب زيارة",
+    "call": "اتصل بالمركز",
+    "directions": "الاتجاهات",
+    "where": "شارع 25 الغربي · كليفلاند، أوهايو",
+    "home": [
+      "رعاية للأطفال يشعرون فيها ",
+      "كأنهم في بيتهم.",
+      "مكان ترحيبي في شارع 25 الغربي في كليفلاند، حيث يتعلم الأطفال ويلعبون ويكتسبون الثقة. تفضلوا بزيارتنا لتتعرفوا على المركز."
+    ],
+    "photos": "صورة توضيحية مولّدة بالذكاء الاصطناعي",
+    "alts": [
+      "أطفال ومعلمة يرسمون معًا في الفصل.",
+      "وليّا أمر وطفلاهما يتبادلون التحية في الخارج."
+    ],
+    "quick": [
+      "سجل رعاية الأطفال في أوهايو",
+      "الرسوم والمساعدة",
+      "3095 W. 25th Street"
+    ],
+    "lead": [
+      "تعرّف على رعاية الأطفال في مركز هارت تو هارت",
+      "اطّلع على ما يمكنك الاستفسار عنه عند البحث عن الرعاية.",
+      "عرض البرامج"
+    ],
+    "cards": [
+      [
+        "الرضّع وصغار الأطفال",
+        "اسأل عن الرعاية والأنشطة اليومية للأطفال الأصغر سنًا."
+      ],
+      [
+        "مرحلة ما قبل المدرسة",
+        "اسأل عن اللعب والتعلّم المبكر."
+      ],
+      [
+        "الأطفال في سن المدرسة",
+        "اسأل عن الخيارات والمواعيد المتاحة حاليًا."
+      ]
+    ],
+    "family": [
+      "دعم لأسرتك",
+      "اطّلع على برامج المساعدة في رعاية الأطفال والموارد المجتمعية في كليفلاند.",
+      "استكشف دعم الأسرة"
+    ],
+    "day": [
+      "يوم في مركز هارت تو هارت",
+      "اسأل عن الأنشطة والراحة والوجبات وكيفية التواصل مع الأسر.",
+      "تعرّف على يوم في المركز"
+    ],
+    "visit": [
+      "تفضّل بزيارة مركز هارت تو هارت",
+      "زر المركز في شارع 25 الغربي واطرح أسئلتك حول الرعاية والتسجيل."
+    ],
+    "footer": [
+      "استكشف",
+      "للأسر",
+      "الخصوصية",
+      "إمكانية الوصول",
+      "جولة افتراضية",
+      "موارد للأهل",
+      "المجتمع والفعاليات"
+    ],
+    "fallback": "تُعرض هذه الصفحة بالإنجليزية ريثما تكتمل مراجعة الترجمة.",
+    "tourBody": "اتصل بالمركز للاستفسار عن أوقات الزيارة. يمكنك التعرّف على المكان والفريق وطرح الأسئلة عن الرعاية المناسبة لعمر طفلك.",
+    "enrollBody": "ابدأ بالاتصال بنا أو ترتيب زيارة. اسأل عن توفر الأماكن والمواعيد والمستندات اللازمة للتسجيل.",
+    "contactBody": "اتصل بالمركز لمعرفة أوقات العمل الحالية وتوفر الأماكن والمساعدة في التخطيط للزيارة.",
+    "careBenefits": [
+      "نقل مدرسي مجاني",
+      "وجبات مجانية"
+    ]
+  },
+  "sw": {
+    "language": "Kiswahili",
+    "skip": "Nenda kwenye maudhui",
+    "menu": "Menyu",
+    "nav": [
+      "Programu",
+      "Siku katika kituo",
+      "Uandikishaji",
+      "Msaada kwa familia",
+      "Usalama",
+      "Kuhusu sisi",
+      "Maswali",
+      "Mawasiliano"
+    ],
+    "tour": "Panga ziara",
+    "call": "Piga simu kituoni",
+    "directions": "Maelekezo ya kufika",
+    "where": "West 25th Street · Cleveland, Ohio",
+    "home": [
+      "Malezi ya watoto ",
+      "yenye ukarimu.",
+      "Mahali pa kukaribisha familia katika West 25th Street, Cleveland, ambapo watoto hujifunza, hucheza na kujenga kujiamini. Tembelea Heart to Heart uone kama inafaa familia yako."
+    ],
+    "photos": "Picha ya mfano iliyotengenezwa kwa AI",
+    "alts": [
+      "Watoto na mwalimu wanachora pamoja darasani.",
+      "Walezi wawili na watoto wao wanasalimiana nje."
+    ],
+    "quick": [
+      "Orodha ya vituo vya Ohio",
+      "Ada na msaada",
+      "3095 W. 25th Street"
+    ],
+    "lead": [
+      "Fahamu malezi ya watoto katika Heart to Heart",
+      "Jua maswali ya kuuliza unapotafuta huduma.",
+      "Tazama programu"
+    ],
+    "cards": [
+      [
+        "Watoto wachanga na wadogo",
+        "Uliza kuhusu malezi na utaratibu wa kila siku kwa watoto wadogo."
+      ],
+      [
+        "Watoto wa umri wa chekechea",
+        "Uliza kuhusu michezo na ujifunzaji wa awali."
+      ],
+      [
+        "Watoto wa umri wa shule",
+        "Uliza kuhusu huduma na ratiba za sasa."
+      ]
+    ],
+    "family": [
+      "Pata msaada kwa familia yako",
+      "Fahamu kuhusu msaada wa malezi ya watoto na huduma za jamii huko Cleveland.",
+      "Tazama msaada kwa familia"
+    ],
+    "day": [
+      "Siku katika Heart to Heart",
+      "Uliza kuhusu shughuli, mapumziko, milo na mawasiliano na familia.",
+      "Fahamu kuhusu siku kituoni"
+    ],
+    "visit": [
+      "Tembelea Heart to Heart",
+      "Njoo kituoni West 25th Street na uulize kuhusu malezi na uandikishaji."
+    ],
+    "footer": [
+      "Chunguza",
+      "Kwa familia",
+      "Faragha",
+      "Ufikivu",
+      "Ziara pepe",
+      "Rasilimali kwa wazazi",
+      "Jamii na matukio"
+    ],
+    "fallback": "Ukurasa huu uko kwa Kiingereza wakati tafsiri inapokaguliwa.",
+    "tourBody": "Piga simu kituoni kuuliza nyakati za ziara. Unaweza kuona kituo, kukutana na timu na kuuliza kuhusu huduma kwa umri wa mtoto wako.",
+    "enrollBody": "Anza kwa kupiga simu au kupanga ziara. Uliza kuhusu nafasi, ratiba na nyaraka zinazohitajika.",
+    "contactBody": "Piga simu kituoni kuuliza saa za kazi, nafasi na kupanga ziara.",
+    "careBenefits": [
+      "Usafiri wa shule bila malipo",
+      "Milo bila malipo"
+    ]
+  },
+  "fr": {
+    "language": "Français",
+    "skip": "Aller au contenu",
+    "menu": "Menu",
+    "nav": [
+      "Programmes",
+      "Une journée ici",
+      "Inscription",
+      "Soutien aux familles",
+      "Sécurité",
+      "À propos",
+      "Questions fréquentes",
+      "Contact"
+    ],
+    "tour": "Planifier une visite",
+    "call": "Appeler le centre",
+    "directions": "Itinéraire",
+    "where": "West 25th Street · Cleveland, Ohio",
+    "home": [
+      "Un milieu de garde où ",
+      "se sentir chez soi.",
+      "Un lieu accueillant sur West 25th Street à Cleveland, où les enfants apprennent, jouent et prennent confiance en eux. Venez découvrir Heart to Heart."
+    ],
+    "photos": "Illustration générée par IA",
+    "alts": [
+      "Des enfants et une éducatrice peignent ensemble en classe.",
+      "Deux adultes et leurs enfants se saluent à l’extérieur."
+    ],
+    "quick": [
+      "Registre des services de garde de l’Ohio",
+      "Tarifs et aides",
+      "3095 W. 25th Street"
+    ],
+    "lead": [
+      "Découvrez la garde d’enfants à Heart to Heart",
+      "Repérez les questions à poser pendant votre recherche.",
+      "Voir les programmes"
+    ],
+    "cards": [
+      [
+        "Bébés et tout-petits",
+        "Renseignez-vous sur l’accueil et la routine des plus jeunes."
+      ],
+      [
+        "Préscolaire",
+        "Renseignez-vous sur le jeu et les premiers apprentissages."
+      ],
+      [
+        "Enfants d’âge scolaire",
+        "Renseignez-vous sur les options et les horaires actuels."
+      ]
+    ],
+    "family": [
+      "Trouvez du soutien pour votre famille",
+      "Découvrez les aides à la garde d’enfants et les ressources communautaires à Cleveland.",
+      "Découvrir le soutien aux familles"
+    ],
+    "day": [
+      "Une journée à Heart to Heart",
+      "Posez vos questions sur les activités, le repos, les repas et les échanges avec les familles.",
+      "Découvrir une journée au centre"
+    ],
+    "visit": [
+      "Venez découvrir Heart to Heart",
+      "Visitez le centre sur West 25th Street et posez vos questions sur la garde et l’inscription."
+    ],
+    "footer": [
+      "Explorer",
+      "Pour les familles",
+      "Confidentialité",
+      "Accessibilité",
+      "Visite virtuelle",
+      "Ressources pour les parents",
+      "Communauté et événements"
+    ],
+    "fallback": "Cette page est en anglais pendant la révision de sa traduction.",
+    "tourBody": "Appelez le centre pour connaître les créneaux de visite. Vous pourrez découvrir les lieux, rencontrer l’équipe et en savoir plus sur l’accueil adapté à l’âge de votre enfant.",
+    "enrollBody": "Appelez-nous ou planifiez une visite pour commencer. Renseignez-vous sur les places, les horaires et les documents nécessaires.",
+    "contactBody": "Appelez le centre pour connaître les horaires et les disponibilités, ou pour préparer votre visite.",
+    "careBenefits": [
+      "Transport scolaire gratuit",
+      "Repas gratuits"
+    ]
+  }
+}
