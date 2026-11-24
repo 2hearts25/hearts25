@@ -110,3 +110,29 @@ Deno.test("webhook refuses traffic when service secrets are missing", async () =
   assert((await handler(new Request(url + "/webhook/tour-request", {method:"POST"}))).status === 503, "fails closed");
 });
 
+
+Deno.test("a stored submission reference keys delivery per submission, not per address", async () => {
+  const t = setup();
+  const withRef = (id: string, reference: string) => ({ ...fake, id, data: { ...fake.data, reference } });
+  // Same submission delivered twice (retry): identical keys, so Resend delivers once.
+  await t.post(withRef("a", "H2H-20261124-0A1B2C3D"));
+  await t.post(withRef("b", "H2H-20261124-0A1B2C3D"));
+  // A genuinely separate request from the same parent: its own keys.
+  await t.post(withRef("c", "H2H-20261124-FFEEDDCC"));
+  await Promise.all(t.pending);
+  const keys = (part: string) => [...new Set(t.requests.filter(req => req.key.includes(part)).map(req => req.key))];
+  assert(keys("/family/").length === 2 && keys("/staff/").length === 2, "one key per stored submission");
+  assert(t.delivered() === 4, "two submissions, each with one staff and one family email");
+  const staff = t.requests.find(x => x.key.includes("/staff/"));
+  assert(String(staff?.body.text).includes("Reference: H2H-20261124-0A1B2C3D"), "reference in staff alert");
+  const family = t.requests.find(x => x.key.includes("/family/"));
+  assert(!String(family?.body.text).includes("H2H-"), "no reference or extra data in family email");
+});
+
+Deno.test("an invalid reference is ignored and the legacy keys apply", async () => {
+  const t = setup();
+  await t.post({ ...fake, data: { ...fake.data, reference: "not-a-reference" } });
+  await Promise.all(t.pending);
+  const staff = t.requests.find(x => x.key.includes("/staff/"));
+  assert(String(staff?.body.text).includes("Reference: (blank)"), "blank reference");
+});

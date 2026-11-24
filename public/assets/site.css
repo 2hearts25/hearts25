@@ -255,3 +255,19 @@ summary { cursor:pointer;font-weight:700 }
   .hero .feature::before { width:2.65rem;inset-inline-end:-.38rem;inset-block-start:-.38rem }
   .hero .feature::after { width:2rem;inset-inline-start:-.35rem }
 }
+
+/* 1.1.0-P1: homepage services, family-support resources */
+.services .section-header p { max-inline-size:62ch }
+.services-grid { grid-template-columns:repeat(auto-fit,minmax(15.5rem,1fr)) }
+.services-grid .card:nth-child(n) { --card-accent:var(--coral);background:var(--pink) }
+.services-grid .card:nth-child(4n+2) { --card-accent:var(--deep-blue);background:var(--sky) }
+.services-grid .card:nth-child(4n+3) { --card-accent:var(--green);background:var(--sage) }
+.services-grid .card:nth-child(4n) { --card-accent:#8a6a00;background:#fff3b8 }
+.services-grid .card-icon { font-size:1.35rem }
+.resources { margin-block:2rem;padding:1.25rem;border:1px solid var(--line);border-radius:1rem;background:var(--white) }
+.resources ul { padding-inline-start:1.2rem }
+.resources li { margin-block:.55rem }
+.resources .help { color:var(--ink) }
+.resources a { overflow-wrap:anywhere }
+.page ul { padding-inline-start:1.25rem }
+@media (max-width:768px) { .services-grid { grid-template-columns:1fr } }

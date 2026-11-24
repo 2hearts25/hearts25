@@ -1,2 +1,7 @@
 User-agent: *
+Allow: /
 Disallow: /thank-you/
+Disallow: /registration-received/
+Disallow: /information-received/
+
+Sitemap: https://hearts25.com/sitemap.xml

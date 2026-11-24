@@ -1,30 +1,29 @@
+# Heart to Heart tour request mailer
 
-# Heart to Heart tour request email receiver
+Internal Edge Function that emails staff and the family when a tour is requested. It is called **only by the `website-inquiry`
+function** after the request has been validated and stored. It is **not** a Netlify Forms webhook: legacy Netlify Forms is
+disabled and must stay disabled.
 
-This function receives Netlify Forms notifications for `tour-request` on `heart-to-heart-enrichment`. It uses the Resend Send Email API from a Supabase Edge Function.
+## Environment variables (Supabase Edge Function secrets, project `zebeclcvrdmisnxkwode`)
 
-## Environment variables
+- `H2H_TOUR_SHARED_SECRET` - 32+ random characters; the same value is used by `website-inquiry` (sent as the `x-webhook-secret` header).
+- `H2H_RESEND_API_KEY` - sending-only Resend API key. (`H2H_TOUR_RESEND_API_KEY` is accepted as a fallback name.)
+- `H2H_STAFF_NOTIFY_EMAIL` - staff alert and reply-to address (`tohearts25@gmail.com`).
+- `H2H_FROM_EMAIL` - `Heart to Heart Enrichment Center <hello@hearts25.com>`.
 
-Add these as Supabase Edge Function secrets for project `zebeclcvrdmisnxkwode`.
+## Endpoints
 
-- `H2H_TOUR_SHARED_SECRET` — a newly generated secret with at least 32 random characters. Use the same value in the Netlify notification.
-- `H2H_TOUR_RESEND_API_KEY` — a sending-only API key from the Heart to Heart Resend account.
-- `H2H_TOUR_STAFF_NOTIFY_EMAIL` — `tohearts25@gmail.com`.
-- `H2H_TOUR_FROM_EMAIL` — `Heart to Heart Enrichment Center <onboarding@resend.dev>` for testing. After verifying the domain, change it to `Heart to Heart Enrichment Center <hello@hearts25.com>`.
+Health: `https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/tour-request-mailer/health`
 
-The test sender is limited to the account’s own address for actual mailbox delivery. Keep the Netlify notification disconnected from real families until the sending domain is verified and the flow has been tested. Use a synthetic submission with the account email as the family email for the initial test.
+Receiver: `.../tour-request-mailer/webhook/tour-request` (POST, secret required). The body is
+`{form_name:"tour-request", id:<reference>, data:{reference, name, email, phone, tour_window, start_month, language}}`.
 
-## Webhook
+## Behavior
 
-Health  
-`https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/tour-request-mailer/health`
-
-Receiver  
-`https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/tour-request-mailer/webhook/tour-request`
-
-In Netlify, open the existing project and go to Forms → Submission notifications → Add notification → Outgoing webhook. Choose the `tour-request` form. If the UI supports a custom header, use `x-webhook-secret` with the shared secret. Otherwise, append `?secret=<URL-encoded shared secret>` to the endpoint. Keep the completed URL private. The endpoint checks the secret before parsing the submission.
-
-The receiver returns HTTP 200 after scheduling email. Inspect Resend for acceptance or delivery and Supabase Edge Function logs for sanitized failure status. A retry with the same submission ID uses the same staff idempotency key. The family idempotency key is based on the normalized recipient address. Resend retains idempotency keys for 24 hours.
+- English family emails use `interest-message.ts`; other languages use `brand-mail.ts`. Family emails never include form text.
+- The staff alert includes the reference (`H2H-YYYYMMDD-XXXXXXXX`, stored in `website_private.inquiries.reference`) and the contact details staff need to call the family.
+- Idempotency: with a valid reference, the staff and family Resend keys are derived from that reference, so a retry of one stored submission is delivered once while separate requests from the same parent each get their own emails. Without a reference (legacy callers) the staff key uses the submission id and the family key the normalized address.
+- Duplicate submissions (identical within 10 minutes) are stopped earlier, in `website-inquiry`, and never reach this function.
 
 ## Local testing
 
@@ -34,4 +33,3 @@ deno test receiver_test.ts
 ```
 
 Tests use synthetic data and a mocked Resend API. They do not send real email.
-
