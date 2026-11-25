@@ -35,3 +35,43 @@ Neither PDF has a password, encryption or copy/print restriction, because the St
 
 ## F. Not changed
 Field trips: no blanket authorization and no new system; trip-specific permission stays a separate document. Netlify Forms stays off. The three workflows — Register, Tour, Information — stay independent.
+
+---
+
+# Version 1.3.0 — Enrollment completion: decisions and open items (11/25/2026)
+
+## G. Approved by management on 11/25/2026 and implemented
+1. **Parent/Provider Contract placement** — the contract is its own step and the last page of the application, immediately before Review and Sign; it is also the last agreement section of the Heart to Heart PDF.
+2. **Attendance definitions** (from the paper Absent Days letter, as approved): full-time child ≥ 25 hours/week, part-time child ≥ 10 hours/week; children are signed in and out each day through a valid attendance method. "Swipe card" wording removed.
+3. **School transportation authorization** is valid for one academic school year.
+4. **Online form supersedes the paper packet** where they differ; physical examination forms are an optional upload.
+
+## H. Source documents reviewed
+* Paper Parent/Provider Contract and the 16-page enrollment packet (supplied 11/25/2026; not committed to the public repository because they contain private-pay rates).
+* Approved Absent Days and Attendance Policy (11/24/2026); Withdrawal and Termination Policy H2H-07 v1.1 (effective 12/1/2026); Translated Agreements Approval H2H-08 v1.1.
+* Ohio rules checked 11/25/2026: OAC 5180:6-1-05 (eff. 8/1/2026), 5180:6-1-09 (eff. 8/1/2026), 5180:6-1-10 (eff. 11/2/2025), 5180:2-12-15 (eff. 7/1/2026).
+
+Paper-contract terms **not** carried online, and why:
+| Paper term | Treatment |
+|---|---|
+| $60 registration fee + half a month's tuition/voucher, non-refundable | Not online. PFCC families pay no registration fee (site FAQ) and may not be asked for the difference between the State's registration payment and the center's fee (OAC 5180:6-1-10(M)(3)). Private-pay pricing is out of scope. |
+| Daily/weekly private-pay rates, summer camp fees | Not published (out of scope). |
+| Monthly billing, "tuition applies regardless of attendance", due 1st/15th incl. voucher co-pays | Replaced for PFCC by weekly copays with a mutually agreed due date (OAC 5180:6-1-05(J)), no copay for weeks with only absent/PD days (5180:6-1-09(H)(4)). Private-pay schedule pending. |
+| Late-payment fees ($20 / $40 / suspension at 6 business days / $10–$20 weekly) | "Late payment fees" section pending. PFCC delinquency follows 5180:6-1-09(H) and the approved W&T policy (no automatic conversion to private pay). |
+| Late pickup $10 for up to 10 minutes, then $2/minute | Loaded in `LATE_PICKUP` but inactive (see I.1). |
+| $40 returned check; check/money order/cashier's check/cash; "all fees non-refundable" | "Other fees and payment methods" pending. Note the approved W&T policy requires a final statement within 10 business days and refunds of undisputed credits within 14 days. |
+| Withdrawal/termination "with or without notice" | Superseded by the approved W&T policy (14-day notice where practicable, review within 5 business days). |
+| Parent pays court costs and attorney fees | Not online — legal review recommended. |
+| Old Absent Days letter: 10 days per six months; absences beyond that charged as tuition | Superseded by the approved Attendance Policy (20 reimbursable days per six-month period). |
+
+## I. Decisions still needed (the system is built for each; nothing is enforced until decided)
+1. **Late pickup** (`enrollment/agreements.mjs` → `LATE_PICKUP`): confirm the amounts for online use; define the **pickup deadline** (closing time 6:00 PM or the child's scheduled pick-up time), **grace period**, **maximum charge (cap)**, **payment deadline**, **exceptions** (emergencies, weather, school delays), and whether the charge **applies to PFCC families** (permitted only with a signed fee agreement, OAC 5180:6-1-10(M)(1)).
+2. **Late payment fees** for private pay and whether any applies to past-due PFCC copays.
+3. **Private-pay tuition and payment schedule** (rates, billing cycle, deadlines) — out of scope for this release.
+4. **Other fees and payment methods** (returned check fee, accepted methods, refunds consistent with the W&T policy) and the **attorney-fee clause** (legal review).
+5. **Online wording for "Enrollment arrangements" and "Parent and provider responsibilities"** (the paper "Signature to Agreement" paragraph references the Parent Handbook, which is not yet issued).
+6. **Authorized staff for document access**: names, roles, and whether two-step sign-in (MFA) is required (`H2H_STAFF_REQUIRE_MFA`). The allowlist is empty until then.
+7. **Document retention periods** by category (immunization, insurance images, custody/court, PFCC notices, other) and for enrollment PDFs; the Website Privacy Policy still refers to a "written retention schedule" — confirm one exists or adjust that sentence before publication.
+8. **Parent acknowledgment of confirmed financial terms**: staff can record confirmed copay/due day as a new revision; choose how the family acknowledges it (paper signature now, or an online acknowledgment step in a later release).
+9. **Native-speaker review** of all new Spanish, French, Arabic and Swahili text, and extension of the Translated Agreements Approval to the 1.3.0 wording.
+10. **When to publish** the 1.3.0 website (then run Phase B of the activation checklist).

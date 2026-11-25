@@ -1,7 +1,7 @@
 // Portable (browser + Deno + Node) checks for supporting-document uploads (B§13).
 // The browser runs these as a convenience; the Edge Function runs them again on the bytes it actually received, so nothing
 // the browser claims (name, MIME type, size) is trusted. This is structural validation and quarantine, NOT antivirus:
-// every accepted file stays "quarantined / structure-checked" until authorized staff review it (see docs/SECURE_DOCUMENTS.md).
+// every accepted file stays "quarantined / structure-checked" until authorized staff review it (see docs/RELEASE_1_3_0_ENROLLMENT_COMPLETION.md).
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;           // 10 MB per document (B§13 proposal)
 export const MAX_SESSION_BYTES = 60 * 1024 * 1024;        // 60 MB per application
 export const MAX_SESSION_FILES = 30;
