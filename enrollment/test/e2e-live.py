@@ -63,6 +63,7 @@ def live(browser, lang='sw'):
     tr = json.load(open(f'{ROOT}/dist/assets/enrollment/i18n/{lang}.json'))
     data = json.loads(json.dumps(SAMPLE))
     data.update({'c.first':'SYNTHETIC-TEST','c.last':'Production-1.2.1','c.nick':'','p1.name':'Synthetic Testparent (H2H 1.2.1 production test)','p1.email':'delivered@resend.dev','p1.contactPath':'email','pe.devInfo':NATIVE[lang][0],'po.care':NATIVE[lang][1]})
+    data['c.days']=['mon','wed','sat']  # combined weekday + weekend selection
     ctx = browser.new_context(viewport={'width':1280,'height':900}, ignore_https_errors=True, locale='sw')
     page = ctx.new_page(); seen={'status':None,'url':None}
     page.on('response', lambda r: seen.update(status=r.status,url=r.url) if 'submit-enrollment' in r.url and r.request.method=='POST' else None)
@@ -83,7 +84,10 @@ def live(browser, lang='sw'):
     page.wait_for_selector('main:not([hidden]) [data-enroll-ref]', timeout=15000)
     ref = page.inner_text('[data-enroll-ref]'); print('REFERENCE', ref, 'HTTP', seen['status'], seen['url'])
     check('HTTP 201 + real reference', seen['status']==201 and re.match(r'^H2H-\d{8}-[0-9A-F]{8}$', ref))
-    check('no storage on device', page.evaluate('localStorage.length===0 && sessionStorage.length===0 && document.cookie===""'))
+    # The confirmation page deliberately keeps only the reference number and a confirmation flag (plus non-PII analytics attribution) in this tab's sessionStorage.
+    st = page.evaluate('({l:localStorage.length,c:document.cookie,s:Object.fromEntries(Object.entries(sessionStorage))})')
+    allowed = {'h2h-confirmation','h2h-enroll-ref','h2h-attribution','h2h-ref'}
+    check('no personal data on device (no localStorage/cookies; sessionStorage holds only reference + flags)', st['l']==0 and st['c']=='' and set(st['s'])<=allowed and 'SYNTHETIC' not in json.dumps(st['s']) and 'Testparent' not in json.dumps(st['s']), st)
     check('URL carries no data', page.url.rstrip('/').endswith('registration-received') and '?' not in page.url)
     return ref
 with sync_playwright() as pw:
