@@ -53,6 +53,9 @@ p { color:var(--muted) }
 .hero-copy p { font-size:clamp(1.04rem,1.6vw,1.25rem);margin-block-start:1.25rem;max-width:43ch }
 .eyebrow { color:var(--coral);font-size:.81rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;display:block;margin-block-end:1rem }
 .actions { display:flex;gap:.7rem;flex-wrap:wrap;margin-block-start:1.55rem }
+.tour-choices,.nav-conversion { display:flex;align-items:center;gap:.5rem;flex-wrap:wrap }
+.virtual-pill { display:inline-flex;align-items:center;justify-content:center;min-height:2.75rem;padding:.4rem .8rem;border:1px solid var(--deep-blue);border-radius:999px;background:var(--sky);color:var(--ink);font-weight:750;font-size:.9rem;text-align:center;text-decoration:none }
+.virtual-pill:hover { background:var(--white);text-decoration:underline }
 .feature img { border-radius:1.65rem;aspect-ratio:1.24;object-fit:cover }
 .hero .feature img { aspect-ratio:1.48;object-position:50% center }
 figcaption { text-align:end;color:var(--muted);font-size:.74rem;margin-block-start:.35rem }
@@ -130,6 +133,13 @@ figcaption { text-align:end;color:var(--muted);font-size:.74rem;margin-block-sta
 .split { display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(1.25rem,5vw,5rem) }
 .split p { margin-block-start:1rem;max-width:49ch }
 .family { background:var(--sage) }
+.virtual-preview { background:var(--sage);padding-block:clamp(2rem,5vw,4.4rem);border-block:1px solid var(--line) }
+.virtual-layout { display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:clamp(1.4rem,5vw,4.5rem) }
+.virtual-title-card { display:flex;flex-direction:column;align-items:start;justify-content:center;gap:1rem;min-height:clamp(10rem,20vw,15rem);padding:clamp(1.4rem,4vw,3.1rem);border-radius:1.5rem;background:var(--deep-blue);color:var(--white) }
+.virtual-title-card :is(h1,h2) { font-size:clamp(2.15rem,5vw,4.1rem) }
+.virtual-status { padding:.36rem .78rem;border-radius:999px;background:var(--gold);color:var(--ink);font-weight:800 }
+.virtual-copy :is(h2,h3) { font-size:clamp(1.65rem,3.4vw,2.65rem) }
+.virtual-copy p { margin-block-start:.7rem;max-width:62ch }
 .callout { background:var(--deep-blue);color:white;border-radius:1.6rem;padding:clamp(1.35rem,4vw,3rem);display:flex;align-items:center;justify-content:space-between;gap:1.25rem }
 .callout p { color:#fff;margin-block-start:.55rem }
 .callout .button { background:var(--gold);color:var(--ink) }
@@ -142,6 +152,25 @@ figcaption { text-align:end;color:var(--muted);font-size:.74rem;margin-block-sta
 .page h2 { font-size:clamp(1.65rem,3vw,2.45rem) }
 .page li+li { margin-block-start:.45rem }
 .page details { border-block-end:1px solid var(--line);padding:.9rem 0 }
+.portal { max-width:77rem }
+.portal-headline { margin-block-start:.9rem;color:var(--deep-blue);font:800 clamp(1.35rem,3vw,2.15rem)/1.2 var(--heading) }
+.portal .intro { max-width:68ch }
+.portal-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1rem;margin-block-start:1rem }
+.portal-document { display:grid;grid-template-rows:1fr auto auto;gap:.7rem;padding:clamp(1rem,2vw,1.5rem);border:1px solid var(--line);border-block-start:.24rem solid var(--coral);border-radius:1rem;background:var(--white);min-inline-size:0 }
+.portal-document-copy { display:flex;align-items:start;gap:.8rem }
+.portal-document h3 { font-size:clamp(1.12rem,2vw,1.48rem);overflow-wrap:anywhere }
+.portal-document-icon { position:relative;display:block;flex:none;width:1.4rem;height:1.65rem;margin-block-start:.12rem;border:2px solid var(--deep-blue);border-radius:.25rem;background:var(--sky) }
+.portal-document-icon::after { content:"";position:absolute;inset:.45rem .23rem auto;height:.28rem;border-block:1px solid var(--deep-blue) }
+.portal-document .portal-metadata,.portal-document .portal-pending { margin:0 }
+.portal-metadata { font-size:.9rem }
+.portal-actions { display:flex;flex-wrap:wrap;gap:.45rem .65rem;align-items:center }
+.portal-actions a { font-weight:700 }
+.portal-actions a:not(.button) { display:inline-flex;align-items:center;min-height:2.75rem }
+.portal-actions .button { padding-inline:.82rem }
+.portal-pending { font-weight:750;color:var(--deep-blue) }
+.portal-help address { margin-block-start:.75rem;font-style:normal }
+.enrollment-document { margin-block:-.35rem .85rem;padding-inline-start:.85rem;border-inline-start:2px solid var(--line) }
+.enroll .policy .enrollment-document { margin-block:.85rem }
 summary { cursor:pointer;font-weight:700 }
 .note { background:var(--sage);padding:1rem 1.25rem;border-radius:.65rem }
 .footer { background:var(--ink);color:#fffdf5;padding-block:2.4rem }
@@ -175,7 +204,7 @@ summary { cursor:pointer;font-weight:700 }
   .top .location { display:none }
   .languages { justify-content:center;font-size:.8rem;gap:.58rem }
   .header .wrap { min-height:4.45rem }
-  .hero,.split,.cards,.footer .wrap { grid-template-columns:1fr }
+  .hero,.split,.cards,.footer .wrap,.virtual-layout { grid-template-columns:1fr }
   .hero .feature img { aspect-ratio:1.6 }
   .quick .wrap { grid-template-columns:1fr;gap:0;padding-block:.4rem }
   .quick a { min-height:2.65rem }

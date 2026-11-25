@@ -13,7 +13,7 @@ const IDLE_MS = 15 * 60 * 1000, IDLE_WARN_S = 60;
 const SIG_W = 600, SIG_H = 200, MIN_INK = 160;
 
 let schema = null;
-const DOC_LINKS = {}; // approved document URLs (https only), from document-links.json; empty until management supplies them
+let documentLibrary = {};
 const trCache = {};
 let lang = LANGS.includes(root.dataset.lang) ? root.dataset.lang : 'en';
 let tr = null;
@@ -41,6 +41,7 @@ const lk = id => (id.startsWith('p2.') && id !== 'p2.has' ? 'p1.' + id.slice(3) 
 const labelOf = (id, sub) => tr.f[sub ? id + '.' + sub : lk(id)] ?? id;
 const optLabel = (id, v) => tr.o[lk(id)]?.[v] ?? tr.o._?.[v] ?? v;
 const route = slug => '/' + (lang === 'en' ? '' : lang + '/') + slug + '/';
+const library = () => documentLibrary[lang];
 const easternToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
 const addYears = (iso, n) => { const [y, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(y + n, m - 1, d)).toISOString().slice(0, 10); };
 const visibleSteps = () => schema.steps.filter(s => stepShown(s, S.data, schema));
@@ -78,7 +79,10 @@ async function loadLang(code) {
 }
 async function boot() {
   try {
-    try { const dl = await fetch('/assets/enrollment/document-links.json'); if (dl.ok) { const j = await dl.json(); for (const [k, v] of Object.entries(j)) if (typeof v === 'string' && /^https:\/\/[^\s"'<>]+$/.test(v)) DOC_LINKS[k] = v; } } catch { /* optional: links are added once management supplies approved documents */ }
+    try {
+      const response = await fetch('/assets/enrollment/document-links.json');
+      if (response.ok) documentLibrary = (await response.json()) ?? {};
+    } catch { /* Document references are optional for the application to load. */ }
     const r = await fetch('/assets/enrollment/schema.json'); if (!r.ok) throw new Error('schema');
     schema = await r.json();
     await loadLang(lang);
@@ -213,6 +217,19 @@ function absencePolicy() {
 function diaperingText() {
   return h('section', { class: 'policy', 'aria-labelledby': 'dp-h' }, h('h3', { id: 'dp-h' }, t('dpH')), h('p', {}, t('dpP1')), h('p', {}, t('dpP2')), h('p', {}, t('dpP3')), h('p', {}, t('dpP4')));
 }
+function portalLink() {
+  const ui = library()?.ui;
+  return ui ? h('a', { href: route('parent-portal'), target: '_blank', rel: 'noopener noreferrer',
+    'aria-label': `${ui.title} (${ui.newTab})` }, ui.title) : null;
+}
+function documentReference(document, showTitle = false) {
+  const { ui } = library();
+  const actions = ['view', 'download'].map(action => h('a', { href: document[action], target: '_blank', rel: 'noopener noreferrer',
+    'aria-label': `${ui[action]} — ${document.title}${action === 'view' ? ' (' + ui.newTab + ')' : ''}` }, ui[action]));
+  return h('div', { class: 'enrollment-document', 'data-document': document.id }, showTitle ? h('strong', {}, document.title) : null,
+    document.view ? [h('p', { class: 'portal-metadata' }, document.metadata), h('div', { class: 'portal-actions' }, actions)]
+      : h('p', { class: 'portal-pending' }, ui.pending));
+}
 function fieldsFor(step) {
   const out = [];
   for (const f of step.fields) {
@@ -222,7 +239,10 @@ function fieldsFor(step) {
     if (step.id === 'daily' && f.id === 'po.trained') out.push(diaperingText());
     if (f.t === 'rep') { out.push(h('div', { class: 'field' }, repeater(f))); continue; }
     out.push(control(f, { get: () => S.data[f.id], set: v => { S.data[f.id] = v; }, ctx: { label: labelOf(f.id), optId: f.id }, path: f.id }));
-    if (DOC_LINKS[f.id]) out.push(h('p', { class: 'help' }, h('a', { href: DOC_LINKS[f.id], target: '_blank', rel: 'noopener noreferrer' }, t('docLink'))));
+    if (step.id === 'agreements') {
+      const document = library()?.documents.find(item => item.registrationField === f.id);
+      if (document) out.push(documentReference(document));
+    }
   }
   return out;
 }
@@ -253,6 +273,7 @@ function renderIntro() {
     h('p', { class: 'help' }, t('lead')),
     [t('intro1'), t('intro2'), t('intro3')].map(x => h('p', {}, x)),
     h('div', { class: 'notice' }, t('intro4'), h('div', { class: 'links' }, h('a', { class: 'button secondary', href: route('tour') }, t('tourLink')), h('a', { class: 'button secondary', href: route('request-information') }, t('infoLink')))),
+    h('p', {}, portalLink()),
     h('div', { class: 'field' }, langSel),
     h('div', { class: 'nav' }, h('span', { class: 'spacer' }), h('button', { type: 'button', class: 'button', onclick: () => goto(nextStepId('intro')) }, t('start'))),
   ];
@@ -266,7 +287,12 @@ function renderStep(step) {
   if (tr.stepHelp[step.id]) nodes.push(h('p', { class: 'help' }, tr.stepHelp[step.id]));
   if (step.id === 'docs') nodes.push(h('p', { class: 'help' }, t('docsLead')));
   if (step.id === 'emtrans') nodes.push(h('p', { class: 'help' }, t('emLead')), h('p', { class: 'notice' }, t('emNote')));
-  if (step.id === 'agreements') nodes.push(h('p', { class: 'notice' }, t('pendingBanner')));
+  if (step.id === 'agreements') {
+    nodes.push(h('p', { class: 'notice' }, t('pendingBanner')));
+    const documents = library()?.documents.filter(document => document.registrationReview && document.view) ?? [];
+    if (documents.length) nodes.push(h('section', { class: 'policy', 'aria-labelledby': 'reference-documents' },
+      h('h3', { id: 'reference-documents' }, library().ui.review), documents.map(document => documentReference(document, true)), h('p', {}, portalLink())));
+  }
   if (S.summary) nodes.push(summaryNode(S.summary));
   nodes.push(...fieldsFor(step));
   nodes.push(navRow(step, () => {

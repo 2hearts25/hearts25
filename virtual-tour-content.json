@@ -1,0 +1,42 @@
+{
+  "en": {
+    "title": "Virtual Tour",
+    "heading": "Take a Look Inside Heart to Heart",
+    "intro": "We know how important it is to feel comfortable with the place where your child will learn, grow and spend their day.",
+    "preview": "Our virtual tour will give you an inside look at our classrooms, learning environments, play areas and the welcoming spaces that make Heart to Heart special.",
+    "visit": "Can’t wait to see our center? Schedule an in-person tour. We would love to meet you and your family!",
+    "action": "Schedule an In-Person Tour"
+  },
+  "es": {
+    "title": "Visita virtual",
+    "heading": "Conoce Heart to Heart por dentro",
+    "intro": "Sabemos lo importante que es sentirte a gusto con el lugar donde tu hijo aprenderá, crecerá y pasará el día.",
+    "preview": "Nuestra visita virtual te permitirá conocer las aulas, los espacios de aprendizaje, las áreas de juego y los rincones acogedores que hacen especial a Heart to Heart.",
+    "visit": "¿Quieres conocer nuestro centro cuanto antes? Programa una visita presencial. ¡Nos encantará conocerte a ti y a tu familia!",
+    "action": "Programa una visita presencial"
+  },
+  "fr": {
+    "title": "Visite virtuelle",
+    "heading": "Découvrez Heart to Heart de l’intérieur",
+    "intro": "Nous savons combien il est important d’être à l’aise avec le lieu où votre enfant va apprendre, grandir et passer ses journées.",
+    "preview": "Notre visite virtuelle vous fera découvrir nos salles, nos espaces d’apprentissage, nos aires de jeux et les lieux accueillants qui font la particularité de Heart to Heart.",
+    "visit": "Vous avez hâte de découvrir notre centre ? Planifiez une visite sur place. Nous serons ravis de rencontrer votre famille !",
+    "action": "Planifier une visite sur place"
+  },
+  "ar": {
+    "title": "جولة افتراضية",
+    "heading": "تعرّفوا على هارت تو هارت من الداخل",
+    "intro": "نعرف مدى أهمية شعوركم بالارتياح تجاه المكان الذي سيتعلّم فيه طفلكم وينمو ويقضي يومه.",
+    "preview": "ستتيح لكم جولتنا الافتراضية الاطلاع على صفوفنا وبيئات التعلّم ومناطق اللعب والمساحات المرحّبة التي تميّز هارت تو هارت.",
+    "visit": "هل ترغبون في رؤية مركزنا قريبًا؟ احجزوا جولة حضورية. يسعدنا أن نلتقي بكم وبأسرتكم!",
+    "action": "احجزوا جولة حضورية"
+  },
+  "sw": {
+    "title": "Ziara ya Mtandaoni",
+    "heading": "Tazama Ndani ya Heart to Heart",
+    "intro": "Tunajua jinsi ilivyo muhimu kujisikia vizuri kuhusu mahali ambapo mtoto wako atajifunza, kukua na kutumia siku yake.",
+    "preview": "Ziara yetu ya mtandaoni itakuonyesha madarasa, mazingira ya kujifunzia, maeneo ya kucheza na sehemu zenye ukarimu zinazofanya Heart to Heart kuwa ya pekee.",
+    "visit": "Una hamu ya kuona kituo chetu? Panga ziara ya ana kwa ana. Tutafurahi kukutana nawe na familia yako!",
+    "action": "Panga ziara ya ana kwa ana"
+  }
+}

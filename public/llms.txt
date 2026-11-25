@@ -40,10 +40,12 @@
 - [Family Support](https://hearts25.com/family-support/): wraparound services and public benefits resources
 - [Tuition and Childcare Assistance](https://hearts25.com/tuition-assistance/)
 - [Enrollment](https://hearts25.com/enrollment/)
+- [Parent Portal](https://hearts25.com/parent-portal/): view or download approved public policies and family documents. The portal is localized in five languages. The current PDFs are in English and the Parent Handbook is coming soon.
 - [Safety & Trust](https://hearts25.com/safety/)
 - [FAQ](https://hearts25.com/faq/)
 - [Contact](https://hearts25.com/contact/)
 - [Schedule a Tour](https://hearts25.com/tour/): request a visit; no registration required
+- [Virtual Tour](https://hearts25.com/virtual-tour/): coming soon. Families can request an in-person visit in the meantime.
 - [Register a Child](https://hearts25.com/register/): digital child enrollment application in English, Spanish, French, Arabic and Swahili; works on phones and computers
 - [Request More Information](https://hearts25.com/request-information/): ask about programs, free childcare for eligible families, transportation and family support; no registration required
 - [Privacy](https://hearts25.com/privacy/)

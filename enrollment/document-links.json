@@ -1,7 +1,321 @@
 {
-  "ag.handbook": "",
-  "ag.resCommunity": "",
-  "ag.transIn": "",
-  "ag.transWithin": "",
-  "ag.transOut": ""
+  "bucket": "Family docs",
+  "documents": [
+    {
+      "id": "parent-handbook",
+      "category": "policies",
+      "status": "pending",
+      "object": null,
+      "language": null,
+      "revision": null,
+      "effectiveDate": null,
+      "registrationField": "ag.handbook",
+      "copy": {
+        "en": {
+          "title": "Parent Handbook",
+          "description": "A guide to center policies and the information families need during enrollment and care."
+        },
+        "es": {
+          "title": "Manual para familias",
+          "description": "Guía de las políticas del centro y de la información que las familias necesitan durante la inscripción y el cuidado."
+        },
+        "fr": {
+          "title": "Guide des parents",
+          "description": "Un guide des politiques du centre et des renseignements dont les familles ont besoin pendant l’inscription et l’accueil."
+        },
+        "ar": {
+          "title": "دليل أولياء الأمور",
+          "description": "دليل لسياسات المركز والمعلومات التي تحتاج إليها الأسر أثناء التسجيل والرعاية."
+        },
+        "sw": {
+          "title": "Mwongozo wa Wazazi",
+          "description": "Mwongozo wa sera za kituo na taarifa ambazo familia zinahitaji wakati wa usajili na malezi."
+        }
+      }
+    },
+    {
+      "id": "withdrawal-and-termination",
+      "category": "policies",
+      "status": "available",
+      "object": "Withdrawal and Termination.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationReview": true,
+      "copy": {
+        "en": {
+          "title": "Withdrawal and Termination",
+          "description": "Center procedures for ending care, including notice, review and transition support."
+        },
+        "es": {
+          "title": "Retiro y finalización del servicio",
+          "description": "Procedimientos del centro para finalizar el cuidado, con información sobre el aviso, la revisión y el apoyo durante la transición."
+        },
+        "fr": {
+          "title": "Retrait et fin de l’accueil",
+          "description": "Les procédures de fin d’accueil, notamment le préavis, le réexamen et l’accompagnement de la transition."
+        },
+        "ar": {
+          "title": "الانسحاب وإنهاء الرعاية",
+          "description": "إجراءات إنهاء الرعاية في المركز، بما فيها الإشعار والمراجعة والدعم خلال الانتقال."
+        },
+        "sw": {
+          "title": "Kujiondoa na Kusitishwa kwa Malezi",
+          "description": "Taratibu za kituo za kumaliza huduma za malezi, zikiwemo taarifa ya mapema, mapitio na msaada wakati wa mabadiliko."
+        }
+      }
+    },
+    {
+      "id": "translation-agreement",
+      "category": "policies",
+      "status": "available",
+      "object": "Translated Agreements Approval.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationReview": true,
+      "copy": {
+        "en": {
+          "title": "Translation Agreement",
+          "description": "Management’s authorization record for translated enrollment agreements."
+        },
+        "es": {
+          "title": "Acuerdo de traducción",
+          "description": "Registro de la autorización de la dirección para usar traducciones de los acuerdos de inscripción."
+        },
+        "fr": {
+          "title": "Accord de traduction",
+          "description": "Le document dans lequel la direction autorise l’utilisation de traductions des accords d’inscription."
+        },
+        "ar": {
+          "title": "اتفاق الترجمة",
+          "description": "سجل موافقة الإدارة على استخدام ترجمات اتفاقات التسجيل."
+        },
+        "sw": {
+          "title": "Makubaliano ya Tafsiri",
+          "description": "Hati ya uidhinishaji wa usimamizi wa tafsiri za makubaliano ya usajili."
+        }
+      }
+    },
+    {
+      "id": "community-resources",
+      "category": "resources",
+      "status": "available",
+      "object": "Community Resources.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationField": "ag.resCommunity",
+      "copy": {
+        "en": {
+          "title": "Community Resources",
+          "description": "A guide to childcare assistance, food, health services and other resources for Cleveland-area families."
+        },
+        "es": {
+          "title": "Recursos comunitarios",
+          "description": "Guía de ayuda para el cuidado infantil, alimentos, servicios de salud y otros recursos para familias del área de Cleveland."
+        },
+        "fr": {
+          "title": "Ressources communautaires",
+          "description": "Un guide des aides à la garde, des services alimentaires, des services de santé et d’autres ressources pour les familles de la région de Cleveland."
+        },
+        "ar": {
+          "title": "الموارد المجتمعية",
+          "description": "دليل لمساعدات رعاية الأطفال والغذاء والخدمات الصحية وغيرها من الموارد للأسر في منطقة كليفلاند."
+        },
+        "sw": {
+          "title": "Rasilimali za Jamii",
+          "description": "Mwongozo wa msaada wa malezi ya watoto, chakula, huduma za afya na rasilimali nyingine kwa familia za eneo la Cleveland."
+        }
+      }
+    },
+    {
+      "id": "transition-into-center",
+      "category": "transitions",
+      "status": "available",
+      "object": "Transition Into Center.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationField": "ag.transIn",
+      "copy": {
+        "en": {
+          "title": "Transition Into Center",
+          "description": "Orientation and a blank plan to help your child settle in when starting care."
+        },
+        "es": {
+          "title": "Ingreso al centro",
+          "description": "Orientación y un plan en blanco para ayudar a tu hijo a adaptarse al comenzar el cuidado."
+        },
+        "fr": {
+          "title": "Entrée au centre",
+          "description": "Des renseignements pour l’accueil et un plan vierge pour aider votre enfant à prendre ses repères."
+        },
+        "ar": {
+          "title": "الانتقال إلى المركز",
+          "description": "إرشادات للتعرّف على المركز ونموذج خطة فارغ لمساعدة طفلك على التأقلم عند بدء الرعاية."
+        },
+        "sw": {
+          "title": "Kuanza Malezi Kituoni",
+          "description": "Utambulisho wa kituo na fomu tupu ya mpango wa kumsaidia mtoto wako kuzoea anapoanza malezi."
+        }
+      }
+    },
+    {
+      "id": "transition-within-center",
+      "category": "transitions",
+      "status": "available",
+      "object": "Transition Within Center.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationField": "ag.transWithin",
+      "copy": {
+        "en": {
+          "title": "Transition Within Center",
+          "description": "How classroom moves are planned and a blank agreement for an individual transition."
+        },
+        "es": {
+          "title": "Transición dentro del centro",
+          "description": "Cómo se planifican los cambios de aula, con un acuerdo en blanco para la transición de cada niño."
+        },
+        "fr": {
+          "title": "Transition au sein du centre",
+          "description": "La préparation des changements de salle, avec un accord vierge pour une transition individuelle."
+        },
+        "ar": {
+          "title": "الانتقال داخل المركز",
+          "description": "كيفية التخطيط للانتقال بين الصفوف، مع نموذج اتفاق فارغ لخطة انتقال فردية."
+        },
+        "sw": {
+          "title": "Kuhamia Darasa Lingine Kituoni",
+          "description": "Jinsi ya kupanga kuhama kwa darasa, pamoja na fomu tupu ya makubaliano ya mpito kwa mtoto mmoja."
+        }
+      }
+    },
+    {
+      "id": "transition-out-of-center",
+      "category": "transitions",
+      "status": "available",
+      "object": "Transition Out of Center.pdf",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "registrationField": "ag.transOut",
+      "copy": {
+        "en": {
+          "title": "Transition Out of Center",
+          "description": "Planning for kindergarten, a move or another departure, with a blank exit plan."
+        },
+        "es": {
+          "title": "Salida del centro",
+          "description": "Orientación para el ingreso a kindergarten, una mudanza u otra salida, con un plan de salida en blanco."
+        },
+        "fr": {
+          "title": "Départ du centre",
+          "description": "La préparation de l’entrée en kindergarten, d’un déménagement ou d’un autre départ, avec un plan vierge."
+        },
+        "ar": {
+          "title": "مغادرة المركز",
+          "description": "إرشادات للاستعداد للالتحاق برياض الأطفال أو الانتقال إلى مكان آخر أو المغادرة لسبب آخر، مع نموذج خطة مغادرة فارغ."
+        },
+        "sw": {
+          "title": "Kuondoka Kituoni",
+          "description": "Mwongozo wa kupanga kuanza chekechea, kuhama au kuondoka kwa sababu nyingine, pamoja na fomu tupu ya mpango wa kuondoka."
+        }
+      }
+    }
+  ],
+  "locales": {
+    "en": {
+      "title": "Parent Portal",
+      "headline": "Everything Your Family Needs, All in One Place.",
+      "intro": "Welcome to the Heart to Heart Parent Portal! Here you can access important center policies, community resources and enrollment documents whenever you need them. View documents online or download a copy directly to your device. If you need help understanding any document, our team is here to assist you.",
+      "help": "Need help understanding a document? Our team is happy to assist you.",
+      "view": "View PDF",
+      "download": "Download PDF",
+      "pending": "Coming Soon",
+      "pdfLanguage": "PDF language",
+      "effective": "Effective",
+      "review": "Documents for review",
+      "newTab": "Opens in a new tab",
+      "categories": {
+        "policies": "Handbook and Policies",
+        "resources": "Family Resources",
+        "transitions": "Childcare Transitions"
+      }
+    },
+    "es": {
+      "title": "Portal para familias",
+      "headline": "Todo lo que necesita tu familia, en un solo lugar.",
+      "intro": "¡Te damos la bienvenida al Portal para familias de Heart to Heart! Aquí puedes consultar las políticas del centro, recursos comunitarios y documentos de inscripción cuando los necesites. Consulta los documentos en línea o descarga una copia en tu dispositivo. Si necesitas ayuda para entender algún documento, nuestro equipo está a tu disposición.",
+      "help": "¿Necesitas ayuda para entender un documento? Nuestro equipo está a tu disposición.",
+      "view": "Ver PDF",
+      "download": "Descargar PDF",
+      "pending": "Próximamente",
+      "pdfLanguage": "Idioma del PDF",
+      "effective": "Vigente a partir del",
+      "review": "Documentos para consultar",
+      "newTab": "Se abre en una pestaña nueva",
+      "categories": {
+        "policies": "Manual y políticas",
+        "resources": "Recursos para familias",
+        "transitions": "Transiciones en el cuidado infantil"
+      }
+    },
+    "fr": {
+      "title": "Portail des parents",
+      "headline": "Tout ce dont votre famille a besoin, au même endroit.",
+      "intro": "Bienvenue sur le portail des parents de Heart to Heart ! Vous pouvez y consulter les politiques du centre, les ressources communautaires et les documents d’inscription quand vous en avez besoin. Consultez-les en ligne ou téléchargez une copie sur votre appareil. Si vous avez besoin d’aide pour comprendre un document, notre équipe est à votre disposition.",
+      "help": "Vous avez besoin d’aide pour comprendre un document ? Notre équipe est là pour vous aider.",
+      "view": "Voir le PDF",
+      "download": "Télécharger le PDF",
+      "pending": "Bientôt disponible",
+      "pdfLanguage": "Langue du PDF",
+      "effective": "En vigueur à partir du",
+      "review": "Documents à consulter",
+      "newTab": "S’ouvre dans un nouvel onglet",
+      "categories": {
+        "policies": "Guide et politiques",
+        "resources": "Ressources pour les familles",
+        "transitions": "Transitions dans les services de garde"
+      }
+    },
+    "ar": {
+      "title": "بوابة أولياء الأمور",
+      "headline": "كل ما تحتاج إليه أسرتك في مكان واحد.",
+      "intro": "مرحبًا بكم في بوابة أولياء الأمور في هارت تو هارت! يمكنكم هنا الاطلاع على سياسات المركز المهمة والموارد المجتمعية ووثائق التسجيل متى احتجتم إليها. اطلعوا على الوثائق عبر الإنترنت أو نزّلوا نسخة على أجهزتكم. إذا احتجتم إلى مساعدة في فهم أي وثيقة، ففريقنا جاهز لمساعدتكم.",
+      "help": "هل تحتاجون إلى مساعدة في فهم إحدى الوثائق؟ يسعد فريقنا بمساعدتكم.",
+      "view": "عرض ملف PDF",
+      "download": "تنزيل ملف PDF",
+      "pending": "قريبًا",
+      "pdfLanguage": "لغة ملف PDF",
+      "effective": "يسري اعتبارًا من",
+      "review": "وثائق للاطلاع",
+      "newTab": "يفتح في علامة تبويب جديدة",
+      "categories": {
+        "policies": "الدليل والسياسات",
+        "resources": "موارد للأسر",
+        "transitions": "مراحل الانتقال في الرعاية"
+      }
+    },
+    "sw": {
+      "title": "Tovuti ya Wazazi",
+      "headline": "Kila Kitu Ambacho Familia Yako Inahitaji, Mahali Pamoja.",
+      "intro": "Karibu kwenye Tovuti ya Wazazi ya Heart to Heart! Hapa unaweza kusoma sera muhimu za kituo, kupata rasilimali za jamii na kuona nyaraka za usajili wakati wowote unapozihitaji. Soma nyaraka mtandaoni au pakua nakala kwenye kifaa chako. Ukihitaji msaada kuelewa hati yoyote, timu yetu iko tayari kukusaidia.",
+      "help": "Je, unahitaji msaada kuelewa hati? Timu yetu iko tayari kukusaidia.",
+      "view": "Fungua PDF",
+      "download": "Pakua PDF",
+      "pending": "Inapatikana hivi karibuni",
+      "pdfLanguage": "Lugha ya PDF",
+      "effective": "Inaanza kutumika",
+      "review": "Nyaraka za kusoma",
+      "newTab": "Hufunguka kwenye kichupo kipya",
+      "categories": {
+        "policies": "Mwongozo na Sera",
+        "resources": "Rasilimali kwa Familia",
+        "transitions": "Mabadiliko Wakati wa Malezi"
+      }
+    }
+  }
 }

@@ -16,6 +16,8 @@ const p1 = await read('./p1.json');
 const trust = await read('./trust-content.json');
 const enrollI18n = Object.fromEntries(await Promise.all(['en','es','fr','ar','sw'].map(async code => [code, (await import('./enrollment/i18n/' + code + '.mjs')).default])));
 const requestInfo = await read('./request-info.json');
+const documentManifest = await read('./enrollment/document-links.json');
+const virtualTour = await read('./virtual-tour-content.json');
 const enrollEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/submit-enrollment';
 const enrollVersion = '1.2.0-E1';
 const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/website-inquiry';
@@ -23,6 +25,7 @@ const agePages = ['programs/infants-toddlers','programs/preschool','programs/sch
 const languages = Object.keys(locales);
 const policyLabels = {en:'Nondiscrimination',es:'No discriminación',ar:'عدم التمييز',sw:'Kutobagua',fr:'Non-discrimination'};
 const nav = ['programs', 'our-day', 'enrollment', 'family-support', 'safety', 'about', 'faq', 'contact'];
+const portalSlug = 'parent-portal';
 const brand = 'Heart to Heart Enrichment Center';
 const licenseNumber = '000000300622';
 const awardAsset = '/assets/ohio-sutq-bronze.png';
@@ -60,6 +63,24 @@ const globe = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" strok
 const heart = '<span class="mark" aria-hidden="true"><span>♥</span><span>♥</span><span>♥</span><span>♥</span></span>';
 const logo = language => `<a class="brand" href="${path(language)}">${heart}<span lang="en"><strong>Heart to Heart</strong><small>Enrichment Center</small></span></a>`;
 
+const documentBase = 'https://zebeclcvrdmisnxkwode.supabase.co/storage/v1/object/public/' + encodeURIComponent(documentManifest.bucket) + '/';
+const portalByLocale = Object.fromEntries(languages.map(language => {
+  const ui = documentManifest.locales[language];
+  const languageNames = new Intl.DisplayNames([language], {type:'language'});
+  const dates = new Intl.DateTimeFormat(language, {dateStyle:'long',timeZone:'UTC'});
+  const documents = documentManifest.documents.map(({copy,object,language:pdfLanguage,effectiveDate,...document}) => {
+    const url = document.status === 'available' && object ? documentBase + object.split('/').map(encodeURIComponent).join('/') : null;
+    const metadata = [
+      pdfLanguage && `${ui.pdfLanguage}: ${languageNames.of(pdfLanguage)}`,
+      document.revision,
+      effectiveDate && `${ui.effective} ${dates.format(new Date(effectiveDate))}`
+    ].filter(Boolean).join(' · ');
+    return { ...document, ...copy[language], language:pdfLanguage, effectiveDate, metadata,
+      view:url, download:url && url + '?download=' + encodeURIComponent(object.split('/').at(-1)) };
+  });
+  return [language, { ui, documents }];
+}));
+
 function dropdown(language, page) {
   const labels = {en:'Website language',es:'Idioma del sitio',ar:'لغة الموقع',sw:'Lugha ya tovuti',fr:'Langue du site'};
   return `<details class="language"><summary aria-label="${labels[language]} · ${escape(locales[language].language)}">${globe}<span lang="${language}">${escape(locales[language].language)}</span></summary>${list(languages.map(option => link(path(option, page), locales[option].language, `data-language="${option}" lang="${option}" hreflang="${option}" ${current(option,language)}`)))}</details>`;
@@ -76,6 +97,8 @@ function frame(language, slug, title, description, body, meta = {}) {
   const tour = link(path(language,'tour'), t.tour, `class="button" ${current('tour',slug)}`);
   const register = button(path(language,'register'), registrations[language].title, true);
   const navigation = nav.map((key,i) => link(path(language,key),key === 'safety' ? q.safety : t.nav[i],current(key,slug))).join('');
+  const portal = link(path(language,portalSlug),portalByLocale[language].ui.title,current(portalSlug,slug));
+  const virtualNav = link(path(language,'virtual-tour'),virtualTour[language].title,current('virtual-tour',slug));
   const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations].includes(slug);
   const foot = t.footer;
   const alternate = slug === '404' ? '' : languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">`;
@@ -92,19 +115,53 @@ ${[...confirmations,'404'].includes(slug) ? '<meta name="robots" content="noinde
 </head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
 <div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span>${dropdown(language,page)}</div></div>
-<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${tour}${register}</nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${tour}${register}${link(path(language,'request-information'),p0[language][0],current('request-information',slug))}${navigation}</nav></details></div></header>
+<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${portal}${virtualNav}<div class="nav-conversion">${tour}${register}</div></nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${tour}${register}${portal}${link(path(language,'request-information'),p0[language][0],current('request-information',slug))}${virtualNav}${navigation}</nav></details></div></header>
 ${suggestion}
 <main id="main" tabindex="-1"${confirmations.includes(slug) ? ' data-confirmation hidden' : ''}>${body}</main>
 <footer class="footer"><div class="wrap">
 <div>${logo(language)}<address>${address}<br><a href="${tel}">${phone}</a><br>${escape(p0[language][10])}</address><p class="footer-rating">${link(path(language,'safety'),q.rating)}</p></div>
 <div><strong>${escape(foot[0])}</strong>${list([link(path(language,'about'),t.nav[5]),link(path(language,'programs'),t.nav[0]),link(path(language,'safety'),q.safety),link(path(language,'contact'),t.nav[7]),link(path(language,'community'),foot[6])])}</div>
-<div><strong>${escape(foot[1])}</strong>${list([link(path(language,'register'),registrations[language].title),link(path(language,'tour'),t.tour),link(path(language,'request-information'),p0[language][0]),link(path(language,'parents'),foot[5]),link(path(language,'privacy'),foot[2]),link(path(language,'accessibility'),foot[3]),link(path(language,'nondiscrimination'),policyLabels[language])])}${dropdown(language,page)}</div>
+<div><strong>${escape(foot[1])}</strong>${list([portal,link(path(language,'register'),registrations[language].title),link(path(language,'tour'),t.tour),virtualNav,link(path(language,'request-information'),p0[language][0]),link(path(language,'parents'),foot[5]),link(path(language,'privacy'),foot[2]),link(path(language,'accessibility'),foot[3]),link(path(language,'nondiscrimination'),policyLabels[language])])}${dropdown(language,page)}</div>
 </div></footer>${showMobileBar ? `<div class="mobile-bar">${button(tel,t.call,true)}${tour}</div>` : ''}
 </body></html>`;
 }
 
 function photo(t, name, index, eager = false) {
   return `<figure class="feature"><img src="/assets/${name}-1200.webp" srcset="/assets/${name}-640.webp 640w, /assets/${name}-1200.webp 1200w" sizes="(max-width: 768px) calc(100vw - 2rem), (max-width: 1280px) 50vw, 630px" width="1200" height="${index ? 800 : 675}" alt="${escape(t.alts[index])}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'}><figcaption>${escape(t.photos)}</figcaption></figure>`;
+}
+
+function portalPage(language) {
+  const {ui, documents} = portalByLocale[language];
+  const categories = Object.entries(ui.categories).map(([category,title]) => {
+    const cards = documents.filter(document => document.category === category).map(document => {
+      const attrs = action => `aria-label="${escape(ui[action] + ' — ' + document.title + (action === 'view' ? ' (' + ui.newTab + ')' : ''))}"`;
+      return `<article class="portal-document" aria-labelledby="${document.id}"><div class="portal-document-copy">
+<span class="portal-document-icon" aria-hidden="true"></span>
+<div><h3 id="${document.id}">${escape(document.title)}</h3><p>${escape(document.description)}</p></div></div>
+${document.view ? `<p class="portal-metadata">${escape(document.metadata)}</p>
+<div class="portal-actions">${link(document.view,ui.view,`class="button" target="_blank" rel="noopener noreferrer" ${attrs('view')}`)}${link(document.download,ui.download,`class="button secondary" ${attrs('download')}`)}</div>`
+    : `<p class="portal-pending">${escape(ui.pending)}</p>`}</article>`;
+    }).join('');
+    return cards ? `<section class="portal-category" aria-labelledby="portal-${category}"><h2 id="portal-${category}">${escape(title)}</h2><div class="portal-grid">${cards}</div></section>` : '';
+  }).join('');
+  return {title:ui.title,intro:ui.intro,body:`<article class="page portal section wrap">
+<h1>${escape(ui.title)}</h1><p class="portal-headline">${escape(ui.headline)}</p><p class="intro">${escape(ui.intro)}</p>
+${categories}
+<section class="note portal-help" aria-labelledby="portal-help"><h2 id="portal-help">${escape(ui.help)}</h2>
+<address>${address}<br><a href="${tel}">${phone}</a></address>
+<div class="actions">${button(path(language,'request-information'),p0[language][0],true)}</div></section>
+</article>`};
+}
+
+function virtualTourPreview(language, standalone = false) {
+  const copy = virtualTour[language];
+  const heading = standalone ? 'h1' : 'h2';
+  const subheading = standalone ? 'h2' : 'h3';
+  return `<section class="virtual-preview" aria-labelledby="virtual-title"><div class="wrap virtual-layout">
+<div class="virtual-title-card"><${heading} id="virtual-title">${escape(copy.title)}</${heading}><p class="virtual-status">${escape(virtualStatus[language])}</p></div>
+<div class="virtual-copy"><${subheading}>${escape(copy.heading)}</${subheading}><p>${escape(copy.intro)}</p><p>${escape(copy.preview)}</p>
+<p>${escape(copy.visit)}</p><div class="actions">${button(path(language,'tour'),copy.action)}${standalone ? '' : button(path(language,'virtual-tour'),copy.title,true)}</div></div>
+</div></section>`;
 }
 
 function homepage(language) {
@@ -114,7 +171,7 @@ function homepage(language) {
   const route = key => path(language,key);
   return `<section class="hero-band"><div class="hero wrap">
 <div class="hero-copy"><span class="eyebrow">${escape(t.where)}</span><h1>${escape(t.home[0])}<em>${escape(t.home[1])}</em></h1><p>${escape(t.home[2])}</p>
-<div class="actions">${button(route('register'),registrations[language].title)}${button(route('tour'),t.tour,true)}${button(route('request-information'),p0[language][0],true)}${button(tel,t.call,true)}</div></div>
+<div class="actions">${button(route('register'),registrations[language].title)}<div class="tour-choices">${button(route('tour'),t.tour,true)}${link(route('virtual-tour'),virtualTour[language].title,'class="virtual-pill"')}</div>${button(route('request-information'),p0[language][0],true)}${button(tel,t.call,true)}</div></div>
 ${photo(t,'classroom',0,true)}</div></section>
 ${qualitySection(language,true)}
 <section class="wrap section affordability"><h2>${escape(offer[7])}</h2><p class="offer">${escape(offer[9])}</p>
@@ -127,6 +184,7 @@ ${careBenefits(t)}
 <div class="cards">${t.cards.map(([title], index) => `<article class="card"><span class="card-icon" aria-hidden="true">${['✦','✿','☀'][index]}</span><h3>${link(route(agePages[index]),title)}</h3><p>${escape(q.programs[index])}</p></article>`).join('')}</div></section>
 <section class="family section"><div class="wrap split">${photo(t,'families',1)}<div><h2>${escape(t.family[0])}</h2><p>${escape(t.family[1])}</p><div class="actions">${button(route('family-support'),t.family[2],true)}</div></div></div></section>
 <section class="section wrap split"><h2>${escape(t.day[0])}</h2><div><p>${escape(q.day)}</p>${list(q.rhythm.map(escape))}<div class="actions">${button(route('our-day'),t.day[2],true)}</div></div></section>
+${virtualTourPreview(language)}
 <section class="section wrap"><div class="callout"><div><h2>${escape(t.visit[0])}</h2><p>${escape(q.visit)}</p></div>${button(route('tour'),t.tour)}</div></section>`;
 }
 
@@ -223,6 +281,7 @@ function informationPage(language) {
   return { title: ui.h1, intro: ui.lead, body: '<article class="page section wrap"><h1>' + escape(ui.h1) + '</h1><p class="intro">' + escape(ui.lead) + '</p><section class="note" aria-labelledby="overview-heading"><h2 id="overview-heading">' + escape(ui.overview) + '</h2><ul>' + ui.items.map(item => '<li>' + escape(item) + '</li>').join('') + '</ul></section>' + form + '</article>' };
 }
 function pageContent(language, slug) {
+  if (slug === 'virtual-tour') return {title:virtualTour[language].title,intro:virtualTour[language].preview,body:virtualTourPreview(language,true)};
   const t = locales[language];
   const q = trust[language];
   const english = pages[slug];
@@ -257,9 +316,11 @@ function pageContent(language, slug) {
   return {
     title: page.title, intro:page.intro, metaTitle: seo?.[0], description: showRating ? `${q.rating}. ${seo?.[1] ?? page.intro}` : seo?.[1],
     body: `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
-${slug === 'virtual-tour' ? `<p class="eyebrow">${escape(virtualStatus[language])}</p>` : ''}${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}
+${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}
 ${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
 ${showRating && slug !== 'faq' ? `<p class="note">${link(path(language,'safety'),q.rating)}</p>` : ''}
+${['enrollment','parents'].includes(slug) ? `<p class="actions">${button(path(language,portalSlug),portalByLocale[language].ui.title,true)}</p>` : ''}
+${slug === 'tour' ? `<p>${link(path(language,'virtual-tour'),virtualTour[language].title)} · ${escape(virtualStatus[language])}</p>` : ''}
 ${slug === 'our-day' ? list(q.rhythm.map(escape)) : ''}
 ${slug === 'programs' ? page.links.map(([title,target],index) => `<section><h2>${link(path(language,target),title)}</h2><p>${escape(q.programs[index])}</p></section>`).join('') : ''}
 ${['programs','enrollment','contact','tuition-assistance','faq','family-support'].includes(slug) ? `<section>${p0Content(language)}</section>` : ''}
@@ -288,7 +349,7 @@ for (const name of ['inquiry.js','analytics.js']) {
 await mkdir(new URL('assets/enrollment/i18n/',dist),{recursive:true});
 await copyFile(new URL('./enrollment/core.mjs',import.meta.url),new URL('assets/enrollment/core.js',dist));
 await copyFile(new URL('./enrollment/schema.json',import.meta.url),new URL('assets/enrollment/schema.json',dist));
-await copyFile(new URL('./enrollment/document-links.json',import.meta.url),new URL('assets/enrollment/document-links.json',dist));
+await writeFile(new URL('assets/enrollment/document-links.json',dist),JSON.stringify(portalByLocale),'utf8');
 for (const [code,data] of Object.entries(enrollI18n)) await writeFile(new URL('assets/enrollment/i18n/' + code + '.json',dist),JSON.stringify(data),'utf8');
 { const appFile = new URL('assets/enrollment/app.js',dist); await writeFile(appFile,(await readFile(appFile,'utf8')).replace('__H2H_PUBLIC_ANON_KEY__',anonKey),'utf8'); }
 let count = 0;
@@ -299,7 +360,7 @@ for (const language of languages) {
   const q = trust[language];
   const description = `${q.rating}. ${seoHome.home_desc}`;
   const jsonld = {'@context':'https://schema.org','@type':['ChildCare','LocalBusiness'],name:brand,url:site + path(language),description,telephone:'+1-216-938-6771',image:site + '/assets/classroom-1200.webp',address:{'@type':'PostalAddress',streetAddress:'3095 W. 25th Street',addressLocality:'Cleveland',addressRegion:'OH',postalCode:'44113',addressCountry:'US'},identifier:{'@type':'PropertyValue',name:'Ohio child care center license number',value:licenseNumber},award:q.rating,sameAs:external.provider,areaServed:{'@type':'City',name:'Cleveland, Ohio'},inLanguage:language};
-  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:description,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language)};
+  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:description,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language),[portalSlug]:portalPage(language)};
   const infoConfirmation = forms[language].received;
   const ri = requestInfo[language];
   pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};

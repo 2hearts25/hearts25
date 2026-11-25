@@ -141,7 +141,12 @@ None requires another. Enrollment details: `docs/ENROLLMENT_FIELD_MAPPING.md` (r
 - **PDF generators:** `enrollment/pdf-ohio.mjs` (Ohio Child Enrollment and Health Records, content-equivalent of DCY 01234 Rev 7/2026), `enrollment/pdf-h2h.mjs` (Heart to Heart internal records, 24 sections, contract last), `enrollment/pdf-kit.mjs`, `enrollment/doc-map.mjs` (which field prints where). Field mapping: `docs/ENROLLMENT_FIELD_MAPPING.md` (`node tools/gen-field-mapping.mjs`).
 - **After editing anything in `enrollment/`** run `node tools/sync-enrollment-function.mjs` to copy it into `supabase/functions/submit-enrollment/`.
 - **Required Netlify build variable:** `H2H_PUBLIC_ANON_KEY` (see `.env.example`). Never commit secret values.
-- **Optional approved-document links:** `enrollment/document-links.json` (empty until management supplies the handbook and related documents).
+- **Approved family document links:** `enrollment/document-links.json` controls the Parent Portal and the registration references. To publish the handbook, upload the approved PDF to Supabase Storage's `Family docs` bucket, set the exact object name and the language, revision and effective date shown on the document, and change its status to `available`. Then rebuild the website. Registration records the existing acknowledgments and form version. Per-document revisions are displayed in the form, and the current enrollment endpoint has no field to store them.
 - **Tests (synthetic data only):** `node enrollment/core.test.mjs`, `node enrollment/test/pdf-coverage.mjs`, `node enrollment/test/e2e-function.mjs` (real Edge function under Deno + mocks), and the five-language browser test `python3 enrollment/test/e2e-lang.py` (needs `node enrollment/test/serve.mjs 8899` and `node enrollment/test/lang-backend.mjs` running and a built `dist/`). `deno test` in `supabase/functions/website-inquiry` and `tour-request-mailer`.
 - **Decisions and open items:** `docs/MANAGEMENT_DECISIONS.md`. Approved policy text: `docs/ABSENT_DAYS_AND_ATTENDANCE_POLICY.md`.
 - **Deploy:** `tools/make-prebuilt-bundle.sh`, then deploy the prebuilt bundle to the existing Netlify project (1.2.0 deploy `6b061d502b6fe556504e2b0c` is the rollback reference). Netlify Forms stays off.
+
+## Release 1.2.3 — Parent Portal and Virtual Tour
+
+- **Virtual Tour:** `virtual-tour-content.json` supplies the five-language preview for the homepage and the existing `/virtual-tour/` route. Add approved facility media to the standalone route when it is ready, using the homepage preview to link to it. The existing in-person tour form handles visit requests.
+- **Rollback:** Netlify deployment `6b06379a6318677c87bda980` and GitHub branch `release/1.2.2`.
