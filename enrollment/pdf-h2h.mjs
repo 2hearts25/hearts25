@@ -71,7 +71,7 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['ag.transWithin'], pendingIf: pend });
   k.section(19, 'Transitioning out of the center');
   k.printFields({ ids: ['ag.transOut'], pendingIf: pend });
-  k.kv('Administration review reported by parent', d['ag.staffReviewed'] || 'Pending / not reported');
+  if (!k.printFields({ ids: ['ag.staffReviewed'] })) k.kv('Administration review reported by parent', 'Pending / not reported', { pending: true });
   k.para('Administrator or designee: record which materials were reviewed and note remaining items. The parent signature records the answers provided.');
   k.signLine('Administrator or designee acknowledgment', 'Date');
   k.section(20, 'Internal photography consent');
