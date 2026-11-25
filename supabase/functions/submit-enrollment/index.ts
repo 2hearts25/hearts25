@@ -26,6 +26,7 @@ import { b64, hmacHex, loadKeys, safeEqual, seal, sha256Hex, unb64, unseal, type
 import { getDelivery, sendResend, staffFailureMessage, staffMessage, type Cfg, type StaffSummary } from "./mail.ts";
 import { familyEnrollmentMessage } from "./family-mail.ts";
 import { familyConfirmationWithDocuments, familyDocumentLinkMessage } from "./family-docs-mail.ts";
+import { packetMessage, packetParts, supportingFiles, type PacketFile } from "./staff-packet.ts";
 import { withPaymentNote } from "./family-payment-note.ts";
 
 const LEGACY_VERSION = "1.2.0-E1";
@@ -241,7 +242,8 @@ async function processApplication(reference: string, opts: { force?: boolean } =
 
   // 1+2. Both PDFs are generated from the same stored record and stored privately. Nothing is emailed unless BOTH exist.
   const haveBoth = row.pdf_status === "generated" && row.pdf_path && row.h2h_pdf_path;
-  if (!haveBoth || opts.force) {
+  const hasUploads = !legacy && Boolean(payload.documents?.length);
+  if (!haveBoth || (opts.force && !hasUploads)) {
     try {
       const meta = {
         applicationId: row.reference, submittedAt: payload.submittedAt, language: payload.lang, languageName: LANGS[payload.lang], formVersion: row.form_version,
@@ -271,7 +273,7 @@ async function processApplication(reference: string, opts: { force?: boolean } =
   }
 
   // 3. ONE staff email with BOTH PDFs attached ("sent" = accepted by Resend; delivery is tracked separately below)
-  if (row.staff_email_status !== "sent" || opts.force) {
+  if (row.staff_email_status !== "sent" || (opts.force && !hasUploads)) {
     try {
       if (!ohio) ohio = await unseal(keys, await storageGet(row.pdf_path), pdfAad(row.reference, "ohio"));
       if (!h2h) h2h = await unseal(keys, await storageGet(row.h2h_pdf_path), pdfAad(row.reference, "h2h"));
@@ -288,12 +290,46 @@ async function processApplication(reference: string, opts: { force?: boolean } =
             ["Withdrawal & Termination Policy", a["ag.wt"] === "ack" ? `Acknowledged (${POLICIES.withdrawal.revision}, effective ${POLICIES.withdrawal.effectiveDate})` : "NOT received — parent asked for a copy"]],
           received: Object.entries(counts).map(([c, n]) => `${CAT_LABEL[c] ?? c}: ${n} file${n === 1 ? "" : "s"}`),
           outstanding: [...outstandingFor(a, docs), ...(row.finalize_status === "done" || row.finalize_status === "not_applicable" ? [] : ["System: record finalization (agreement evidence / document association) is still retrying automatically — it is not complete yet"])],
-          access: docs.length ? "Uploaded files are not attached to this email. Sign in to the staff document page (https://hearts25.com/staff/documents/) with your authorized staff account to review them." : "No files were uploaded with this application.",
+          access: docs.length ? "See the attachment inventory for supporting documents included in the administration packet." : "No files were uploaded with this application.",
         };
       }
-      const msg = staffMessage({ reference: row.reference, submittedAt: payload.submittedAt }, { filename: ohioFilename(row.reference), bytes: ohio! }, { filename: h2hFilename(row.reference), bytes: h2h! }, summary);
-      const idem = `heart-to-heart/enrollment-staff-v121/${row.reference}` + (opts.force ? `/${row.staff_email_attempts}` : "");
-      const res = await sendResend(cfg, { from: cfg.from, to: [cfg.director], bcc: [cfg.bcc], reply_to: cfg.replyTo, ...msg }, idem);
+      const info = { reference: row.reference, submittedAt: payload.submittedAt };
+      const ohioAttachment = { filename: ohioFilename(row.reference), bytes: ohio! };
+      const h2hAttachment = { filename: h2hFilename(row.reference), bytes: h2h! };
+      const recipients = { from: cfg.from, to: [cfg.director], bcc: [cfg.bcc], reply_to: cfg.replyTo };
+      let res: { ok: boolean; id: string; error: string };
+      if (hasUploads) {
+        const wanted = [...new Set<string>(payload.documents.map((d: { id: string }) => d.id))];
+        const rows = await rpc("enrollment_docs_for_app_p2", { p_reference: row.reference });
+        if (!Array.isArray(rows)) throw new Error("invalid packet document list");
+        const files = supportingFiles(row.reference, wanted, rows, CATEGORIES);
+        const pdfs = [ohioAttachment, h2hAttachment].map(f => ({ filename: f.filename, bytes: f.bytes.length }));
+        const parts = packetParts(pdfs, files);
+        const withheld = wanted.length - files.length;
+        const plan = await sha256Hex(utf8(JSON.stringify({ parts, withheld, recipients, ohio: row.pdf_sha256, h2h: row.h2h_pdf_sha256 })));
+        const receipt = (part: number | null = null, id: string | null = null) =>
+          rpc("enrollment_staff_packet_p2", { p_id: row.id, p_plan: plan, p_part: part, p_email_id: id });
+        let ledger = await receipt();
+        const loadDocument = async (f: PacketFile) => {
+          const bytes = await unseal(keys, await storageGet(f.path!, DOC_BUCKET), "h2h-doc-v1:" + f.id);
+          if (bytes.length !== f.bytes || await sha256Hex(bytes) !== f.sha256) throw new Error("packet document integrity");
+          return bytes;
+        };
+        for (let i = 0; i < parts.length; i++) {
+          if (ledger.sent[String(i + 1)]) continue;
+          if (!ledger.retry_open) throw new Error("packet receipt requires reconciliation");
+          const primary = i === 0 ? staffMessage(info, ohioAttachment, h2hAttachment, summary) : null;
+          const msg = await packetMessage(row.reference, parts, i, withheld, primary, loadDocument);
+          const sent = await sendResend(cfg, { ...recipients, ...msg }, "heart-to-heart/enrollment-packet/" + row.reference + "/" + (i + 1));
+          if (!sent.ok || !sent.id) throw new Error("packet delivery needs retry");
+          ledger = await receipt(i + 1, sent.id);
+        }
+        res = { ok: true, id: ledger.sent["1"], error: "" };
+      } else {
+        const msg = staffMessage(info, ohioAttachment, h2hAttachment, summary);
+        const idem = "heart-to-heart/enrollment-staff-v121/" + row.reference + (opts.force ? "/" + row.staff_email_attempts : "");
+        res = await sendResend(cfg, { ...recipients, ...msg }, idem);
+      }
       await mark(res.ok ? { staff_email_status: "sent", staff_email_id: res.id, staff_email_attempts_inc: 1, staff_email_error: "" } : { staff_email_status: "failed", staff_email_attempts_inc: 1, staff_email_error: res.error });
       if (!res.ok) return { ok: false, error: "staff-email" };
       row.staff_email_status = "sent"; row.staff_email_id = res.id; row.staff_delivery_status = "in_transit";
