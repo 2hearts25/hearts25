@@ -54,6 +54,6 @@ try {
   assert.ok(await until(async () => (await appRow(j.reference))?.family_email_status === 'sent'),log.slice(-3000));
   assert.equal(mailsTo(data['p1.email']).length,1);
   console.log('PASS disabled card guard, migration-backed finalization retry, both actual PDFs, and automatic parent email retry');
-} finally { fn.kill(); mock.close(); await pg.close(); }
+} finally { fn.kill(); mock.close(); await pg.stop(); }
 JS
 sudo env DENO=/home/claude/h2h-tools/node_modules/.bin/deno PATH="$PATH" "$(command -v node)" enrollment/test/targeted-ci.mjs
