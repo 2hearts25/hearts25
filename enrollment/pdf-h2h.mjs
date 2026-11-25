@@ -40,7 +40,7 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   k.section(6, 'Primary language and communication preferences');
   k.printFields({ ids: ['c.commLang', 'c.commLangOther'] });
   k.section(7, 'Child personality and behavior');
-  k.printFields({ ids: ['pe.traits', 'pe.traitsOther', 'pe.more', 'pe.fears', 'pe.comfort', 'pe.frustration', 'pe.negBehavior', 'pe.anxious', 'pe.excited', 'pe.expect', 'pe.helpful'] });
+  k.printFields({ ids: ['pe.traits', 'pe.traitsOther', 'pe.more', 'pe.fears', 'pe.fearReaction', 'pe.angerTriggers', 'pe.comfort', 'pe.frustration', 'pe.negBehavior', 'pe.anxious', 'pe.excited', 'pe.expect', 'pe.helpful'] });
   k.section(8, 'Developmental information');
   k.printFields({ ids: ['pe.devInfo', 'pe.routines', 'h.devDelay', 'h.devDesc'] });
   k.section(9, 'Individual care requirements');
@@ -71,6 +71,9 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['ag.transWithin'], pendingIf: pend });
   k.section(19, 'Transitioning out of the center');
   k.printFields({ ids: ['ag.transOut'], pendingIf: pend });
+  k.kv('Administration review reported by parent', d['ag.staffReviewed'] || 'Pending / not reported');
+  k.para('Administrator or designee: record which materials were reviewed and note remaining items. The parent signature records the answers provided.');
+  k.signLine('Administrator or designee acknowledgment', 'Date');
   k.section(20, 'Internal photography consent');
   k.printFields({ ids: ['m.internal'] });
   k.kv('Consent wording', `Exact wording shown above (English). Signed with online form ${meta.formVersion}; the parent viewed it in ${meta.languageName || meta.language}.`);

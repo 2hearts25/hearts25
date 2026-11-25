@@ -93,7 +93,7 @@ export default {
     "up.immun": "Immunization record",
     "up.physical": "Physical examination or child medical statement (optional)",
     "up.hcp": "Health care plan (DCY 01236) or doctor’s instructions",
-    "up.med": "Medication authorization (DCY 01217)",
+    "up.med": "Medication authorization (DCY 01236)",
     "up.diet": "Doctor’s statement for a special diet",
     "up.custody": "Custody, guardianship or court documents",
     "up.pfcc": "PFCC authorization or copayment notice",

@@ -93,7 +93,7 @@ export default {
     "up.immun": "Kumbukumbu ya chanjo",
     "up.physical": "Uchunguzi wa mwili au taarifa ya kitabibu ya mtoto (hiari)",
     "up.hcp": "Mpango wa huduma ya afya (DCY 01236) au maelekezo ya daktari",
-    "up.med": "Idhini ya kutoa dawa (DCY 01217)",
+    "up.med": "Idhini ya kutoa dawa (DCY 01236)",
     "up.diet": "Taarifa ya daktari kwa lishe maalum",
     "up.custody": "Nyaraka za malezi, ulezi au mahakama",
     "up.pfcc": "Idhini ya PFCC au taarifa ya malipo ya pamoja",

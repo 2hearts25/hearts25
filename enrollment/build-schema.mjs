@@ -150,6 +150,8 @@ export const schema = {
     ] },
     { id: 'docs', fields: [
       F('d.immun', 'select', { r: 1, o: ['available', 'pending', 'school', 'provider', 'medical', 'conscience'], src: 'P16,A§19,OAC 5180:2-12-15', pdf: 'docs' }),
+      R('d.conscienceScope', ['all', 'specified'], { r: 1, s: eq('d.immun', 'conscience'), src: 'P16', pdf: 'docs' }),
+      TA('d.conscienceVaccines', { x: 600, r: 1, s: all(eq('d.immun', 'conscience'), eq('d.conscienceScope', 'specified')), src: 'P16', pdf: 'docs' }),
       TA('d.conscienceText', { x: 300, s: eq('d.immun', 'conscience'), src: 'P16,A§19', pdf: 'docs' }),
       F('d.hcp', 'select', { r: fn('hcpNeeded'), s: fn('hcpNeeded'), o: ['available', 'pending'], src: 'NEW1,P3,A§9', pdf: 'docs' }),
       F('d.diet', 'select', { r: eq('h.dietModified', 'yes'), s: eq('h.dietModified', 'yes'), o: ['available', 'pending'], src: 'P3', pdf: 'docs' }),
@@ -180,6 +182,8 @@ export const schema = {
       F('pe.traits', 'checks', { o: ['active','adventurous','affectionate','anxious','bossy','bright','busy','calm','cautious','cheerful','content','creative','curious','easily-angered','emotional','energetic','excitable','friendly','gives-in-easily','happy','hesitant','insecure','jealous','likes-structure','loud','loving','mellow','outgoing','prefers-adult-attention','quiet','sensitive','serious','shares-well','social','spontaneous','stubborn','tentative','other'], src: 'P7,A§11', pdf: 'fam' }),
       T('pe.traitsOther', { r: has('pe.traits', 'other'), s: has('pe.traits', 'other'), x: 200, src: 'P7', pdf: 'fam' }),
       TA('pe.more', { src: 'P7,A§11', pdf: 'fam' }),
+      TA('pe.fearReaction', { src: 'P7', pdf: 'fam' }),
+      TA('pe.angerTriggers', { src: 'P7', pdf: 'fam' }),
       TA('pe.fears', { src: 'P7,A§11', pdf: 'fam' }),
       TA('pe.comfort', { src: 'P7,A§11', pdf: 'fam' }),
       TA('pe.frustration', { src: 'P7,A§11', pdf: 'fam' }),
@@ -239,6 +243,7 @@ export const schema = {
       R('ag.transIn', ['received', 'pending'], { r: 1, src: 'P12,A§17', pdf: 'resources' }),
       R('ag.transWithin', ['received', 'pending'], { r: 1, src: 'P12,A§17', pdf: 'resources' }),
       R('ag.transOut', ['received', 'pending'], { r: 1, src: 'P12,A§17', pdf: 'resources' }),
+      TA('ag.staffReviewed', { x: 600, src: 'P12', pdf: 'resources' }),
       F('ag.absenceAck', 'check', { r: 1, src: 'P9,A§16', pdf: 'absence' }),
       // Withdrawal and Termination Policy v1.1 (B§8): acknowledge receipt, or say it could not be opened (never recorded as received).
       R('ag.wt', ['ack', 'noaccess'], { r: 1, src: 'B§8', pdf: 'h2h' }),
@@ -278,7 +283,7 @@ export const schema = {
     { id: 'pending', src: 'P1,P9,A§15,A§16' },
   ],
   // Computed predicates referenced by ['fn', name]: health-care-plan trigger (OAC 5180:2-12-15(D)).
-  fns: { hcpNeeded: any(yes('h.allergyAction'), yes('h.chronic'), all(yes('h.meds'), yes('h.medsAtCare')), eq('h.dietModified', 'yes')) },
+  fns: { hcpNeeded: any(yes('h.allergyAction'), yes('h.chronic'), all(yes('h.meds'), yes('h.medsAtCare'))) },
 };
 
 await writeFile(new URL('./schema.json', import.meta.url), JSON.stringify(schema, null, 1) + '\n');

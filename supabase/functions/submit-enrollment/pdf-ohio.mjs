@@ -39,20 +39,22 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['h.provNone', 'h.provName', 'h.provAddr', 'h.provCity', 'h.provState', 'h.provPhone'] });
   k.section(7, 'Allergies, medical and chronic health conditions');
   k.printFields({ ids: ['h.allergy', 'h.allergyTypes', 'h.allergyDesc', 'h.allergyAction', 'h.chronic', 'h.chronicNeeds', 'h.chronicDesc', 'h.procedureDesc', 'h.history'] });
-  const hcp = d['h.allergyAction'] === 'yes' || d['h.chronic'] === 'yes' || (d['h.meds'] === 'yes' && d['h.medsAtCare'] === 'yes') || d['h.dietModified'] === 'yes';
+  const hcp = d['h.allergyAction'] === 'yes' || d['h.chronic'] === 'yes' || (d['h.meds'] === 'yes' && d['h.medsAtCare'] === 'yes');
   k.kv('Health care plan required?', hcp ? 'Yes — a DCY 01236 Health Care Plan (or equivalent, or physician/PA/APRN documentation) is required before care of this condition (OAC 5180:2-12-15).' : 'Not indicated by the parent’s answers.', { pending: hcp });
   k.section(8, 'Medication and medical food');
   k.para('Includes prescription and non-prescription medicine and any medical food the child takes or that staff would give. Care instructions are part of the description.', { size: 8.5, color: [0.36, 0.4, 0.48] });
   k.printFields({ ids: ['h.meds', 'h.medsDesc', 'h.medsAtCare'] });
   k.section(9, 'Dietary restrictions and other health information');
   k.printFields({ ids: ['h.diet', 'h.dietDesc', 'h.dietModified', 'h.avoid', 'fe.noFeed', 'h.other'] });
+  k.para('For medical foods or removal of an entire food group, retain a physician’s written instructions. For religious or cultural special diets, retain the parent’s signed and dated instructions unless the diet is part of the center’s program.');
   k.section(10, 'Development and individual care information');
-  k.printFields({ ids: ['h.devDelay', 'h.devDesc', 'pe.devInfo', 'pe.routines', 'po.care', 'h.accom', 'h.services', 'h.serviceProv'] });
+  k.printFields({ ids: ['h.devDelay', 'h.devDesc', 'pe.devInfo', 'pe.fears', 'pe.fearReaction', 'pe.comfort', 'pe.angerTriggers', 'pe.frustration', 'pe.negBehavior', 'pe.more', 'pe.routines', 'po.care', 'h.accom', 'h.services', 'h.serviceProv', 'fe.drinks', 'fe.amount', 'fe.fav', 'fe.dislike', 'fe.seat'] });
+  k.printFields({ prefix: 'sl.' });
 
   k.section(11, 'Health documentation and immunization status');
   k.para('These lines record what the parent said about each document. They are not the documents themselves.', { size: 8.5, color: [0.36, 0.4, 0.48] });
-  const immunLabel = { available: 'Parent has the record and will bring it', pending: 'Parent will bring it later', school: 'Child’s school has it (school-age child)', provider: 'Health provider will send it', medical: 'Parent reports a medical exemption', conscience: 'Parent is requesting an exemption (conscience)' };
-  k.printFields({ ids: ['d.immun', 'd.conscienceText', 'd.hcp', 'd.diet', 'd.med'], pendingIf: (id, v) => v === 'pending' || id === 'd.immun' });
+  const immunLabel = { available: 'Parent has the record and will bring it', pending: 'Parent will bring it later', school: 'Child attends elementary school in kindergarten or above', provider: 'Health provider will send it', medical: 'Parent reports a medical exemption', conscience: 'Parent is requesting an exemption (conscience)' };
+  k.printFields({ ids: ['d.immun', 'd.conscienceScope', 'd.conscienceVaccines', 'd.conscienceText', 'd.hcp', 'd.diet', 'd.med'], pendingIf: (id, v) => v === 'pending' || id === 'd.immun' });
   const up = id => Array.isArray(d[id]) && d[id].length > 0;
   if (meta.v130) {
     k.sub('Supporting health documents uploaded with the online application');
@@ -60,18 +62,21 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
     k.para('Uploaded files are kept as separate confidential records under this application ID and are not embedded in this document. An upload is not a record received or verified by the program until authorized staff review it.', { size: 8.5, color: [0.36, 0.4, 0.48] });
   }
   const outstanding = [];
-  if (d['d.immun'] === 'conscience') outstanding.push('Immunization exemption (reasons of conscience) — requested by the parent; the separate exemption paperwork must be completed and is not yet on file');
-  else if (d['d.immun'] === 'medical') outstanding.push('Immunization medical exemption — reported by the parent; a physician’s statement is required and has not been received');
+  if (d['d.immun'] === 'conscience' && d['d.conscienceScope']) outstanding.push('Signed parental conscience declaration recorded in this PDF; administrator review is pending.');
+  else if (d['d.immun'] === 'school' && meta.v130) outstanding.push('Verify attendance at elementary school in kindergarten or above before applying the exemption.');
+  else if (d['d.immun'] === 'conscience') outstanding.push('Immunization exemption (reasons of conscience) — requested by the parent; the separate exemption paperwork must be completed and is not yet on file');
+  else if (d['d.immun'] === 'medical') outstanding.push('Immunization medical exemption — reported by the parent; a qualifying practitioner’s statement is required and has not been received');
   else outstanding.push('Immunization record — not yet received/verified by the program (parent’s answer: ' + (immunLabel[d['d.immun']] || '—') + ')' + (up('up.immun') ? '; a copy was uploaded online and awaits staff review' : ''));
   if (d['d.hcp'] !== undefined) outstanding.push('Health Care Plan (DCY 01236 or equivalent / provider documentation) — ' + (d['d.hcp'] === 'available' ? 'parent reports having it; not yet received/verified' : 'pending'));
-  if (d['d.diet'] !== undefined) outstanding.push('Medical statement for special diet — ' + (d['d.diet'] === 'available' ? 'parent reports having it; not yet received/verified' : 'pending'));
-  if (d['d.med'] !== undefined) outstanding.push('Request for Administration of Medication (DCY 01217 or equivalent) — ' + (d['d.med'] === 'available' ? 'parent reports having it; not yet received/verified' : 'pending'));
+  if (d['d.diet'] !== undefined) outstanding.push('Diet instructions — staff must determine whether parent or physician documentation applies — ' + (d['d.diet'] === 'available' ? 'parent reports having it; not yet received/verified' : 'pending'));
+  if (d['d.med'] !== undefined) outstanding.push('Written medication permission (DCY 01236 or equivalent, with separate documentation for each medication as applicable) — ' + (d['d.med'] === 'available' ? 'parent reports having it; not yet received/verified' : 'pending'));
   if (meta.v130) outstanding.push('Physical examination / child medical statement — optional for this program (not required by OAC 5180:2-12-15 as effective 7/1/2026); ' + (up('up.physical') ? 'a copy was uploaded online and awaits staff review' : 'not provided online'));
   else outstanding.push('Child health/physical examination form (DCY 01305) and any other medical records required by the licensing rules — maintained separately by the program');
 
   k.section(12, 'Emergency transportation authorization');
   k.para('The parent chose to give or refuse permission for emergency medical transportation. If permission is refused, the parent’s alternative instructions are recorded below. A refusal does not override the program’s independent legal duty to call emergency services when a child’s life or health is in immediate danger (emergency response and health procedures: OAC 5180:2-12-16).', { size: 8.5, color: [0.36, 0.4, 0.48] });
   k.printFields({ ids: ['et.choice', 'et.denyAction'] });
+  k.para('The parent signature below applies to the selected authorization.');
 
   k.section(13, 'Parent acknowledgement of accuracy and receipt of policies and procedures');
   const acked = new Set(meta.acks || []);
@@ -93,6 +98,6 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
 
   k.section(16, 'Outstanding state-required documentation');
   for (const line of outstanding) k.tick(line, false);
-  for (const id of ['d.immun', 'd.conscienceText', 'd.hcp', 'd.diet', 'd.med']) if (d[id] !== undefined) k.printed.add(id);
+  for (const id of ['d.immun', 'd.conscienceScope', 'd.conscienceVaccines', 'd.conscienceText', 'd.hcp', 'd.diet', 'd.med']) if (d[id] !== undefined) k.printed.add(id);
   return k.finish();
 }

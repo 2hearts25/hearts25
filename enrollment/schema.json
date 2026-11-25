@@ -1917,6 +1917,43 @@
      "pdf": "docs"
     },
     {
+     "id": "d.conscienceScope",
+     "t": "radio",
+     "o": [
+      "all",
+      "specified"
+     ],
+     "r": 1,
+     "s": [
+      "eq",
+      "d.immun",
+      "conscience"
+     ],
+     "src": "P16",
+     "pdf": "docs"
+    },
+    {
+     "id": "d.conscienceVaccines",
+     "t": "textarea",
+     "x": 600,
+     "r": 1,
+     "s": [
+      "all",
+      [
+       "eq",
+       "d.immun",
+       "conscience"
+      ],
+      [
+       "eq",
+       "d.conscienceScope",
+       "specified"
+      ]
+     ],
+     "src": "P16",
+     "pdf": "docs"
+    },
+    {
      "id": "d.conscienceText",
      "t": "textarea",
      "x": 300,
@@ -2248,6 +2285,20 @@
      "t": "textarea",
      "x": 1000,
      "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.fearReaction",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.angerTriggers",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7",
      "pdf": "fam"
     },
     {
@@ -2754,6 +2805,13 @@
      "pdf": "resources"
     },
     {
+     "id": "ag.staffReviewed",
+     "t": "textarea",
+     "x": 600,
+     "src": "P12",
+     "pdf": "resources"
+    },
+    {
      "id": "ag.absenceAck",
      "t": "check",
      "r": 1,
@@ -3093,11 +3151,6 @@
      "h.medsAtCare",
      "yes"
     ]
-   ],
-   [
-    "eq",
-    "h.dietModified",
-    "yes"
    ]
   ]
  }

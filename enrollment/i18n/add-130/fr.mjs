@@ -93,7 +93,7 @@ export default {
     "up.immun": "Carnet de vaccination",
     "up.physical": "Examen physique ou certificat médical de l’enfant (facultatif)",
     "up.hcp": "Plan de soins de santé (DCY 01236) ou instructions du médecin",
-    "up.med": "Autorisation d’administration de médicaments (DCY 01217)",
+    "up.med": "Autorisation d’administration de médicaments (DCY 01236)",
     "up.diet": "Attestation du médecin pour un régime spécial",
     "up.custody": "Documents de garde, de tutelle ou du tribunal",
     "up.pfcc": "Autorisation PFCC ou avis de quote-part",

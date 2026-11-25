@@ -93,7 +93,7 @@ export default {
     "up.immun": "Registro de vacunas",
     "up.physical": "Examen físico o declaración médica del niño/a (opcional)",
     "up.hcp": "Plan de atención médica (DCY 01236) o instrucciones del médico",
-    "up.med": "Autorización de medicamentos (DCY 01217)",
+    "up.med": "Autorización de medicamentos (DCY 01236)",
     "up.diet": "Declaración del médico para una dieta especial",
     "up.custody": "Documentos de custodia, tutela o del tribunal",
     "up.pfcc": "Autorización de PFCC o aviso de copago",

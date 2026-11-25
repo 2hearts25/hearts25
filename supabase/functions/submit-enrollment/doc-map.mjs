@@ -19,7 +19,8 @@ const exact = {
   'h.diet': B, 'h.dietDesc': B, 'h.dietModified': B, 'h.avoid': B, 'h.accom': B,
   'h.devDelay': B, 'h.devDesc': B, 'h.services': B, 'h.serviceProv': B,
   // development / routines: the state form asks for this once; the centre keeps it with the personality questionnaire
-  'pe.devInfo': B, 'pe.routines': B, 'po.care': B, 'fe.noFeed': B,
+  'pe.devInfo': B, 'pe.fears': B, 'pe.fearReaction': B, 'pe.comfort': B,
+  'pe.angerTriggers': B, 'pe.frustration': B, 'pe.negBehavior': B, 'pe.more': B, 'pe.routines': B, 'po.care': B, 'fe.noFeed': B,
   // handbook receipt: the state form asks for receipt; the centre also keeps the detailed acknowledgment
   'ag.handbook': B,
   // 1.3.0: supporting health documents are state-record items, so their upload status prints in both documents (never the files).
@@ -29,7 +30,7 @@ const prefix = [ // first match wins; p2.* is classified like p1.*
   ['p1.', O], ['ec', O], ['h.', O], ['d.', O], ['et.', O],
   // 1.3.0: insurance (kept OUT of the Ohio PDF), other uploads, PFCC copayment agreement, late pickup
   ['ins.', H], ['up.', H], ['pf.', H], ['lp.', H], ['fin.', H],
-  ['pu', H], ['f.', H], ['pe.', H], ['fe.', H], ['sl.', H], ['po.', H], ['st.', H], ['m.', H], ['ag.', H],
+  ['pu', H], ['f.', H], ['pe.', H], ['fe.', B], ['sl.', B], ['po.', H], ['st.', H], ['m.', H], ['ag.', H],
 ];
 export const docsOf = id => {
   const k = id.replace(/^p2\./, 'p1.');
