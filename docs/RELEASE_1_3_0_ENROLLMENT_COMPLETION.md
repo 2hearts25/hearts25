@@ -30,7 +30,7 @@ All new text exists in English, Spanish, French, Arabic (RTL) and Swahili. Trans
 
 * **Private bucket `enrollment-documents`** (not the public `Family docs` bucket). No storage policies: only the service role inside the Edge Function can read or write.
 * **Upload path:** browser → Edge Function (never storage directly). The function issues a short-lived (3 h) upload session token (only its HMAC is stored), validates the real bytes (type sniffing, extension match, ≤ 10 MB, PDF structure, refuses encrypted PDFs and active content — JavaScript, Launch, embedded files, XFA, forms submission — and polyglot images), encrypts each file with AES-256-GCM bound to its document id, and stores it under `sessions/<random>/<random>`. Original filenames are stored encrypted. Limits: 10 MB per file, 30 files / 60 MB per application, per-category caps.
-* **Quarantine instead of antivirus:** no malware scanner is available in the Edge runtime. Every file stays `structure_checked / unreviewed` until staff mark it reviewed; staff open files only through the logged staff page, on a protected center computer. Files are never emailed or embedded in PDFs.
+* **Supporting document delivery:** v8 emails only structurally validated uploads that pass integrity checks to the existing authorized administration recipients. Quarantined, blocked and rejected files are excluded. See CONSOLIDATED_WEBSITE_RELEASE.md for packet limits, retention and retry behavior.
 * **Submission:** every referenced file must be a stored file of the same family's session and the matching category (checked before anything is saved); otherwise 422 and the family re-uploads. Unreferenced files are retired.
 * **Cleanup:** removed, replaced, rejected and abandoned uploads are deleted from storage by the existing 10-minute sweep. Attached documents are never deleted automatically until management sets retention periods (`retain_until` column ready).
 * **Agreement evidence:** for each application, four append-only records (contract, withdrawal/termination, attendance, signing acknowledgments) with the exact text shown in the family's language and the English source, encrypted, with SHA-256 hashes. Triggers block UPDATE/DELETE even for the database owner.
@@ -76,7 +76,7 @@ Not testable here: real Resend delivery to real inboxes, real Supabase Storage/A
 
 ### Phase B - separate explicit management authorization required
 
-Use the [accepted prebuilt Netlify ZIP](https://chatgpt.com/library?file_id=libfile_ce43f6fc47248191a5c3267f199aa4a8&account_id=personal) when publication is authorized and credits are available. Coordinate the `enrollment_v130` and `parent_document_access` flags with publication, then run one targeted synthetic enrollment to verify the new flow and parent link. Enable `staff_document_access` only after management identifies authorized staff and Supabase Auth and the allowlist are ready. Enable `enrollment_uploads` after staff retrieval is available and verify the upload path with synthetic data. Keep `financial_card_collection` off until its independent security prerequisites are met.
+Use the consolidated prebuilt ZIP with the updated Privacy Policy when publication is separately authorized and credits are available. Follow CONSOLIDATED_WEBSITE_RELEASE.md for the coordinated enrollment, parent PDF and upload activation. Leave the staff portal and full card collection off.
 
 ## 7. Rollback
 
