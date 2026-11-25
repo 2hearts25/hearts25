@@ -20,5 +20,15 @@ User-agent: bingbot
 User-agent: OAI-SearchBot
 User-agent: PerplexityBot
 Allow: /
+Disallow: /register/documents/
+Disallow: /staff/
+Disallow: /es/register/documents/
+Disallow: /es/staff/
+Disallow: /fr/register/documents/
+Disallow: /fr/staff/
+Disallow: /ar/register/documents/
+Disallow: /ar/staff/
+Disallow: /sw/register/documents/
+Disallow: /sw/staff/
 
 Sitemap: https://hearts25.com/sitemap.xml
