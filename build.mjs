@@ -30,6 +30,8 @@ const privatePages = ['register/documents','staff/documents'];
 const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/website-inquiry';
 const agePages = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
 const languages = Object.keys(locales);
+const nonIndexableSlugs = new Set(['404', 'thank-you', 'registration-received', 'information-received', ...privatePages]);
+const socialLocales = {en:'en_US',es:'es_US',fr:'fr_US',ar:'ar_US',sw:'sw_US'};
 const policyLabels = {en:'Nondiscrimination',es:'No discriminación',ar:'عدم التمييز',sw:'Kutobagua',fr:'Non-discrimination'};
 const moreLabels = {en:'More',es:'Más',ar:'المزيد',sw:'Zaidi',fr:'Plus'};
 const portalSlug = 'parent-portal';
@@ -42,9 +44,10 @@ const address = '<bdi dir="ltr">3095 W. 25th Street<br>Cleveland, OH 44113</bdi>
 const external = {
   license: 'https://childcaresearch.ohio.gov/',
   provider: 'https://childcaresearch.ohio.gov/provider/300622/',
-  sutq: 'https://childrenandyouth.ohio.gov/for-providers/step-up-to-quality',
+  startingPoint: 'https://starting-point.org/provider/heart-to-heart-enrichment-center/',
+  sutq: 'https://codes.ohio.gov/ohio-administrative-code/chapter-5180:2-17',
   county: 'https://hhs.cuyahogacounty.gov/programs/child-care-assistance-programs',
-  ohio: 'https://childrenandyouth.ohio.gov/for-families/early-care-education/child-care',
+  ohio: 'https://childcaresearch.ohio.gov/',
   pfcc: 'https://hhs.cuyahogacounty.gov/programs/child-care-assistance-programs',
   benefits: 'https://benefits.ohio.gov/',
   snap: 'https://benefits.ohio.gov/',
@@ -57,6 +60,27 @@ const external = {
   map: 'https://www.google.com/maps/search/?api=1&query=3095%20W%2025th%20Street%2C%20Cleveland%2C%20OH%2044113'
 };
 const site = 'https://hearts25.com';
+const socialImage = site + '/assets/classroom-1200.webp';
+const childcareBusiness = {
+  '@context': 'https://schema.org',
+  '@type': ['ChildCare', 'LocalBusiness'],
+  '@id': site + '/#childcare-center',
+  name: brand,
+  url: site + '/',
+  telephone: '+1-216-938-6771',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '3095 W. 25th Street',
+    addressLocality: 'Cleveland',
+    addressRegion: 'OH',
+    postalCode: '44113',
+    addressCountry: 'US'
+  },
+  identifier: {'@type':'PropertyValue',name:'Ohio child care center license number',value:licenseNumber},
+  award: 'Ohio Step Up To Quality Bronze',
+  sameAs: [external.provider, external.startingPoint],
+  areaServed: {'@type':'City',name:'Cleveland, Ohio'}
+};
 const virtualStatus = {en:'Coming Soon',es:'Próximamente',ar:'قريبًا',sw:'Inakuja hivi karibuni',fr:'Bientôt disponible'};
 const path = (language, page = '') => '/' + [language === 'en' ? '' : language, page].filter(Boolean).map(part => part + '/').join('');
 const escape = str => String(str).replace(/[&<>"']/g, char => ({
@@ -138,16 +162,18 @@ function frame(language, slug, title, description, body, meta = {}) {
   const virtualNav = link(path(language,'virtual-tour'),virtualTour[language].title,current('virtual-tour',slug));
   const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations,...privatePages].includes(slug);
   const foot = t.footer;
-  const alternate = slug === '404' ? '' : languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">`;
+  const indexable = !nonIndexableSlugs.has(slug);
+  const alternate = indexable ? languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">` : '';
+  const socialAlternates = indexable ? languages.filter(key => key !== language).map(key => `<meta property="og:locale:alternate" content="${socialLocales[key]}">`).join('') : '';
   const suggestion = Object.entries({es:'¿Prefieres ver el sitio en español?',ar:'هل تفضّل عرض الموقع بالعربية؟',sw:'Je, ungependa kuona tovuti kwa Kiswahili?',fr:'Préférez-vous consulter le site en français ?'}).map(([code,prompt]) => `<div class="suggestion" lang="${code}" dir="${code === 'ar' ? 'rtl' : 'ltr'}" data-suggest="${code}" hidden>${link(path(code,page),prompt,`data-language="${code}"`)}</div>`).join('');
   return `<!doctype html>
 <html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-${[...confirmations,'404',...privatePages].includes(slug) ? '<meta name="robots" content="noindex,nofollow">' : ""}
+${indexable ? '' : '<meta name="robots" content="noindex,nofollow">'}
 <title>${escape(meta.fullTitle ?? (meta.metaTitle ?? title) + ' | ' + brand)}</title><meta name="description" content="${escape(description)}">
-<link rel="canonical" href="${url}">${alternate}
-<meta property="og:title" content="${escape(meta.fullTitle ?? meta.metaTitle ?? title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="${language}"><meta property="og:site_name" content="${brand}"><meta property="og:image" content="${site}/assets/classroom-1200.webp">${meta.jsonld ? '<script type="application/ld+json">' + JSON.stringify(meta.jsonld).replace(/</g,'\\u003c') + '</script>' : ''}
+${indexable ? `<link rel="canonical" href="${url}">` + alternate : ''}
+<meta property="og:title" content="${escape(meta.fullTitle ?? meta.metaTitle ?? title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="${socialLocales[language]}">${socialAlternates}<meta property="og:site_name" content="${brand}"><meta property="og:image" content="${socialImage}"><meta property="og:image:alt" content="${escape(t.alts[0])}">${meta.jsonld ? '<script type="application/ld+json">' + JSON.stringify(meta.jsonld).replace(/</g,'\\u003c') + '</script>' : ''}
 <link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script>${privatePages.includes(slug) ? '' : '<script defer src="/assets/analytics.js"></script>'}${formScript}
 </head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
@@ -344,7 +370,7 @@ function policyBody(copy) {
   return sections[0] + sections.slice(1).map(section => '<section>' + section + '</section>').join('');
 }
 function pageContent(language, slug) {
-  if (slug === 'virtual-tour') return {title:virtualTour[language].title,intro:virtualTour[language].preview,body:virtualTourPreview(language,true)};
+  if (slug === 'virtual-tour') return {title:virtualTour[language].title,intro:virtualTour[language].visit,description:`${virtualStatus[language]}. ${virtualTour[language].visit}`,body:virtualTourPreview(language,true)};
   const t = locales[language];
   const q = trust[language];
   const english = pages[slug];
@@ -422,10 +448,7 @@ const indexable = [];
 for (const language of languages) {
   const t = locales[language];
   const seoHome = p1[language].seo;
-  const q = trust[language];
-  const description = `${q.rating}. ${seoHome.home_desc}`;
-  const jsonld = {'@context':'https://schema.org','@type':['ChildCare','LocalBusiness'],name:brand,url:site + path(language),description,telephone:'+1-216-938-6771',image:site + '/assets/classroom-1200.webp',address:{'@type':'PostalAddress',streetAddress:'3095 W. 25th Street',addressLocality:'Cleveland',addressRegion:'OH',postalCode:'44113',addressCountry:'US'},identifier:{'@type':'PropertyValue',name:'Ohio child care center license number',value:licenseNumber},award:q.rating,sameAs:external.provider,areaServed:{'@type':'City',name:'Cleveland, Ohio'},inLanguage:language};
-  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:description,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language),[portalSlug]:portalPage(language)};
+  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),description:seoHome.home_desc,fullTitle:seoHome.home_title,jsonld:childcareBusiness,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language),[portalSlug]:portalPage(language)};
   const infoConfirmation = forms[language].received;
   const ri = requestInfo[language];
   pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};
@@ -438,7 +461,7 @@ for (const language of languages) {
     const folder = dirname(destination).replaceAll('\\','/');
     await mkdir(new URL(folder + '/',dist),{recursive:true});
     await writeFile(output,frame(language,slug,page.title,page.description ?? page.intro,page.body,{metaTitle:page.metaTitle,fullTitle:page.fullTitle,jsonld:page.jsonld}),'utf8');
-    if (!['404','thank-you','registration-received','information-received',...privatePages].includes(slug)) indexable.push([language,slug]);
+    if (!nonIndexableSlugs.has(slug)) indexable.push([language,slug]);
     count += 1;
   }
 }

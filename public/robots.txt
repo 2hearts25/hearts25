@@ -4,10 +4,21 @@ Disallow: /thank-you/
 Disallow: /registration-received/
 Disallow: /information-received/
 Disallow: /register/documents/
-Disallow: /es/register/documents/
-Disallow: /fr/register/documents/
-Disallow: /ar/register/documents/
-Disallow: /sw/register/documents/
 Disallow: /staff/
+Disallow: /es/register/documents/
+Disallow: /es/staff/
+Disallow: /fr/register/documents/
+Disallow: /fr/staff/
+Disallow: /ar/register/documents/
+Disallow: /ar/staff/
+Disallow: /sw/register/documents/
+Disallow: /sw/staff/
+
+# Search crawlers can read the noindex tags on static confirmation pages.
+User-agent: Googlebot
+User-agent: bingbot
+User-agent: OAI-SearchBot
+User-agent: PerplexityBot
+Allow: /
 
 Sitemap: https://hearts25.com/sitemap.xml

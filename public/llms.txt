@@ -1,6 +1,6 @@
 # Heart to Heart Enrichment Center
 
-> Heart to Heart Enrichment Center is a licensed child care center in Cleveland, Ohio. It offers childcare for infants, toddlers, preschool and school-age children, with free meals, free school transportation, homework assistance, toddler potty training support, and family support including help understanding public benefits.
+> Heart to Heart Enrichment Center is a licensed, Bronze-rated child care center on West 25th Street in Cleveland, Ohio. It accepts Ohio Publicly Funded Child Care (PFCC) vouchers, provides free meals for children in care, and offers free pickup from eligible schools within 10 miles, subject to school and route availability.
 
 ## Business facts
 
@@ -12,18 +12,17 @@
 - Ohio Step Up To Quality — Bronze Rated. Step Up To Quality is Ohio's quality rating and improvement system for early care and education programs.
 - Continuous Ohio child care center license issued September 11, 2014 by the Ohio Department of Children and Youth.
 - Official provider record (license and Bronze rating): https://childcaresearch.ohio.gov/provider/300622/
-- Verify the license: https://childcaresearch.ohio.gov/
 - Hours: 6:00 AM to 6:00 PM
-- Languages of the website: English, Spanish, French, Arabic, Swahili (the website only; this does not describe staff language ability)
+- Website languages: English, Spanish, French, Arabic and Swahili.
 
 ## Services and costs
 
-- Accepts families participating in Ohio's Publicly Funded Child Care (PFCC) program.
-- Free childcare tuition for eligible families who receive full PFCC coverage. Eligibility, authorized coverage and any copay are determined by Ohio's PFCC program and the county agency.
+- Childcare for infants, toddlers, preschoolers and school-age children.
+- Tuition is free for eligible families who receive full PFCC coverage. The county agency determines eligibility, authorized coverage and any required copay.
 - No application fee.
 - No registration fee for PFCC families.
 - Free meals for children in care.
-- Free school transportation with pickup within 10 miles of the center, subject to school and route availability.
+- School transportation is between participating schools and the center. Call (216) 938-6771 to confirm your school and route.
 - Wraparound services: individualized support for families and connections to community resources.
 - Help understanding public benefits and childcare benefit applications. Heart to Heart is not a government agency or benefits advisor; outside agencies decide eligibility.
 - Homework time and homework assistance for school-age children.
@@ -36,10 +35,10 @@
 - [Programs](https://hearts25.com/programs/): infants and toddlers, preschool and school-age care
 - [Infants and Toddlers](https://hearts25.com/programs/infants-toddlers/)
 - [Preschool](https://hearts25.com/programs/preschool/)
-- [School-Age](https://hearts25.com/programs/school-age/)
+- [School-age care](https://hearts25.com/programs/school-age/): school pickup limits, meals and homework assistance
 - [Family Support](https://hearts25.com/family-support/): wraparound services and public benefits resources
-- [Tuition and Childcare Assistance](https://hearts25.com/tuition-assistance/)
-- [Enrollment](https://hearts25.com/enrollment/)
+- [Tuition and Childcare Assistance](https://hearts25.com/tuition-assistance/): PFCC acceptance, full coverage, fees and copay qualifications
+- [Enrollment](https://hearts25.com/enrollment/): enrollment steps and questions about availability
 - [Parent Portal](https://hearts25.com/parent-portal/): view or download approved public policies and family documents. The portal is localized in five languages. The current PDFs are in English and the Parent Handbook is coming soon.
 - [Safety & Trust](https://hearts25.com/safety/)
 - [FAQ](https://hearts25.com/faq/)
@@ -59,9 +58,11 @@
 
 ## Qualifications and verification
 
-- The center is licensed by the State of Ohio as a child care center. Verify the current license status and inspection information at Ohio Child Care Search: https://childcaresearch.ohio.gov/
-- Safety policies are described at https://hearts25.com/safety/
+- [Ohio Child Care Search](https://childcaresearch.ohio.gov/): state licensing and inspection records. Search for license 000000300622.
+- [Starting Point provider listing](https://starting-point.org/provider/heart-to-heart-enrichment-center/): address, phone, Bronze rating and PFCC acceptance.
+- [Cuyahoga County child care assistance](https://hhs.cuyahogacounty.gov/programs/child-care-assistance-programs): eligibility information and how to apply for PFCC.
+- [Ohio Step Up To Quality](https://codes.ohio.gov/ohio-administrative-code/chapter-5180:2-17): rules for the state's quality rating program.
 
-## Not provided here
+## Enrollment confirmation
 
-- This file contains no private, family or child information. A submitted registration does not guarantee enrollment.
+- Enrollment is confirmed by the center after it reviews a registration application.
