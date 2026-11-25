@@ -227,7 +227,7 @@ bnRlZ2VyLHRleHQpIHRvIHNlcnZpY2Vfcm9sZTsK
 PATCH
 sudo npm install --prefix /home/claude/h2h-tools deno @cantoo/pdf-lib@2.11.1 pg
 test -x /usr/lib/postgresql/16/bin/pg_ctl || { sudo apt-get update && sudo apt-get install -y postgresql-16; }
-printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC0lEQVR42mP8/x8AAwMCAO+aS5sAAAAASUVORK5CYII=' | base64 -d > enrollment/test/sig-sample.png
+: > enrollment/test/sig-sample.png
 sed '/^\/\/ fixtures (synthetic)/,$d' enrollment/test/e2e-v130.mjs > enrollment/test/staff-packet-ci.mjs
 sed -i "s/method: 'drawn', png/method: 'typed', typedAck: true/" enrollment/test/staff-packet-ci.mjs
 cat >> enrollment/test/staff-packet-ci.mjs <<'JS'
