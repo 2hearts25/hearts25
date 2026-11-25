@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          git apply --check release-validation.patch
-          git apply release-validation.patch
+          base64 -d release-validation.patch | gzip -d > /tmp/enrollment-candidate.patch
+          git apply --check /tmp/enrollment-candidate.patch
+          git apply /tmp/enrollment-candidate.patch
+          node tools/sync-enrollment-function.mjs
+          git rm --cached .github/workflows/enrollment-targeted.yml enrollment-targeted-ci.sh release-validation.patch
+          git add -A -- . ':!.github/workflows/enrollment-targeted.yml' ':!enrollment-targeted-ci.sh' ':!release-validation.patch'
+          test "$(git write-tree)" = '67503c218a14eced766bd2ea1c0e0ea4e501fcba'
           bash enrollment-targeted-ci.sh
