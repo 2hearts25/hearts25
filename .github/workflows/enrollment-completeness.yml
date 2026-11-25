@@ -1,0 +1,28 @@
+name: Targeted enrollment completeness
+on:
+  push:
+    branches: [validation/enrollment-completeness-corrections]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Restore source and render both signed PDFs
+        run: |
+          git fetch origin feature/enrollment-completion
+          git bundle verify completeness-source.bundle
+          git fetch ./completeness-source.bundle refs/heads/feature/enrollment-completion:refs/heads/completeness-exact
+          git worktree add --detach source-tree completeness-exact
+          cd source-tree
+          deno run --allow-read enrollment/test/completeness-corrections.mjs
+          deno check supabase/functions/submit-enrollment/index.ts
+          git diff --quiet b9a02b2 HEAD -- supabase/functions/submit-enrollment/v120 supabase/functions/submit-enrollment/staff-packet.ts
+      - name: Preserve verified exact source commit in GitHub
+        run: git push origin completeness-exact:refs/heads/release/enrollment-completeness
