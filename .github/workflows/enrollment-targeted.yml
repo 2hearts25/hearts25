@@ -1,0 +1,17 @@
+name: Targeted enrollment validation
+on:
+  push:
+    branches: [validation/enrollment-release-debcefd]
+    paths: [release-validation.patch]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git apply --check release-validation.patch
+          git apply release-validation.patch
+          bash enrollment-targeted-ci.sh
