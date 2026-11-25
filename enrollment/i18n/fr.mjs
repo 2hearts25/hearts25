@@ -127,7 +127,7 @@ export default {
     sign: "Signer et envoyer",
   },
   stepHelp: {
-    child: "Informations de base et garde demandée.",
+    child: "Informations de base et garde demandée. La garde le week-end dépend du personnel et des disponibilités ; la direction vous le confirmera.",
     parents: "Au moins un parent ou tuteur. Ajoutez-en un second s’il y en a un.",
     contacts: "Personnes que nous pouvons appeler si nous ne vous joignons pas. Au moins une ne doit pas être un parent ou tuteur indiqué ci-dessus.",
     pickup: "Seules les personnes de cette liste (et les parents ou tuteurs indiqués plus haut) peuvent venir chercher votre enfant. Elles doivent présenter une pièce d’identité avec photo. Les contacts d’urgence forment une liste distincte.",
@@ -297,7 +297,7 @@ export default {
     "po.care": "Consignes particulières pour les couches, la toilette ou les soins personnels (facultatif)",
   },
   o: {
-    _: { yes: "Oui", no: "Non", na: "Sans objet", mon: "Lun", tue: "Mar", wed: "Mer", thu: "Jeu", fri: "Ven", received: "Je l’ai reçu", pending: "Pas encore : veuillez me le remettre", available: "Je l’ai", other: "Autre" },
+    _: { yes: "Oui", no: "Non", na: "Sans objet", mon: "Lun", tue: "Mar", wed: "Mer", thu: "Jeu", fri: "Ven", sat: "Sam", sun: "Dim", received: "Je l’ai reçu", pending: "Pas encore : veuillez me le remettre", available: "Je l’ai", other: "Autre" },
     "c.program": { "infant-toddler": "Nourrissons et tout-petits", preschool: "Préscolaire", "school-age": "Âge scolaire" },
     "c.schedule": { full: "Temps plein", part: "Temps partiel" },
     "c.payment": { pfcc: "PFCC (garde d’enfants financée par des fonds publics)", private: "Paiement privé", assist: "Autre aide", unsure: "Pas encore sûr(e)" },

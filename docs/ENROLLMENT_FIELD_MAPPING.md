@@ -30,7 +30,7 @@
 | `c.phone` | Home phone (optional) | Phone | Optional | always | 10–15 digits; max 32 chars | Ohio + Heart to Heart |
 | `c.start` | Requested start date | Date | Required | always | Today to +2 years | Ohio + Heart to Heart |
 | `c.program` | Program | Dropdown | Required | always | Infant and toddler / Preschool / School-age | Heart to Heart |
-| `c.days` | Days needed | Choose several | Required | always | Mon / Tue / Wed / Thu / Fri | Heart to Heart |
+| `c.days` | Days needed | Choose several | Required | always | Mon / Tue / Wed / Thu / Fri / Sat / Sun | Heart to Heart |
 | `c.from` | Drop-off time | Time | Required | always |  | Heart to Heart |
 | `c.to` | Pick-up time | Time | Required | always | Later than c.from | Heart to Heart |
 | `c.schedule` | Schedule | Choose one | Required | always | Full time / Part time | Heart to Heart |

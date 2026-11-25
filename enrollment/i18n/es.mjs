@@ -127,7 +127,7 @@ export default {
     sign: "Firmar y enviar",
   },
   stepHelp: {
-    child: "Datos básicos y el cuidado que solicita.",
+    child: "Datos básicos y el cuidado que solicita. El cuidado de fin de semana depende del personal y de la disponibilidad; la directora o el director se lo confirmará.",
     parents: "Al menos un padre, madre o tutor. Agregue otro si lo hay.",
     contacts: "Personas a quienes podemos llamar si no podemos comunicarnos con usted. Al menos una no debe ser padre, madre ni tutor de los indicados arriba.",
     pickup: "Solo las personas de esta lista (y los padres o tutores indicados arriba) pueden recoger a su hijo. Deben mostrar identificación con foto. Los contactos de emergencia son una lista aparte.",
@@ -297,7 +297,7 @@ export default {
     "po.care": "Instrucciones específicas sobre pañales, uso del baño o cuidado personal (opcional)",
   },
   o: {
-    _: { yes: "Sí", no: "No", na: "No aplica", mon: "Lun", tue: "Mar", wed: "Mié", thu: "Jue", fri: "Vie", received: "Lo recibí", pending: "Todavía no: entréguenmelo", available: "Lo tengo", other: "Otro" },
+    _: { yes: "Sí", no: "No", na: "No aplica", mon: "Lun", tue: "Mar", wed: "Mié", thu: "Jue", fri: "Vie", sat: "Sáb", sun: "Dom", received: "Lo recibí", pending: "Todavía no: entréguenmelo", available: "Lo tengo", other: "Otro" },
     "c.program": { "infant-toddler": "Bebés y niños pequeños", preschool: "Preescolar", "school-age": "Edad escolar" },
     "c.schedule": { full: "Tiempo completo", part: "Medio tiempo" },
     "c.payment": { pfcc: "PFCC (Cuidado infantil financiado con fondos públicos)", private: "Pago privado", assist: "Otra ayuda", unsure: "Aún no estoy seguro/a" },

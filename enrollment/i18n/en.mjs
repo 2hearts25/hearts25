@@ -127,7 +127,7 @@ export default {
     sign: "Sign and submit",
   },
   stepHelp: {
-    child: "Basic details and the care you are requesting.",
+    child: "Basic details and the care you are requesting. Weekend care is subject to staffing and availability; the Director will confirm.",
     parents: "At least one parent or guardian. Add a second if there is one.",
     contacts: "People we can call if we cannot reach you. At least one must not be a parent or guardian listed above.",
     pickup: "Only people on this list (and the parents or guardians above) may pick up your child. They must show photo ID. Emergency contacts are a separate list.",
@@ -297,7 +297,7 @@ export default {
     "po.care": "Specific diapering, toileting or personal care instructions (optional)",
   },
   o: {
-    _: { yes: "Yes", no: "No", na: "Not applicable", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", received: "I received it", pending: "Not yet — please provide it", available: "I have it", other: "Other" },
+    _: { yes: "Yes", no: "No", na: "Not applicable", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun", received: "I received it", pending: "Not yet — please provide it", available: "I have it", other: "Other" },
     "c.program": { "infant-toddler": "Infant and toddler", preschool: "Preschool", "school-age": "School-age" },
     "c.schedule": { full: "Full time", part: "Part time" },
     "c.payment": { pfcc: "PFCC (Publicly Funded Child Care)", private: "Private pay", assist: "Other assistance", unsure: "Not sure yet" },

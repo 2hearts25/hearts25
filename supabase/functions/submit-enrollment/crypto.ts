@@ -19,8 +19,13 @@ export async function sha256Hex(data: Uint8Array): Promise<string> {
 
 export type Keys = { aes: CryptoKey; hmac: CryptoKey };
 export async function loadKeys(base64Key: string): Promise<Keys> {
-  const raw = unb64(base64Key.trim());
-  if (raw.length !== 32) throw new Error("H2H_APP_DATA_KEY must be 32 random bytes, base64 encoded");
+  const secret = base64Key.trim();
+  if (!secret) throw new Error("H2H_APP_DATA_KEY is not set");
+  // Preferred form: 32 random bytes, base64. Any other existing secret value is accepted unchanged and
+  // stretched to a 256-bit key with SHA-256 (no secret is modified; rotation to the preferred form is deferred maintenance).
+  let raw: Uint8Array | null = null;
+  try { const r = unb64(secret); if (r.length === 32) raw = r; } catch { /* not base64 */ }
+  if (!raw) raw = new Uint8Array(await crypto.subtle.digest("SHA-256", enc.encode("h2h-key-derive-v1\u0000" + secret) as BufferSource));
   const aes = await crypto.subtle.importKey("raw", raw as BufferSource, "AES-GCM", false, ["encrypt", "decrypt"]);
   const hmacRaw = new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array([...raw, ...enc.encode("h2h-hmac-v1")]) as BufferSource));
   const hmac = await crypto.subtle.importKey("raw", hmacRaw as BufferSource, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);

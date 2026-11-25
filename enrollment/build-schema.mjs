@@ -69,7 +69,7 @@ export const schema = {
       F('c.phone', 'tel', { x: 32, v: 'phone', src: 'NEW1,P2', pdf: 'ohio' }),
       F('c.start', 'date', { r: 1, v: 'future', src: 'NEW1,P2,A§6', pdf: 'ohio' }),
       F('c.program', 'select', { r: 1, o: ['infant-toddler', 'preschool', 'school-age'], src: 'A§6', pdf: 'sum' }),
-      F('c.days', 'checks', { r: 1, o: ['mon', 'tue', 'wed', 'thu', 'fri'], src: 'A§6', pdf: 'sum' }),
+      F('c.days', 'checks', { r: 1, o: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], src: 'A§6', pdf: 'sum' }),
       F('c.from', 'time', { r: 1, src: 'A§6', pdf: 'sum' }),
       F('c.to', 'time', { r: 1, v: 'after:c.from', src: 'A§6', pdf: 'sum' }),
       R('c.schedule', ['full', 'part'], { r: 1, src: 'A§6,P9', pdf: 'sum' }),

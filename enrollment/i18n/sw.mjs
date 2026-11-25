@@ -127,7 +127,7 @@ export default {
     sign: "Saini na utume",
   },
   stepHelp: {
-    child: "Maelezo ya msingi na huduma unayoomba.",
+    child: "Maelezo ya msingi na huduma unayoomba. Huduma ya wikendi inategemea wafanyakazi na nafasi iliyopo; Mkurugenzi atakuthibitishia.",
     parents: "Angalau mzazi au mlezi mmoja. Ongeza wa pili ikiwa yupo.",
     contacts: "Watu tunaoweza kuwapigia ikiwa hatuwezi kukupata. Angalau mmoja asiwe mzazi au mlezi aliyetajwa hapo juu.",
     pickup: "Ni watu walio kwenye orodha hii pekee (na wazazi au walezi walioorodheshwa hapo juu) wanaoweza kumchukua mtoto wako. Lazima waonyeshe kitambulisho chenye picha. Watu wa mawasiliano ya dharura ni orodha tofauti.",
@@ -297,7 +297,7 @@ export default {
     "po.care": "Maelekezo maalum kuhusu nepi, matumizi ya choo au utunzaji wa kibinafsi (hiari)",
   },
   o: {
-    _: { yes: "Ndiyo", no: "Hapana", na: "Haihusiki", mon: "Jtatu", tue: "Jnne", wed: "Jtano", thu: "Alh", fri: "Ijm", received: "Nimepokea", pending: "Bado — tafadhali nipe", available: "Ninayo", other: "Nyingine" },
+    _: { yes: "Ndiyo", no: "Hapana", na: "Haihusiki", mon: "Jtatu", tue: "Jnne", wed: "Jtano", thu: "Alh", fri: "Ijm", sat: "Jmosi", sun: "Jpili", received: "Nimepokea", pending: "Bado — tafadhali nipe", available: "Ninayo", other: "Nyingine" },
     "c.program": { "infant-toddler": "Watoto wachanga na wadogo", preschool: "Chekechea", "school-age": "Umri wa shule" },
     "c.schedule": { full: "Muda wote", part: "Muda wa sehemu" },
     "c.payment": { pfcc: "PFCC (Malezi ya watoto yanayofadhiliwa na umma)", private: "Malipo binafsi", assist: "Msaada mwingine", unsure: "Sina uhakika bado" },
