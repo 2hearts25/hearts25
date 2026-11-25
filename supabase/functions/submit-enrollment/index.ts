@@ -243,7 +243,9 @@ async function processApplication(reference: string, opts: { force?: boolean } =
       let message = familyEnrollmentMessage(String(payload.answers["p1.name"] ?? ""), payload.lang, row.reference);
       let withAccess = false;
       if (!legacy && row.access_email_status === "pending" && (await flags()).parent_document_access) {
-        const token = randomToken();
+        // The initial link is derived from the application key and the reference (unguessable without the secret), so a retry or a
+        // concurrent sweep of the same email always produces the same link instead of revoking the one already sent.
+        const token = (await hmacHex(keys, "access-initial", row.reference)).slice(0, 48);
         await rpc("enrollment_access_create_p2", { p_application: row.id, p_token_hash: await hmacHex(keys, "access", token), p_ttl_seconds: ACCESS_DAYS * 86400, p_reason: "initial" });
         message = familyConfirmationWithDocuments(String(payload.answers["p1.name"] ?? ""), payload.lang, row.reference, accessUrl(payload.lang, token), ACCESS_DAYS);
         withAccess = true;

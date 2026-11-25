@@ -389,6 +389,10 @@ $f$;
 create or replace function public.enrollment_access_create_p2(p_application uuid, p_token_hash text, p_ttl_seconds integer, p_reason text) returns jsonb
 language plpgsql set search_path to '' as $f$
 begin
+  -- idempotent: the initial link is derived from a secret, so a concurrent retry of the same email yields the same token
+  if exists (select 1 from website_private.enrollment_parent_access where token_hash = p_token_hash and application_id = p_application) then
+    return pg_catalog.jsonb_build_object('ok', true, 'existing', true);
+  end if;
   update website_private.enrollment_parent_access set revoked_at = now() where application_id = p_application and revoked_at is null;
   insert into website_private.enrollment_parent_access (application_id, token_hash, expires_at, reason)
   values (p_application, p_token_hash, now() + pg_catalog.make_interval(secs => least(greatest(p_ttl_seconds, 3600), 1209600)), p_reason);

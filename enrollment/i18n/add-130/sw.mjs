@@ -99,6 +99,7 @@ export default {
     school: "Ninaomba usafiri kati ya shule ya mtoto wangu na kituo kama ilivyoelezwa, ninaidhinisha Heart to Heart kumsafirisha mtoto wangu baada ya Mkurugenzi kuthibitisha kwamba unapatikana, na ninathibitisha kwamba taarifa nilizotoa ni sahihi. Ninaelewa kwamba idhini hii ni halali kwa mwaka mmoja wa masomo.",
   },
   err: {
+    upload: "Tafadhali pakia faili hili tena.",
     money: "Weka kiasi kama 15 au 15.00.",
     tooMany: "Faili ni nyingi mno kwa aina hii ya nyaraka.",
   },

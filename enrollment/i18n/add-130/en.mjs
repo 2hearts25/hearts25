@@ -105,6 +105,7 @@ export default {
     school: "I request transportation between my child’s school and the center as described, authorize Heart to Heart to transport my child once the Director confirms it is available, and confirm the details I gave are correct. I understand this authorization is valid for one academic school year.",
   },
   err: {
+    upload: "Please upload this file again.",
     money: "Enter an amount such as 15 or 15.00.",
     tooMany: "Too many files for this document type.",
   },

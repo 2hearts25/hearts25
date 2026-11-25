@@ -99,6 +99,7 @@ export default {
     school: "Je demande le transport entre l’école de mon enfant et le centre comme décrit, j’autorise Heart to Heart à transporter mon enfant une fois que la directrice aura confirmé qu’il est disponible, et je confirme que les renseignements donnés sont exacts. Je comprends que cette autorisation est valable pour une année scolaire.",
   },
   err: {
+    upload: "Veuillez téléverser ce fichier de nouveau.",
     money: "Saisissez un montant comme 15 ou 15.00.",
     tooMany: "Trop de fichiers pour ce type de document.",
   },

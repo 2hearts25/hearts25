@@ -18,7 +18,7 @@ for (const st of schema.steps) {
   }
 }
 for (const a of schema.acks) need.push(['acks', a.id]);
-for (const e of ['required', 'email', 'phone', 'zip', 'date', 'dobFuture', 'dobOld', 'startPast', 'startFar', 'time', 'timeOrder', 'long', 'choice', 'type', 'min', 'max', 'nonParent', 'phoneNeeded', 'money', 'tooMany']) need.push(['err', e]);
+for (const e of ['required', 'email', 'phone', 'zip', 'date', 'dobFuture', 'dobOld', 'startPast', 'startFar', 'time', 'timeOrder', 'long', 'choice', 'type', 'min', 'max', 'nonParent', 'phoneNeeded', 'money', 'tooMany', 'upload']) need.push(['err', e]);
 const lookupOpt = (L, id, v) => L.o[id]?.[v] ?? L.o._[v] ?? L.o[id.replace(/^p2\./, 'p1.')]?.[v];
 const ph = s => (String(s).match(/\{[a-z]+\}/g) || []).sort().join();
 for (const [code, L] of Object.entries(langs)) {

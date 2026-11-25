@@ -21,7 +21,12 @@ const documentManifest = await read('./enrollment/document-links.json');
 const virtualTour = await read('./virtual-tour-content.json');
 const homeCopy = await read('./homepage-content.json');
 const enrollEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/submit-enrollment';
-const enrollVersion = '1.2.0-E1';
+// The form version comes from enrollment/agreements.mjs. Publishing this build switches the website to form 1.3.0-E2, which the
+// backend accepts only after the enrollment_v130 flag is turned on (see docs/RELEASE_1_3_0_ACTIVATION.md).
+const { FORM_VERSION: enrollVersion } = await import('./enrollment/agreements.mjs');
+const supabaseAuth = 'https://zebeclcvrdmisnxkwode.supabase.co/auth/v1';
+// Private, never-indexed pages: no analytics, no-store (see public/_headers)
+const privatePages = ['register/documents','staff/documents'];
 const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/website-inquiry';
 const agePages = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
 const languages = Object.keys(locales);
@@ -124,7 +129,7 @@ function frame(language, slug, title, description, body, meta = {}) {
   const home = path(language);
   const page = slug === '404' ? '' : slug;
   const confirmations = ['thank-you','registration-received','information-received'];
-  const formScript = slug === 'register' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/app.js"></script>' : ['enrollment','contact','tour','request-information',...confirmations].includes(slug) ? '<script defer src="/assets/inquiry.js"></script>' : '';
+  const formScript = slug === 'register/documents' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/documents.js"></script>' : slug === 'staff/documents' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/staff.js"></script>' : slug === 'register' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/app.js"></script>' : ['enrollment','contact','tour','request-information',...confirmations].includes(slug) ? '<script defer src="/assets/inquiry.js"></script>' : '';
   const url = site + path(language, page);
   const q = trust[language];
   const tour = link(path(language,'tour'), t.tour, `class="button" ${current('tour',slug)}`);
@@ -139,11 +144,11 @@ function frame(language, slug, title, description, body, meta = {}) {
 <html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-${[...confirmations,'404'].includes(slug) ? '<meta name="robots" content="noindex,nofollow">' : ""}
+${[...confirmations,'404',...privatePages].includes(slug) ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <title>${escape(meta.fullTitle ?? (meta.metaTitle ?? title) + ' | ' + brand)}</title><meta name="description" content="${escape(description)}">
 <link rel="canonical" href="${url}">${alternate}
 <meta property="og:title" content="${escape(meta.fullTitle ?? meta.metaTitle ?? title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="${language}"><meta property="og:site_name" content="${brand}"><meta property="og:image" content="${site}/assets/classroom-1200.webp">${meta.jsonld ? '<script type="application/ld+json">' + JSON.stringify(meta.jsonld).replace(/</g,'\\u003c') + '</script>' : ''}
-<link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script><script defer src="/assets/analytics.js"></script>${formScript}
+<link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script>${privatePages.includes(slug) ? '' : '<script defer src="/assets/analytics.js"></script>'}${formScript}
 </head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
 ${header(language,page,slug,{tour,register,portal,virtualNav})}
@@ -283,6 +288,11 @@ function registrationPages(language) {
 <noscript><p class="note">${escape(ui.jsRequired)}</p><div class="actions">${button(tel,t.call,true)}${button(path(language,'tour'),t.tour,true)}${button(path(language,'request-information'),p0[language][0],true)}</div></noscript>
 <div id="enroll-app" class="enroll" lang="${language}" dir="${enrollI18n[language].dir}" data-lang="${language}" data-endpoint="${enrollEndpoint}" data-version="${enrollVersion}"><p class="loading" role="status">${escape(ui.saving)}</p></div></article>`
     },
+    'register/documents': {
+      title:ui.accessTitle,
+      intro:ui.accessLead,
+      body:`<article class="page section wrap"><noscript><p class="note">${escape(ui.jsRequired)}</p></noscript><div id="docs-app" class="enroll" lang="${language}" dir="${enrollI18n[language].dir}" data-lang="${language}" data-endpoint="${enrollEndpoint}"><p class="loading" role="status">${escape(ui.saving)}</p></div></article>`
+    },
     'registration-received': {
       title:ui.doneTitle,
       intro:ui.doneBody,
@@ -401,10 +411,12 @@ for (const name of ['inquiry.js','analytics.js']) {
 }
 await mkdir(new URL('assets/enrollment/i18n/',dist),{recursive:true});
 await copyFile(new URL('./enrollment/core.mjs',import.meta.url),new URL('assets/enrollment/core.js',dist));
+// 1.3.0 shared modules (same files the Edge Function uses), served as .js with their relative imports rewritten
+for (const name of ['agreements','evidence','file-check']) await writeFile(new URL('assets/enrollment/' + name + '.js',dist),(await readFile(new URL('./enrollment/' + name + '.mjs',import.meta.url),'utf8')).replace(/from '\.\/([a-z-]+)\.mjs'/g,"from './$1.js'"),'utf8');
 await copyFile(new URL('./enrollment/schema.json',import.meta.url),new URL('assets/enrollment/schema.json',dist));
 await writeFile(new URL('assets/enrollment/document-links.json',dist),JSON.stringify(portalByLocale),'utf8');
 for (const [code,data] of Object.entries(enrollI18n)) await writeFile(new URL('assets/enrollment/i18n/' + code + '.json',dist),JSON.stringify(data),'utf8');
-{ const appFile = new URL('assets/enrollment/app.js',dist); await writeFile(appFile,(await readFile(appFile,'utf8')).replace('__H2H_PUBLIC_ANON_KEY__',anonKey),'utf8'); }
+for (const name of ['app.js','documents.js','staff.js']) { const appFile = new URL('assets/enrollment/' + name,dist); await writeFile(appFile,(await readFile(appFile,'utf8')).replace('__H2H_PUBLIC_ANON_KEY__',anonKey),'utf8'); }
 let count = 0;
 const indexable = [];
 for (const language of languages) {
@@ -418,6 +430,7 @@ for (const language of languages) {
   const ri = requestInfo[language];
   pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};
   for (const slug of Object.keys(pages)) pagesForLocale[slug] = pageContent(language,slug);
+  if (language === 'en') pagesForLocale['staff/documents'] = {title:'Enrollment documents — staff',intro:'Authorized staff only.',body:`<article class="page section wrap"><noscript><p class="note">JavaScript is required.</p></noscript><div id="staff-app" class="enroll" data-endpoint="${enrollEndpoint}" data-auth="${supabaseAuth}"><p class="loading" role="status">Loading…</p></div></article>`};
   for (const [slug,page] of Object.entries(pagesForLocale)) {
     const route = path(language,slug === '404' ? '' : slug).slice(1);
     const destination = join(route,slug === '404' ? '404.html' : 'index.html');
@@ -425,7 +438,7 @@ for (const language of languages) {
     const folder = dirname(destination).replaceAll('\\','/');
     await mkdir(new URL(folder + '/',dist),{recursive:true});
     await writeFile(output,frame(language,slug,page.title,page.description ?? page.intro,page.body,{metaTitle:page.metaTitle,fullTitle:page.fullTitle,jsonld:page.jsonld}),'utf8');
-    if (!['404','thank-you','registration-received','information-received'].includes(slug)) indexable.push([language,slug]);
+    if (!['404','thank-you','registration-received','information-received',...privatePages].includes(slug)) indexable.push([language,slug]);
     count += 1;
   }
 }

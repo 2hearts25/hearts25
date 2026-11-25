@@ -1,6 +1,9 @@
-// Child enrollment application (v1.2.0). Multi-step, five languages, finger or typed signature.
+// Child enrollment application (form 1.3.0-E2). Multi-step, five languages, finger or typed signature, optional document uploads.
 // Privacy: answers live ONLY in memory (this tab). Nothing is written to localStorage, sessionStorage, cookies or the URL.
 import { validate, settle, stepShown, fieldShown, fieldRequired, visibleAcks } from './core.js';
+import { CONTRACT, POLICIES } from './agreements.js';
+import { contractView } from './evidence.js';
+import { sniff, extOf, TYPES, ACCEPT, MAX_FILE_BYTES } from './file-check.js';
 
 const PUBLIC_KEY = '__H2H_PUBLIC_ANON_KEY__';
 const root = document.getElementById('enroll-app');
@@ -17,7 +20,7 @@ let documentLibrary = {};
 const trCache = {};
 let lang = LANGS.includes(root.dataset.lang) ? root.dataset.lang : 'en';
 let tr = null;
-const fresh = () => ({ data: {}, acks: {}, sig: { parent1: blankSig(), parent2: blankSig() }, parent2Mode: null, stepId: 'intro', errors: {}, summary: null, returnToReview: false, key: crypto.randomUUID(), submitting: false, confirmReset: false, notice: '' });
+const fresh = () => ({ uploads: [], uploadToken: null, uploadsOff: false, data: {}, acks: {}, sig: { parent1: blankSig(), parent2: blankSig() }, parent2Mode: null, stepId: 'intro', errors: {}, summary: null, returnToReview: false, key: crypto.randomUUID(), submitting: false, confirmReset: false, notice: '' });
 const blankSig = () => ({ mode: matchMedia('(pointer: coarse)').matches ? 'draw' : 'type', name: '', relation: '', strokes: [], ink: 0, png: '', typedAck: false });
 let S = fresh();
 let done = false;
@@ -61,6 +64,7 @@ function showValue(f, v, id = f.id) {
     case 'date': return fmtDate(v);
     case 'time': return fmtTime(v);
     case 'textna': return v === 'N/A' ? t('na') : v;
+    case 'upload': return v.length + ' × ' + t('upDone');
     default: return String(v);
   }
 }
@@ -175,8 +179,121 @@ function control(f, { get, set, ctx, path, cond }) {
     case 'check': {
       return h('div', { class: 'field' }, h('label', { class: 'opt' }, h('input', { type: 'checkbox', id, checked: get() === true, 'aria-invalid': invalid ? 'true' : undefined, 'aria-describedby': describedBy, onchange: e => { set(e.target.checked); delete S.errors[key]; refresh(id); } }), h('span', {}, label, reqMark(required))), err);
     }
+    case 'upload': return uploadControl(f, { label, err, required, id });
     default: return h('div');
   }
+}
+
+// ---------- optional document uploads (1.3.0) ----------
+// Files go straight from this tab to the enrollment function, which validates the real bytes, encrypts them and stores them
+// privately. Nothing is kept in browser storage. Only server-issued ids are part of the answers.
+const fmtSize = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+const upEndpoint = p => ENDPOINT.replace(/\/+$/, '') + '/upload/' + p;
+const authHeaders = () => ({ apikey: PUBLIC_KEY, Authorization: 'Bearer ' + PUBLIC_KEY });
+async function uploadToken() {
+  if (S.uploadToken) return S.uploadToken;
+  const r = await fetch(upEndpoint('session'), { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(20000) });
+  if (r.status === 503) { S.uploadsOff = true; throw new Error('off'); }
+  if (!r.ok) throw new Error('session');
+  S.uploadToken = (await r.json()).token; return S.uploadToken;
+}
+function sendFile(item, token) {
+  return new Promise(resolve => {
+    const x = new XMLHttpRequest();
+    x.open('POST', upEndpoint('file'));
+    for (const [k, v] of Object.entries({ ...authHeaders(), 'Content-Type': 'application/octet-stream', 'x-upload-token': token, 'x-upload-category': item.cat, 'x-upload-name': encodeURIComponent(item.name) })) x.setRequestHeader(k, v);
+    if (item.replaces) x.setRequestHeader('x-upload-replaces', item.replaces);
+    x.upload.onprogress = e => { if (e.lengthComputable) { item.progress = Math.round(e.loaded / e.total * 100); const el = document.getElementById('upp-' + item.key); if (el) { el.value = item.progress; el.nextSibling.textContent = t('upUploading', { p: item.progress }); } } };
+    x.onload = () => { let j = {}; try { j = JSON.parse(x.responseText); } catch { /* ignore */ } resolve({ status: x.status, body: j }); };
+    x.onerror = x.ontimeout = () => resolve({ status: 0, body: {} });
+    x.timeout = 120000; x.send(item.file);
+  });
+}
+const failText = (status, code) => status === 413 || code === 'size' ? 'upTooBig' : code === 'type' || code === 'ext' ? 'upBadType' : status === 422 ? 'upRejected' : status === 409 && /limit/.test(code || '') ? 'upTooMany' : status === 503 ? 'upUnavailable' : 'upFailed';
+async function startUpload(item) {
+  item.status = 'uploading'; item.progress = 0; item.error = ''; refresh();
+  let tries = 0;
+  while (tries++ < 2) {
+    let token; try { token = await uploadToken(); } catch { item.status = 'failed'; item.error = S.uploadsOff ? 'upUnavailable' : 'upFailed'; refresh(); return; }
+    const r = await sendFile(item, token);
+    if (r.status === 401 || r.status === 410) { S.uploadToken = null; continue; } // session expired: get a fresh one once
+    if ((r.status === 200 || r.status === 201) && r.body.id) {
+      item.status = 'done'; item.id = r.body.id; item.file = null;
+      const cur = new Set(Array.isArray(S.data[item.field]) ? S.data[item.field] : []); if (item.replaces) cur.delete(item.replaces); cur.add(item.id);
+      S.data[item.field] = [...cur]; if (item.replaces) S.uploads = S.uploads.filter(u => u.id !== item.replaces || u === item);
+      delete S.errors[item.field]; refresh(); return;
+    }
+    item.status = 'failed'; item.error = failText(r.status, r.body.error); if (r.status === 503) S.uploadsOff = true; refresh(); return;
+  }
+  item.status = 'failed'; item.error = 'upFailed'; refresh();
+}
+async function addFiles(f, files, replaces) {
+  for (const file of files) {
+    const item = { key: crypto.randomUUID(), field: f.id, cat: f.cat, name: file.name || 'photo.jpg', size: file.size, file, status: 'checking', progress: 0, replaces: replaces || null };
+    const live = S.uploads.filter(u => u.field === f.id && u.status !== 'failed' && u.id !== replaces).length;
+    if (live >= f.max) { item.status = 'failed'; item.error = 'upTooMany'; item.file = null; S.uploads.push(item); continue; }
+    S.uploads.push(item);
+    if (file.size > MAX_FILE_BYTES) { item.status = 'failed'; item.error = 'upTooBig'; item.file = null; continue; }
+    const head = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+    const mime = sniff(head), ext = extOf(item.name);
+    if (!mime || (ext && !TYPES[mime].includes(ext))) { item.status = 'failed'; item.error = 'upBadType'; item.file = null; continue; }
+    startUpload(item);
+  }
+  refresh();
+}
+async function removeUpload(item) {
+  S.uploads = S.uploads.filter(u => u !== item);
+  if (item.id) { S.data[item.field] = (S.data[item.field] || []).filter(x => x !== item.id); if (!S.data[item.field].length) delete S.data[item.field];
+    fetch(upEndpoint('remove'), { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify({ token: S.uploadToken, id: item.id }) }).catch(() => {}); }
+  refresh();
+}
+function uploadControl(f, { label, err, required, id }) {
+  const items = S.uploads.filter(u => u.field === f.id);
+  const live = items.filter(u => u.status !== 'failed').length;
+  const pickers = [];
+  const picker = (capture, replaces) => {
+    const input = h('input', { type: 'file', accept: capture ? 'image/jpeg,image/png' : ACCEPT, capture: capture ? 'environment' : undefined, multiple: !capture && !replaces && f.max > 1 ? true : undefined, hidden: true, tabindex: '-1', 'aria-hidden': 'true',
+      onchange: e => { const files = [...e.target.files].slice(0, replaces ? 1 : f.max - live); e.target.value = ''; if (files.length) addFiles(f, files, replaces); } });
+    pickers.push(input); return input;
+  };
+  const off = S.uploadsOff;
+  const list = h('ul', { class: 'uploads', 'aria-live': 'polite' }, items.map(u => h('li', { class: 'upload ' + u.status },
+    h('span', { class: 'upname', dir: 'auto' }, u.name), h('span', { class: 'muted' }, ' · ' + fmtSize(u.size)),
+    u.status === 'uploading' ? h('div', { class: 'upprog' }, h('progress', { id: 'upp-' + u.key, max: 100, value: u.progress }), h('span', { class: 'muted' }, t('upUploading', { p: u.progress }))) : null,
+    u.status === 'done' ? h('span', { class: 'upok' }, ' ✓ ' + t('upDone')) : null,
+    u.status === 'failed' ? h('p', { class: 'err', role: 'alert' }, t(u.error || 'upFailed')) : null,
+    h('span', { class: 'upactions' },
+      u.status === 'failed' && u.file ? h('button', { type: 'button', class: 'linkish', onclick: () => startUpload(u) }, t('upRetry')) : null,
+      u.status === 'done' ? (() => { const r = picker(false, u.id); return h('button', { type: 'button', class: 'linkish', onclick: () => r.click() }, t('upReplace')); })() : null,
+      u.status !== 'uploading' ? h('button', { type: 'button', class: 'linkish', onclick: () => removeUpload(u) }, t('upRemove')) : null))));
+  const cam = picker(true), choose = picker(false);
+  const canAdd = !off && live < f.max;
+  return h('div', { class: 'field upload-field', id },
+    h('p', { class: 'uplabel' }, label, required ? reqMark(true) : h('span', { class: 'muted' }, ' — ' + t('optional'))),
+    list,
+    canAdd ? h('div', { class: 'upbuttons' },
+      h('button', { type: 'button', class: 'button secondary', onclick: () => cam.click() }, '📷 ' + t('upTake')),
+      h('button', { type: 'button', class: 'button secondary', onclick: () => choose.click() }, t('upChoose'))) : null,
+    off ? h('p', { class: 'notice' }, t('upUnavailable')) : live >= f.max ? h('p', { class: 'muted' }, t('upTooMany')) : h('p', { class: 'muted' }, t('upHint')),
+    pickers, err);
+}
+const uploadsBusy = () => S.uploads.some(u => u.status === 'uploading' || u.status === 'checking');
+
+// ---------- Parent/Provider Contract (1.3.0): the last step before Review and Sign ----------
+function contractBlock() {
+  const v = contractView(tr, S.data);
+  return h('section', { class: 'contract', 'aria-labelledby': 'ct-h' },
+    h('h3', { id: 'ct-h' }, v.title), h('p', { class: 'muted' }, t('ctVersion', { v: v.version })),
+    v.sections.map(sec => h('section', { class: 'policy ct-' + sec.status, 'aria-label': sec.title },
+      h('h4', {}, sec.title, ' ', h('span', { class: 'badge ' + sec.status }, sec.label)),
+      sec.note ? h('p', { class: 'muted' }, sec.note) : null,
+      sec.paragraphs.map(p => h('p', {}, p)))));
+}
+function withdrawalBlock() {
+  const doc = library()?.documents.find(d => d.id === POLICIES.withdrawal.id);
+  return h('section', { class: 'policy', 'aria-labelledby': 'wt-h' }, h('h3', { id: 'wt-h' }, t('wtHeading')),
+    h('p', { class: 'muted' }, t('wtMeta', { r: POLICIES.withdrawal.revision, d: fmtDate(POLICIES.withdrawal.effectiveDate) })),
+    doc ? documentReference(doc) : null, h('p', {}, t('wtLead')), h('p', { class: 'muted' }, t('wtHelp')));
 }
 
 function repeater(f) {
@@ -234,7 +351,10 @@ function fieldsFor(step) {
   const out = [];
   for (const f of step.fields) {
     if (!fieldShown(f, S.data, schema)) continue;
-    if (step.id === 'agreements' && f.id === 'ag.contractAck') out.push(h('h3', {}, t('contractTitle')));
+    if (step.id === 'contract' && f.id === 'pf.auth') out.push(h('h3', {}, t('pfHeading')), h('p', { class: 'help' }, t('pfLead')));
+    if (step.id === 'agreements' && f.id === 'ag.wt') out.push(withdrawalBlock());
+    if (step.id === 'health' && f.id === 'ins.status') out.push(h('h3', {}, t('insHeading')), h('p', { class: 'help' }, t('insLead')));
+    if (step.id === 'docs' && f.id === 'up.immun') out.push(h('p', { class: 'notice' }, t('upPrivacy')), h('p', { class: 'muted' }, t('upInsNote')));
     if (step.id === 'agreements' && f.id === 'ag.absenceAck') out.push(absencePolicy());
     if (step.id === 'daily' && f.id === 'po.trained') out.push(diaperingText());
     if (f.t === 'rep') { out.push(h('div', { class: 'field' }, repeater(f))); continue; }
@@ -293,9 +413,11 @@ function renderStep(step) {
     if (documents.length) nodes.push(h('section', { class: 'policy', 'aria-labelledby': 'reference-documents' },
       h('h3', { id: 'reference-documents' }, library().ui.review), documents.map(document => documentReference(document, true)), h('p', {}, portalLink())));
   }
+  if (step.id === 'contract') nodes.push(contractBlock());
   if (S.summary) nodes.push(summaryNode(S.summary));
   nodes.push(...fieldsFor(step));
   nodes.push(navRow(step, () => {
+    if (uploadsBusy()) { S.summary = [{ id: 'step-h', text: t('upWait') }]; render({ focusSummary: true }); return; }
     const errs = errorsForStep(step);
     if (Object.keys(errs).length) { S.errors = errs; S.summary = summaryOf(errs, step); render({ focusSummary: true }); return; }
     const target = S.returnToReview ? 'review' : nextStepId(step.id); S.returnToReview = false; goto(target);
@@ -415,6 +537,7 @@ function renderSign(step) {
 async function submit() {
   if (S.submitting) return;
   S.submitMessage = '';
+  if (uploadsBusy()) { S.submitMessage = t('upWait'); render({ focusSummary: true }); return; }
   const bad = firstInvalidStep();
   if (bad) { S.errors = bad.errs; S.summary = summaryOf(bad.errs, bad.step); S.returnToReview = true; render({ focusSummary: true, stepId: bad.step.id }); return; }
   const errors = {}, items = [];
@@ -430,6 +553,7 @@ async function submit() {
     v: FORM_VERSION, key: S.key, lang, data: settle(S.data, schema), acks: acks.map(a => a.id).filter(id => S.acks[id]), parent2Mode: hasP2 ? S.parent2Mode : 'na',
     signatures: ['parent1', ...(hasP2 && S.parent2Mode === 'now' ? ['parent2'] : [])].map(role => { const s = S.sig[role]; return s.mode === 'draw' ? { role, name: s.name.trim(), relation: s.relation.trim(), method: 'drawn', png: s.png } : { role, name: s.name.trim(), relation: s.relation.trim(), method: 'typed', typedAck: true }; }),
     hp: document.getElementById('hp')?.value || '',
+    contractVersion: CONTRACT.version, uploadToken: S.uploadToken || undefined,
   };
   S.submitting = true; render();
   try {
