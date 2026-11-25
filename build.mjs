@@ -8,6 +8,7 @@ import { netlifyTourForm } from './netlify-tour-form.mjs';
 const read = async file => JSON.parse((await readFile(new URL(file, import.meta.url), 'utf8')).replace(/^\uFEFF/, ''));
 const locales = await read('./locales.json');
 const pages = await read('./pages.json');
+const policies = await read('./policy-content.json');
 const forms = await read('./forms.json');
 const p0 = await read('./p0.json');
 const p0Safety = await read('./p0-safety.json');
@@ -305,6 +306,33 @@ function thanksgivingDinner([title, date, invitation, menu, closing, locationLab
 <p><strong>${escape(locationLabel)}</strong> <bdi dir="ltr">Heart to Heart Enrichment Center</bdi><br><bdi dir="ltr">3095 W. 25th Street</bdi><br><bdi dir="ltr">Cleveland, OH 44113</bdi></p>
 <p><strong>${escape(contactLabel)}</strong> <bdi dir="ltr">${link(tel, phone)}</bdi></p></section>`;
 }
+function policyBody(copy) {
+  const inline = text => {
+    const parts = text.split(/(\[[^\]]+\]\((?:https:\/\/|mailto:|tel:)[^)]+\))/g);
+    return parts.map(part => {
+      const match = part.match(/^\[([^\]]+)\]\((.+)\)$/);
+      return match ? link(match[2],match[1],'dir="ltr"') : escape(part)
+        .replace('3095 W. 25th Street, Cleveland, OH 44113','<bdi dir="ltr">3095 W. 25th Street, Cleveland, OH 44113</bdi>')
+        .replace(/216-938-6771/g,link(tel,'216-938-6771','dir="ltr"'));
+    }).join('');
+  };
+  let intro = false;
+  const blocks = copy.split(/\r?\n\r?\n/).map(block => {
+    if (block.startsWith('# ')) return `<h1>${inline(block.slice(2))}</h1>`;
+    if (block.startsWith('## ')) return `<h2>${inline(block.slice(3))}</h2>`;
+    if (block.startsWith('- ')) return list(block.split(/\r?\n/).map(item => inline(item.slice(2))));
+    if (block.startsWith('**')) {
+      intro = block.includes('|');
+      return `<p><strong>${inline(block.slice(2,-2))}</strong></p>`;
+    }
+    if (block.startsWith('¿Necesita ayuda en español?')) return '<p lang="es" dir="ltr">' + inline(block) + '</p>';
+    const paragraph = intro ? `<p class="intro">${inline(block)}</p>` : `<p>${inline(block)}</p>`;
+    intro = false;
+    return paragraph;
+  });
+  const sections = blocks.join('').split(/(?=<h2>)/);
+  return sections[0] + sections.slice(1).map(section => '<section>' + section + '</section>').join('');
+}
 function pageContent(language, slug) {
   if (slug === 'virtual-tour') return {title:virtualTour[language].title,intro:virtualTour[language].preview,body:virtualTourPreview(language,true)};
   const t = locales[language];
@@ -313,7 +341,6 @@ function pageContent(language, slug) {
   const form = forms[language];
   const isForm = ['enrollment','tour','contact'].includes(slug);
   const offer = slug === 'enrollment' ? form.waiver : slug === 'tuition-assistance' ? form.free : '';
-  const draft = ['privacy','accessibility','nondiscrimination'].includes(slug) ? form.draft : '';
   const formContent = slug === 'tour' ? netlifyTourForm({language,path,locales,escape,copy:form,endpoint:formEndpoint})
     : isForm ? inquiryForm({ copy:form, language, kind:slug, path, locales, escape, action:formEndpoint }) : '';
   const common = {
@@ -338,10 +365,11 @@ function pageContent(language, slug) {
   const links = page.links?.map(([label,target]) => link(external[target] ?? path(language,target),label));
   const showRating = ['about','enrollment','faq'].includes(slug);
   const seo = p1[language].seo.meta[slug];
+  const policy = policies[language][slug];
   return {
     title: page.title, intro:page.intro, metaTitle: seo?.[0], description: showRating ? `${q.rating}. ${seo?.[1] ?? page.intro}` : seo?.[1],
-    body: `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
-${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}${page.thanksgiving ? thanksgivingDinner(page.thanksgiving) : ''}
+    body: policy ? `<article class="page section wrap">${policyBody(policy)}${actions}</article>` : `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
+<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}${page.thanksgiving ? thanksgivingDinner(page.thanksgiving) : ''}
 ${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${escape(p1[language].home.cards[7][1])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
 ${showRating && slug !== 'faq' ? `<p class="note">${link(path(language,'safety'),q.rating)}</p>` : ''}
 ${['enrollment','parents'].includes(slug) ? `<p class="actions">${button(path(language,portalSlug),portalByLocale[language].ui.title,true)}</p>` : ''}
