@@ -222,7 +222,7 @@ export default {
     "latePickup": {
       "title": "Recogida tardía",
       "p": [
-        "Por favor, recoja a su hijo/a a más tardar a la hora de cierre del centro. Si lo recogen después del cierre, el cargo por recogida tardía que se indica abajo se aplica a todas las familias, incluidas las familias cuyo cuidado se paga mediante PFCC.",
+        "Por favor, recoja a su hijo/a a más tardar a la hora de cierre del centro, a las 6:00 p. m. Si lo recogen después del cierre, el cargo por recogida tardía que se indica abajo se aplica a todas las familias, incluidas las familias cuyo cuidado se paga mediante PFCC.",
         "El cargo es de $10.00 por hasta los primeros 10 minutos de retraso y luego $2.00 por cada minuto adicional.",
         "Ejemplos: 10 minutos tarde son $10.00. 15 minutos tarde son $20.00. 30 minutos tarde son $50.00.",
         "El cargo por recogida tardía es independiente de su copago de PFCC. No se aplica ningún otro cargo por recogida tardía. Heart to Heart no aplica este cargo a menos que usted lo acepte marcando el reconocimiento de recogida tardía en esta página."

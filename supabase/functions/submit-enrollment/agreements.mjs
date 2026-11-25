@@ -47,7 +47,7 @@ export const LATE_PICKUP = {
   active: true,
   source: 'Paper Parent/Provider Contract, item 6; management 11/25/2026',
   paperTerms: { firstBlockMinutes: 10, firstBlockCents: 1000, perMinuteAfterCents: 200 },
-  pickupDeadline: "center_closing_time", graceMinutes: null, capCents: null, paymentDeadline: null, exceptions: null, // not defined on paper: none applied
+  pickupDeadline: "center_closing_time", closingTime: "18:00", graceMinutes: null, capCents: null, paymentDeadline: null, exceptions: null, // not defined on paper: none applied
   appliesToPfcc: true,
 };
 // Fee for a pickup `minutes` whole minutes late (0 = on time). Used by tests to verify the printed schedule and examples.

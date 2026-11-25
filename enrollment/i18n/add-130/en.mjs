@@ -222,7 +222,7 @@ export default {
     "latePickup": {
       "title": "Late pickup",
       "p": [
-        "Please pick up your child by the center’s closing time. If your child is picked up after closing, the late pickup charge below applies to every family, including families whose care is paid through PFCC.",
+        "Please pick up your child by the center’s closing time of 6:00 PM. If your child is picked up after closing, the late pickup charge below applies to every family, including families whose care is paid through PFCC.",
         "The charge is $10.00 for up to the first 10 minutes late, then $2.00 for each additional minute after that.",
         "Examples: 10 minutes late is $10.00. 15 minutes late is $20.00. 30 minutes late is $50.00.",
         "A late pickup charge is separate from your PFCC copayment. No other late pickup charge applies. Heart to Heart does not apply this charge unless you accept it by ticking the late pickup acknowledgment on this page."

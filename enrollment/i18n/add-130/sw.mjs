@@ -222,7 +222,7 @@ export default {
     "latePickup": {
       "title": "Kuchelewa kumchukua mtoto",
       "p": [
-        "Tafadhali mchukue mtoto wako kufikia saa ya kufungwa kwa kituo. Akichukuliwa baada ya kituo kufungwa, ada ya kuchelewa iliyo hapa chini inatumika kwa familia zote, ikiwemo familia ambazo huduma yao inalipiwa kupitia PFCC.",
+        "Tafadhali mchukue mtoto wako kufikia saa ya kufungwa kwa kituo, saa 12:00 jioni (6:00 PM). Akichukuliwa baada ya kituo kufungwa, ada ya kuchelewa iliyo hapa chini inatumika kwa familia zote, ikiwemo familia ambazo huduma yao inalipiwa kupitia PFCC.",
         "Ada ni $10.00 kwa kuchelewa hadi dakika 10 za kwanza, kisha $2.00 kwa kila dakika ya ziada baada ya hapo.",
         "Mifano: kuchelewa dakika 10 ni $10.00. Kuchelewa dakika 15 ni $20.00. Kuchelewa dakika 30 ni $50.00.",
         "Ada ya kuchelewa kumchukua mtoto ni tofauti na malipo yako ya pamoja ya PFCC. Hakuna ada nyingine ya kuchelewa kumchukua mtoto inayotumika. Heart to Heart haitozi ada hii isipokuwa ukiikubali kwa kuweka tiki kwenye uthibitisho wa kuchelewa kumchukua mtoto katika ukurasa huu."

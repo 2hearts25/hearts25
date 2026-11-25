@@ -141,7 +141,7 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
     k.para('Heart to Heart does not calculate PFCC eligibility or copayments. When the amount and the mutually agreed due date are confirmed in writing, the family acknowledges them as a new, separately recorded revision; this signed application is never altered.', muted);
   }
   k.sub('Late pickup schedule and acknowledgment');
-  k.kv('Schedule', 'After center closing: $10.00 for up to the first 10 minutes late, then $2.00 for each additional minute (examples: 10 min = $10.00, 15 min = $20.00, 30 min = $50.00). Applies to every family, including PFCC families. The only center-imposed charge for PFCC families.');
+  k.kv('Schedule', 'After center closing at 6:00 PM: $10.00 for up to the first 10 minutes late, then $2.00 for each additional minute (examples: 10 min = $10.00, 15 min = $20.00, 30 min = $50.00). Applies to every family, including PFCC families. The only center-imposed charge for PFCC families.');
   k.printFields({ ids: ['lp.ack'] });
   k.kv('Late pickup acceptance', d['lp.ack'] === true ? `ACCEPTED ${meta.submittedAtEastern || meta.submittedAt} — agreement version ${CONTRACT.version}; accepted with the electronic signature(s) shown below.` : 'NOT ACCEPTED — no late pickup charge may be applied.', { pending: d['lp.ack'] !== true });
   k.printFields({ ids: ['ag.contractAck'] });

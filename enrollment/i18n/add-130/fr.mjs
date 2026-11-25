@@ -222,7 +222,7 @@ export default {
     "latePickup": {
       "title": "Retard à la sortie",
       "p": [
-        "Veuillez venir chercher votre enfant au plus tard à l’heure de fermeture du centre. Si vous venez après la fermeture, les frais ci-dessous s’appliquent à toutes les familles, y compris celles dont la garde est payée par le PFCC.",
+        "Veuillez venir chercher votre enfant au plus tard à l’heure de fermeture du centre, à 18 h. Si vous venez après la fermeture, les frais ci-dessous s’appliquent à toutes les familles, y compris celles dont la garde est payée par le PFCC.",
         "Les frais sont de 10,00 $ pour un retard allant jusqu’à 10 minutes, puis de 2,00 $ pour chaque minute supplémentaire.",
         "Exemples : 10 minutes de retard : 10,00 $. 15 minutes de retard : 20,00 $. 30 minutes de retard : 50,00 $.",
         "Les frais de retard à la sortie sont distincts de votre quote-part PFCC. Aucun autre frais de retard à la sortie ne s’applique. Heart to Heart n’applique ces frais que si vous les acceptez en cochant la reconnaissance de retard à la sortie sur cette page."
