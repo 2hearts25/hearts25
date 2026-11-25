@@ -1,4 +1,7 @@
-export default {
+import add from './add-130/ar.mjs';
+import { merge } from './merge.mjs';
+// Base wording (form 1.2.0-E1) + 1.3.0-E2 additions (add-130/). Later wording of a key overrides the base for the new form only.
+const base = {
   code: "ar", dir: "rtl", name: "العربية",
   ui: {
     title: "سجّل طفلك",
@@ -353,3 +356,4 @@ export default {
     phoneNeeded: "أدخل رقم هاتف محمول أو منزلي، لأنك اخترت الهاتف أفضل وسيلة للتواصل معك.",
   },
 };
+export default merge(base, add);

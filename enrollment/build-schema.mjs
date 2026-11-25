@@ -1,8 +1,9 @@
-// Source of truth for the 1.2.0 child enrollment application.
+// Source of truth for the child enrollment application (form 1.3.0-E2; 1.2.0-E1 is frozen in supabase/functions/submit-enrollment/v120/).
 // Run `node enrollment/build-schema.mjs` to regenerate enrollment/schema.json.
 // Source codes (src): P1..P16 = page of the supplied 16-page packet, NEW1/NEW2 = DCY 01234 (Rev. 7/2026) pages,
-// A§n = section n of the 1.2.0 assignment, OAC = Ohio Administrative Code rule.
+// A§n = section n of the 1.2.0 assignment, B§n = section n of the 1.3.0 enrollment-completion assignment, OAC = Ohio Administrative Code rule.
 import { writeFile } from 'node:fs/promises';
+import { FORM_VERSION, CFG } from './agreements.mjs';
 
 // ---- condition helpers (evaluated by core.mjs) ----
 const eq = (id, v) => ['eq', id, v];
@@ -11,6 +12,7 @@ const all = (...c) => ['all', ...c];
 const any = (...c) => ['any', ...c];
 const not = c => ['not', c];
 const fn = name => ['fn', name];
+const cfg = name => ['cfg', name];
 const yes = id => eq(id, 'yes');
 const YN = ['yes', 'no'];
 const YNN = ['yes', 'no', 'na'];
@@ -20,6 +22,8 @@ const T = (id, o) => F(id, 'text', { x: 100, ...o });
 const TA = (id, o) => F(id, 'textarea', { x: 1000, ...o });
 const R = (id, opts, o) => F(id, 'radio', { o: opts, ...o });
 const YNR = (id, o) => R(id, YN, o);
+// Optional file uploads (B§10–13). Value = array of server-issued document ids; files never travel inside the application body.
+const UP = (id, cat, max, o) => F(id, 'upload', { cat, max, ...o });
 
 function parent(p, showIf) {
   const cond = (extra) => extra ? (showIf ? all(showIf, extra) : extra) : showIf;
@@ -51,10 +55,14 @@ function parent(p, showIf) {
 }
 
 const heldDiaper = any(eq('po.trained', 'no'), eq('po.trained', 'learning'));
+const insHas = any(eq('ins.status', 'private'), eq('ins.status', 'medicaid'), eq('ins.status', 'other'));
+const insCard = not(eq('ins.status', 'none'));
+const pfcc = eq('c.payment', 'pfcc');
 const schoolOn = all(any(eq('c.program', 'preschool'), eq('c.program', 'school-age')), yes('c.schoolTransport'));
 
 export const schema = {
-  version: '1.2.0-E1',
+  version: FORM_VERSION,
+  cfg: CFG,
   steps: [
     { id: 'intro', fields: [] },
     { id: 'child', fields: [
@@ -130,6 +138,15 @@ export const schema = {
       F('h.accom', 'textna', { x: 1000, r: 1, src: 'NEW2,A§9', pdf: 'ohio' }),
       YNR('h.services', { r: 1, src: 'NEW2,A§9', pdf: 'ohio' }),
       F('h.serviceProv', 'textna', { x: 600, r: yes('h.services'), s: yes('h.services'), src: 'NEW2,A§9', pdf: 'ohio' }),
+      // Health insurance (B§10): every field optional; no Social Security number is ever requested.
+      R('ins.status', ['private', 'medicaid', 'other', 'none', 'applied', 'later'], { src: 'B§10', pdf: 'h2h' }),
+      T('ins.plan', { x: 100, s: insHas, src: 'B§10', pdf: 'h2h' }),
+      T('ins.member', { x: 40, s: insHas, src: 'B§10', pdf: 'h2h' }),
+      T('ins.group', { x: 40, s: insHas, src: 'B§10', pdf: 'h2h' }),
+      T('ins.holder', { x: 100, s: insHas, src: 'B§10', pdf: 'h2h' }),
+      T('ins.holderRel', { x: 40, s: insHas, src: 'B§10', pdf: 'h2h' }),
+      UP('up.insFront', 'insurance-front', 1, { s: insCard, src: 'B§10', pdf: 'h2h' }),
+      UP('up.insBack', 'insurance-back', 1, { s: insCard, src: 'B§10', pdf: 'h2h' }),
     ] },
     { id: 'docs', fields: [
       F('d.immun', 'select', { r: 1, o: ['available', 'pending', 'school', 'provider', 'medical', 'conscience'], src: 'P16,A§19,OAC 5180:2-12-15', pdf: 'docs' }),
@@ -137,6 +154,16 @@ export const schema = {
       F('d.hcp', 'select', { r: fn('hcpNeeded'), s: fn('hcpNeeded'), o: ['available', 'pending'], src: 'NEW1,P3,A§9', pdf: 'docs' }),
       F('d.diet', 'select', { r: eq('h.dietModified', 'yes'), s: eq('h.dietModified', 'yes'), o: ['available', 'pending'], src: 'P3', pdf: 'docs' }),
       F('d.med', 'select', { r: all(yes('h.meds'), yes('h.medsAtCare')), s: all(yes('h.meds'), yes('h.medsAtCare')), o: ['available', 'pending'], src: 'P3,OAC 5180:2-12-25', pdf: 'docs' }),
+      // Optional uploads (B§11). Never required: a missing file never blocks submission. Insurance cards are uploaded in the Health step only.
+      UP('up.immun', 'immunization', 5, { src: 'P16,B§11,OAC 5180:2-12-15', pdf: 'docs' }),
+      UP('up.physical', 'physical-exam', 3, { src: 'P16,B§11', pdf: 'docs' }),
+      UP('up.hcp', 'health-care-plan', 5, { s: fn('hcpNeeded'), src: 'NEW1,B§11', pdf: 'docs' }),
+      UP('up.med', 'medication-authorization', 5, { s: all(yes('h.meds'), yes('h.medsAtCare')), src: 'P3,B§11,OAC 5180:2-12-25', pdf: 'docs' }),
+      UP('up.diet', 'dietary-statement', 3, { s: yes('h.diet'), src: 'P3,B§11', pdf: 'docs' }),
+      UP('up.custody', 'custody', 5, { src: 'A§8,B§11', pdf: 'h2h' }),
+      UP('up.pfcc', 'pfcc', 3, { s: eq('c.payment', 'pfcc'), src: 'B§11', pdf: 'h2h' }),
+      UP('up.other', 'other', 5, { src: 'B§11', pdf: 'h2h' }),
+      F('d.separate', 'check', { src: 'B§11', pdf: 'docs' }),
     ] },
     { id: 'family', fields: [
       TA('f.immediate', { src: 'P6,A§10', pdf: 'fam' }),
@@ -213,7 +240,20 @@ export const schema = {
       R('ag.transWithin', ['received', 'pending'], { r: 1, src: 'P12,A§17', pdf: 'resources' }),
       R('ag.transOut', ['received', 'pending'], { r: 1, src: 'P12,A§17', pdf: 'resources' }),
       F('ag.absenceAck', 'check', { r: 1, src: 'P9,A§16', pdf: 'absence' }),
-      F('ag.contractAck', 'check', { r: 1, src: 'P1,A§15', pdf: 'contract' }),
+      // Withdrawal and Termination Policy v1.1 (B§8): acknowledge receipt, or say it could not be opened (never recorded as received).
+      R('ag.wt', ['ack', 'noaccess'], { r: 1, src: 'B§8', pdf: 'h2h' }),
+    ] },
+    // The Parent/Provider Contract is its own step and the LAST page before Review and Sign (B§5, management 11/25/2026).
+    { id: 'contract', fields: [
+      // PFCC copayment agreement (B§6). The parent reports; Heart to Heart confirms later in a separate, versioned acknowledgment.
+      R('pf.auth', ['authorized', 'pending', 'applying', 'unsure'], { r: pfcc, s: pfcc, src: 'B§6,OAC 5180:6-1-09', pdf: 'h2h' }),
+      R('pf.copay', ['amount', 'zero', 'unknown'], { r: pfcc, s: pfcc, src: 'B§6,OAC 5180:6-1-05', pdf: 'h2h' }),
+      T('pf.copayAmt', { x: 10, v: 'money', r: all(pfcc, eq('pf.copay', 'amount')), s: all(pfcc, eq('pf.copay', 'amount')), src: 'B§6', pdf: 'h2h' }),
+      F('pf.dueDay', 'select', { o: ['mon', 'tue', 'wed', 'thu', 'fri', 'discuss'], s: pfcc, src: 'B§6,OAC 5180:6-1-05(J)', pdf: 'h2h' }),
+      F('pf.ack', 'check', { r: pfcc, s: pfcc, src: 'B§6', pdf: 'h2h' }),
+      // Late pickup (B§7): structure ready, switched off until management approves the terms (agreements.mjs LATE_PICKUP).
+      F('lp.ack', 'check', { r: cfg('latePickup'), s: cfg('latePickup'), src: 'P1,B§7', pdf: 'h2h' }),
+      F('ag.contractAck', 'check', { r: 1, src: 'P1,A§15,B§5', pdf: 'contract' }),
     ] },
     { id: 'review', fields: [] },
     { id: 'sign', fields: [] },

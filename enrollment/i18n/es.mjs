@@ -1,4 +1,7 @@
-export default {
+import add from './add-130/es.mjs';
+import { merge } from './merge.mjs';
+// Base wording (form 1.2.0-E1) + 1.3.0-E2 additions (add-130/). Later wording of a key overrides the base for the new form only.
+const base = {
   code: "es", dir: "ltr", name: "Español",
   ui: {
     title: "Inscriba a su hijo/a",
@@ -353,3 +356,4 @@ export default {
     phoneNeeded: "Escriba un teléfono celular o de casa, porque eligió el teléfono como la mejor forma de contactarlo.",
   },
 };
+export default merge(base, add);

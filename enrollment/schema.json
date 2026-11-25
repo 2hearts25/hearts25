@@ -1,5 +1,9 @@
 {
- "version": "1.2.0-E1",
+ "version": "1.3.0-E2",
+ "cfg": {
+  "latePickup": false,
+  "privatePay": false
+ },
  "steps": [
   {
    "id": "intro",
@@ -1720,6 +1724,177 @@
      ],
      "src": "NEW2,A§9",
      "pdf": "ohio"
+    },
+    {
+     "id": "ins.status",
+     "t": "radio",
+     "o": [
+      "private",
+      "medicaid",
+      "other",
+      "none",
+      "applied",
+      "later"
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "ins.plan",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "any",
+      [
+       "eq",
+       "ins.status",
+       "private"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "medicaid"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "other"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "ins.member",
+     "t": "text",
+     "x": 40,
+     "s": [
+      "any",
+      [
+       "eq",
+       "ins.status",
+       "private"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "medicaid"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "other"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "ins.group",
+     "t": "text",
+     "x": 40,
+     "s": [
+      "any",
+      [
+       "eq",
+       "ins.status",
+       "private"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "medicaid"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "other"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "ins.holder",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "any",
+      [
+       "eq",
+       "ins.status",
+       "private"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "medicaid"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "other"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "ins.holderRel",
+     "t": "text",
+     "x": 40,
+     "s": [
+      "any",
+      [
+       "eq",
+       "ins.status",
+       "private"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "medicaid"
+      ],
+      [
+       "eq",
+       "ins.status",
+       "other"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "up.insFront",
+     "t": "upload",
+     "cat": "insurance-front",
+     "max": 1,
+     "s": [
+      "not",
+      [
+       "eq",
+       "ins.status",
+       "none"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
+    },
+    {
+     "id": "up.insBack",
+     "t": "upload",
+     "cat": "insurance-back",
+     "max": 1,
+     "s": [
+      "not",
+      [
+       "eq",
+       "ins.status",
+       "none"
+      ]
+     ],
+     "src": "B§10",
+     "pdf": "h2h"
     }
    ]
   },
@@ -1825,6 +2000,103 @@
       "pending"
      ],
      "src": "P3,OAC 5180:2-12-25",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.immun",
+     "t": "upload",
+     "cat": "immunization",
+     "max": 5,
+     "src": "P16,B§11,OAC 5180:2-12-15",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.physical",
+     "t": "upload",
+     "cat": "physical-exam",
+     "max": 3,
+     "src": "P16,B§11",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.hcp",
+     "t": "upload",
+     "cat": "health-care-plan",
+     "max": 5,
+     "s": [
+      "fn",
+      "hcpNeeded"
+     ],
+     "src": "NEW1,B§11",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.med",
+     "t": "upload",
+     "cat": "medication-authorization",
+     "max": 5,
+     "s": [
+      "all",
+      [
+       "eq",
+       "h.meds",
+       "yes"
+      ],
+      [
+       "eq",
+       "h.medsAtCare",
+       "yes"
+      ]
+     ],
+     "src": "P3,B§11,OAC 5180:2-12-25",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.diet",
+     "t": "upload",
+     "cat": "dietary-statement",
+     "max": 3,
+     "s": [
+      "eq",
+      "h.diet",
+      "yes"
+     ],
+     "src": "P3,B§11",
+     "pdf": "docs"
+    },
+    {
+     "id": "up.custody",
+     "t": "upload",
+     "cat": "custody",
+     "max": 5,
+     "src": "A§8,B§11",
+     "pdf": "h2h"
+    },
+    {
+     "id": "up.pfcc",
+     "t": "upload",
+     "cat": "pfcc",
+     "max": 3,
+     "s": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "src": "B§11",
+     "pdf": "h2h"
+    },
+    {
+     "id": "up.other",
+     "t": "upload",
+     "cat": "other",
+     "max": 5,
+     "src": "B§11",
+     "pdf": "h2h"
+    },
+    {
+     "id": "d.separate",
+     "t": "check",
+     "src": "B§11",
      "pdf": "docs"
     }
    ]
@@ -2489,10 +2761,152 @@
      "pdf": "absence"
     },
     {
+     "id": "ag.wt",
+     "t": "radio",
+     "o": [
+      "ack",
+      "noaccess"
+     ],
+     "r": 1,
+     "src": "B§8",
+     "pdf": "h2h"
+    }
+   ]
+  },
+  {
+   "id": "contract",
+   "fields": [
+    {
+     "id": "pf.auth",
+     "t": "radio",
+     "o": [
+      "authorized",
+      "pending",
+      "applying",
+      "unsure"
+     ],
+     "r": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "s": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "src": "B§6,OAC 5180:6-1-09",
+     "pdf": "h2h"
+    },
+    {
+     "id": "pf.copay",
+     "t": "radio",
+     "o": [
+      "amount",
+      "zero",
+      "unknown"
+     ],
+     "r": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "s": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "src": "B§6,OAC 5180:6-1-05",
+     "pdf": "h2h"
+    },
+    {
+     "id": "pf.copayAmt",
+     "t": "text",
+     "x": 10,
+     "v": "money",
+     "r": [
+      "all",
+      [
+       "eq",
+       "c.payment",
+       "pfcc"
+      ],
+      [
+       "eq",
+       "pf.copay",
+       "amount"
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "c.payment",
+       "pfcc"
+      ],
+      [
+       "eq",
+       "pf.copay",
+       "amount"
+      ]
+     ],
+     "src": "B§6",
+     "pdf": "h2h"
+    },
+    {
+     "id": "pf.dueDay",
+     "t": "select",
+     "o": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "discuss"
+     ],
+     "s": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "src": "B§6,OAC 5180:6-1-05(J)",
+     "pdf": "h2h"
+    },
+    {
+     "id": "pf.ack",
+     "t": "check",
+     "r": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "s": [
+      "eq",
+      "c.payment",
+      "pfcc"
+     ],
+     "src": "B§6",
+     "pdf": "h2h"
+    },
+    {
+     "id": "lp.ack",
+     "t": "check",
+     "r": [
+      "cfg",
+      "latePickup"
+     ],
+     "s": [
+      "cfg",
+      "latePickup"
+     ],
+     "src": "P1,B§7",
+     "pdf": "h2h"
+    },
+    {
      "id": "ag.contractAck",
      "t": "check",
      "r": 1,
-     "src": "P1,A§15",
+     "src": "P1,A§15,B§5",
      "pdf": "contract"
     }
    ]
