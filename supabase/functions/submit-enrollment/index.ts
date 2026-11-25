@@ -269,6 +269,7 @@ Deno.serve(async (req) => {
     if (path.endsWith("/sweep")) { await req.body?.cancel(); background(sweep(3)); return json({ ok: true, queued: true }, 202, origin); }
     return await submit(req, origin);
   } catch (e) {
+    console.error("request failed:", e instanceof Error ? `${e.name}: ${e.message}`.slice(0, 300) : "error"); // name/message only, never request data
     return json({ ok: false, error: "server" }, 500, origin);
   }
 });
