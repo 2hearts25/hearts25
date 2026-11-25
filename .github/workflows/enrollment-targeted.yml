@@ -2,7 +2,7 @@ name: Targeted enrollment validation
 on:
   push:
     branches: [validation/enrollment-release-debcefd]
-    paths: [release-validation.patch]
+    paths: [release-validation.patch, enrollment-targeted-ci.sh]
 permissions:
   contents: read
 jobs:
