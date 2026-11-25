@@ -1,0 +1,2637 @@
+{
+ "version": "1.2.0-E1",
+ "steps": [
+  {
+   "id": "intro",
+   "fields": []
+  },
+  {
+   "id": "child",
+   "fields": [
+    {
+     "id": "c.first",
+     "t": "text",
+     "x": 60,
+     "r": 1,
+     "src": "NEW1,P2,P6",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.last",
+     "t": "text",
+     "x": 60,
+     "r": 1,
+     "src": "NEW1,P2,P6",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.nick",
+     "t": "text",
+     "x": 40,
+     "src": "P6",
+     "pdf": "fam"
+    },
+    {
+     "id": "c.dob",
+     "t": "date",
+     "r": 1,
+     "v": "dob",
+     "src": "NEW1,P2,P16",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.addr",
+     "t": "text",
+     "x": 100,
+     "r": 1,
+     "ac": "off",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.city",
+     "t": "text",
+     "x": 60,
+     "r": 1,
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.state",
+     "t": "state",
+     "r": 1,
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.zip",
+     "t": "text",
+     "x": 10,
+     "r": 1,
+     "v": "zip",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.phone",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.start",
+     "t": "date",
+     "r": 1,
+     "v": "future",
+     "src": "NEW1,P2,A§6",
+     "pdf": "ohio"
+    },
+    {
+     "id": "c.program",
+     "t": "select",
+     "r": 1,
+     "o": [
+      "infant-toddler",
+      "preschool",
+      "school-age"
+     ],
+     "src": "A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.days",
+     "t": "checks",
+     "r": 1,
+     "o": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri"
+     ],
+     "src": "A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.from",
+     "t": "time",
+     "r": 1,
+     "src": "A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.to",
+     "t": "time",
+     "r": 1,
+     "v": "after:c.from",
+     "src": "A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.schedule",
+     "t": "radio",
+     "o": [
+      "full",
+      "part"
+     ],
+     "r": 1,
+     "src": "A§6,P9",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.payment",
+     "t": "radio",
+     "o": [
+      "pfcc",
+      "private",
+      "assist",
+      "unsure"
+     ],
+     "r": 1,
+     "src": "A§6,P1",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.schoolTransport",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "preschool"
+      ],
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ]
+     ],
+     "s": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "preschool"
+      ],
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ]
+     ],
+     "src": "P14,A§14",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.school",
+     "t": "text",
+     "x": 100,
+     "r": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ],
+      [
+       "all",
+       [
+        "any",
+        [
+         "eq",
+         "c.program",
+         "preschool"
+        ],
+        [
+         "eq",
+         "c.program",
+         "school-age"
+        ]
+       ],
+       [
+        "eq",
+        "c.schoolTransport",
+        "yes"
+       ]
+      ]
+     ],
+     "s": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ],
+      [
+       "all",
+       [
+        "any",
+        [
+         "eq",
+         "c.program",
+         "preschool"
+        ],
+        [
+         "eq",
+         "c.program",
+         "school-age"
+        ]
+       ],
+       [
+        "eq",
+        "c.schoolTransport",
+        "yes"
+       ]
+      ]
+     ],
+     "src": "P14,A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.grade",
+     "t": "text",
+     "x": 20,
+     "r": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ],
+      [
+       "all",
+       [
+        "any",
+        [
+         "eq",
+         "c.program",
+         "preschool"
+        ],
+        [
+         "eq",
+         "c.program",
+         "school-age"
+        ]
+       ],
+       [
+        "eq",
+        "c.schoolTransport",
+        "yes"
+       ]
+      ]
+     ],
+     "s": [
+      "any",
+      [
+       "eq",
+       "c.program",
+       "school-age"
+      ],
+      [
+       "all",
+       [
+        "any",
+        [
+         "eq",
+         "c.program",
+         "preschool"
+        ],
+        [
+         "eq",
+         "c.program",
+         "school-age"
+        ]
+       ],
+       [
+        "eq",
+        "c.schoolTransport",
+        "yes"
+       ]
+      ]
+     ],
+     "src": "P14,A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.commLang",
+     "t": "select",
+     "r": 1,
+     "o": [
+      "en",
+      "es",
+      "fr",
+      "ar",
+      "sw",
+      "other"
+     ],
+     "src": "A§6",
+     "pdf": "sum"
+    },
+    {
+     "id": "c.commLangOther",
+     "t": "text",
+     "x": 40,
+     "r": [
+      "eq",
+      "c.commLang",
+      "other"
+     ],
+     "s": [
+      "eq",
+      "c.commLang",
+      "other"
+     ],
+     "src": "A§6",
+     "pdf": "sum"
+    }
+   ]
+  },
+  {
+   "id": "parents",
+   "fields": [
+    {
+     "id": "p1.name",
+     "t": "text",
+     "x": 100,
+     "r": 1,
+     "ac": "name",
+     "src": "NEW1,P2,P1",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.rel",
+     "t": "text",
+     "x": 40,
+     "r": 1,
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.sameAddr",
+     "t": "check",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.addr",
+     "t": "text",
+     "x": 100,
+     "r": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "ac": "street-address",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.city",
+     "t": "text",
+     "x": 60,
+     "r": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.state",
+     "t": "state",
+     "r": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.zip",
+     "t": "text",
+     "x": 10,
+     "v": "zip",
+     "r": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.sameAddr",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.sameHome",
+     "t": "check",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.home",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.sameHome",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.cell",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.contactPath",
+     "t": "radio",
+     "o": [
+      "email",
+      "phone"
+     ],
+     "r": 1,
+     "src": "A§7",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.email",
+     "t": "email",
+     "x": 254,
+     "v": "email",
+     "r": [
+      "eq",
+      "p1.contactPath",
+      "email"
+     ],
+     "ac": "email",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.workNA",
+     "t": "check",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.workName",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.workNA",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.workAddr",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.workNA",
+       true
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.workCity",
+     "t": "text",
+     "x": 60,
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.workNA",
+       true
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.workPhone",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "s": [
+      "not",
+      [
+       "eq",
+       "p1.workNA",
+       true
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.reach",
+     "t": "text",
+     "x": 150,
+     "r": 1,
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.share",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p1.shareWhat",
+     "t": "checks",
+     "o": [
+      "work",
+      "cell",
+      "home",
+      "email"
+     ],
+     "r": [
+      "eq",
+      "p1.share",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p1.share",
+      "yes"
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.has",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "NEW1,P2,A§7",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.name",
+     "t": "text",
+     "x": 100,
+     "r": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "ac": "name",
+     "src": "NEW1,P2,P1",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.rel",
+     "t": "text",
+     "x": 40,
+     "r": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.sameAddr",
+     "t": "check",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.addr",
+     "t": "text",
+     "x": 100,
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "ac": "street-address",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.city",
+     "t": "text",
+     "x": 60,
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.state",
+     "t": "state",
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.zip",
+     "t": "text",
+     "x": 10,
+     "v": "zip",
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameAddr",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.sameHome",
+     "t": "check",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.home",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.sameHome",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.cell",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.contactPath",
+     "t": "radio",
+     "o": [
+      "email",
+      "phone"
+     ],
+     "r": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "A§7",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.email",
+     "t": "email",
+     "x": 254,
+     "v": "email",
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "eq",
+       "p2.contactPath",
+       "email"
+      ]
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "ac": "email",
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.workNA",
+     "t": "check",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.workName",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.workNA",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.workAddr",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.workNA",
+        true
+       ]
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.workCity",
+     "t": "text",
+     "x": 60,
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.workNA",
+        true
+       ]
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.workPhone",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "not",
+       [
+        "eq",
+        "p2.workNA",
+        true
+       ]
+      ]
+     ],
+     "src": "NEW1,P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.reach",
+     "t": "text",
+     "x": 150,
+     "r": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.share",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "p2.shareWhat",
+     "t": "checks",
+     "o": [
+      "work",
+      "cell",
+      "home",
+      "email"
+     ],
+     "r": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "eq",
+       "p2.share",
+       "yes"
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "p2.has",
+       "yes"
+      ],
+      [
+       "eq",
+       "p2.share",
+       "yes"
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    }
+   ]
+  },
+  {
+   "id": "contacts",
+   "fields": [
+    {
+     "id": "ec",
+     "t": "rep",
+     "min": 1,
+     "max": 6,
+     "src": "NEW1,P2",
+     "pdf": "ohio",
+     "f": [
+      {
+       "id": "name",
+       "t": "text",
+       "x": 80,
+       "r": 1
+      },
+      {
+       "id": "rel",
+       "t": "text",
+       "x": 40,
+       "r": 1
+      },
+      {
+       "id": "city",
+       "t": "text",
+       "x": 60,
+       "r": 1
+      },
+      {
+       "id": "state",
+       "t": "state",
+       "r": 1
+      },
+      {
+       "id": "phone",
+       "t": "tel",
+       "r": 1,
+       "x": 32,
+       "v": "phone"
+      },
+      {
+       "id": "other",
+       "t": "text",
+       "x": 80
+      },
+      {
+       "id": "adult",
+       "t": "radio",
+       "o": [
+        "yes",
+        "no"
+       ],
+       "r": 1
+      },
+      {
+       "id": "canResp",
+       "t": "radio",
+       "o": [
+        "yes",
+        "no"
+       ],
+       "r": 1
+      },
+      {
+       "id": "release",
+       "t": "radio",
+       "o": [
+        "yes",
+        "no"
+       ],
+       "r": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pickup",
+   "fields": [
+    {
+     "id": "pu.has",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P13,A§8",
+     "pdf": "pick"
+    },
+    {
+     "id": "pu",
+     "t": "rep",
+     "min": 1,
+     "max": 8,
+     "s": [
+      "eq",
+      "pu.has",
+      "yes"
+     ],
+     "src": "P13,A§8",
+     "pdf": "pick",
+     "f": [
+      {
+       "id": "name",
+       "t": "text",
+       "x": 80,
+       "r": 1
+      },
+      {
+       "id": "rel",
+       "t": "text",
+       "x": 40,
+       "r": 1
+      },
+      {
+       "id": "phone",
+       "t": "tel",
+       "r": 1,
+       "x": 32,
+       "v": "phone"
+      }
+     ]
+    },
+    {
+     "id": "pu.idAck",
+     "t": "check",
+     "r": [
+      "eq",
+      "pu.has",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "pu.has",
+      "yes"
+     ],
+     "src": "P13",
+     "pdf": "pick"
+    },
+    {
+     "id": "pu.restrict",
+     "t": "radio",
+     "o": [
+      "none",
+      "yes"
+     ],
+     "r": 1,
+     "src": "A§8",
+     "pdf": "pick"
+    },
+    {
+     "id": "pu.restrictText",
+     "t": "textarea",
+     "x": 600,
+     "r": [
+      "eq",
+      "pu.restrict",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "pu.restrict",
+      "yes"
+     ],
+     "src": "A§8",
+     "pdf": "pick"
+    }
+   ]
+  },
+  {
+   "id": "health",
+   "fields": [
+    {
+     "id": "h.provNone",
+     "t": "check",
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.provName",
+     "t": "text",
+     "x": 100,
+     "r": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "src": "P2,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.provAddr",
+     "t": "text",
+     "x": 100,
+     "s": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "src": "P2,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.provCity",
+     "t": "text",
+     "x": 60,
+     "s": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.provState",
+     "t": "state",
+     "s": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "src": "P2",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.provPhone",
+     "t": "tel",
+     "x": 32,
+     "v": "phone",
+     "r": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "s": [
+      "not",
+      [
+       "eq",
+       "h.provNone",
+       true
+      ]
+     ],
+     "src": "P2,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.allergy",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.allergyTypes",
+     "t": "checks",
+     "o": [
+      "food",
+      "medication",
+      "environmental"
+     ],
+     "r": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.allergyDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.allergyAction",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.allergy",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.chronic",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "NEW1,P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.chronicNeeds",
+     "t": "checks",
+     "o": [
+      "monitor",
+      "medication",
+      "food",
+      "procedure",
+      "avoid",
+      "selfmed"
+     ],
+     "r": [
+      "eq",
+      "h.chronic",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.chronic",
+      "yes"
+     ],
+     "src": "NEW1",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.chronicDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "eq",
+      "h.chronic",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.chronic",
+      "yes"
+     ],
+     "src": "NEW1,P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.procedureDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "has",
+      "h.chronicNeeds",
+      "procedure"
+     ],
+     "s": [
+      "has",
+      "h.chronicNeeds",
+      "procedure"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.devDelay",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.devDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "eq",
+      "h.devDelay",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.devDelay",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.meds",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.medsDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "eq",
+      "h.meds",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.meds",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.medsAtCare",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": [
+      "eq",
+      "h.meds",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.meds",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.diet",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.dietDesc",
+     "t": "textarea",
+     "x": 1000,
+     "r": [
+      "eq",
+      "h.diet",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.diet",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.dietModified",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no",
+      "na"
+     ],
+     "r": [
+      "eq",
+      "h.diet",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.diet",
+      "yes"
+     ],
+     "src": "P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.avoid",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "NEW1,P3,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.history",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "P4,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.other",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "P4,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.accom",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "NEW2,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.services",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "NEW2,A§9",
+     "pdf": "ohio"
+    },
+    {
+     "id": "h.serviceProv",
+     "t": "textna",
+     "x": 600,
+     "r": [
+      "eq",
+      "h.services",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.services",
+      "yes"
+     ],
+     "src": "NEW2,A§9",
+     "pdf": "ohio"
+    }
+   ]
+  },
+  {
+   "id": "docs",
+   "fields": [
+    {
+     "id": "d.immun",
+     "t": "select",
+     "r": 1,
+     "o": [
+      "available",
+      "pending",
+      "school",
+      "provider",
+      "medical",
+      "conscience"
+     ],
+     "src": "P16,A§19,OAC 5180:2-12-15",
+     "pdf": "docs"
+    },
+    {
+     "id": "d.conscienceText",
+     "t": "textarea",
+     "x": 300,
+     "s": [
+      "eq",
+      "d.immun",
+      "conscience"
+     ],
+     "src": "P16,A§19",
+     "pdf": "docs"
+    },
+    {
+     "id": "d.hcp",
+     "t": "select",
+     "r": [
+      "fn",
+      "hcpNeeded"
+     ],
+     "s": [
+      "fn",
+      "hcpNeeded"
+     ],
+     "o": [
+      "available",
+      "pending"
+     ],
+     "src": "NEW1,P3,A§9",
+     "pdf": "docs"
+    },
+    {
+     "id": "d.diet",
+     "t": "select",
+     "r": [
+      "eq",
+      "h.dietModified",
+      "yes"
+     ],
+     "s": [
+      "eq",
+      "h.dietModified",
+      "yes"
+     ],
+     "o": [
+      "available",
+      "pending"
+     ],
+     "src": "P3",
+     "pdf": "docs"
+    },
+    {
+     "id": "d.med",
+     "t": "select",
+     "r": [
+      "all",
+      [
+       "eq",
+       "h.meds",
+       "yes"
+      ],
+      [
+       "eq",
+       "h.medsAtCare",
+       "yes"
+      ]
+     ],
+     "s": [
+      "all",
+      [
+       "eq",
+       "h.meds",
+       "yes"
+      ],
+      [
+       "eq",
+       "h.medsAtCare",
+       "yes"
+      ]
+     ],
+     "o": [
+      "available",
+      "pending"
+     ],
+     "src": "P3,OAC 5180:2-12-25",
+     "pdf": "docs"
+    }
+   ]
+  },
+  {
+   "id": "family",
+   "fields": [
+    {
+     "id": "f.immediate",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.household",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.homeLang",
+     "t": "text",
+     "x": 60,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.arrangements",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.changes",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.cultural",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.pets",
+     "t": "textarea",
+     "x": 400,
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.prevCare",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "src": "P6,A§10",
+     "pdf": "fam"
+    },
+    {
+     "id": "f.prevCareDesc",
+     "t": "textarea",
+     "x": 1000,
+     "s": [
+      "eq",
+      "f.prevCare",
+      "yes"
+     ],
+     "src": "P6,A§10",
+     "pdf": "fam"
+    }
+   ]
+  },
+  {
+   "id": "develop",
+   "fields": [
+    {
+     "id": "pe.traits",
+     "t": "checks",
+     "o": [
+      "active",
+      "adventurous",
+      "affectionate",
+      "anxious",
+      "bossy",
+      "bright",
+      "busy",
+      "calm",
+      "cautious",
+      "cheerful",
+      "content",
+      "creative",
+      "curious",
+      "easily-angered",
+      "emotional",
+      "energetic",
+      "excitable",
+      "friendly",
+      "gives-in-easily",
+      "happy",
+      "hesitant",
+      "insecure",
+      "jealous",
+      "likes-structure",
+      "loud",
+      "loving",
+      "mellow",
+      "outgoing",
+      "prefers-adult-attention",
+      "quiet",
+      "sensitive",
+      "serious",
+      "shares-well",
+      "social",
+      "spontaneous",
+      "stubborn",
+      "tentative",
+      "other"
+     ],
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.traitsOther",
+     "t": "text",
+     "x": 200,
+     "r": [
+      "has",
+      "pe.traits",
+      "other"
+     ],
+     "s": [
+      "has",
+      "pe.traits",
+      "other"
+     ],
+     "src": "P7",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.more",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.fears",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.comfort",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.frustration",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.negBehavior",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P7,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.devInfo",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "NEW2,P4,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.routines",
+     "t": "textna",
+     "x": 1000,
+     "r": 1,
+     "src": "P4,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.anxious",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P8,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.excited",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P8,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.expect",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P8,A§11",
+     "pdf": "fam"
+    },
+    {
+     "id": "pe.helpful",
+     "t": "textarea",
+     "x": 1000,
+     "src": "P8,A§11",
+     "pdf": "fam"
+    }
+   ]
+  },
+  {
+   "id": "daily",
+   "fields": [
+    {
+     "id": "fe.drinks",
+     "t": "checks",
+     "o": [
+      "milk",
+      "formula",
+      "juice",
+      "water"
+     ],
+     "src": "P6,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "fe.amount",
+     "t": "textarea",
+     "x": 400,
+     "src": "P6,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "fe.fav",
+     "t": "textarea",
+     "x": 400,
+     "src": "P6,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "fe.dislike",
+     "t": "textarea",
+     "x": 400,
+     "src": "P6,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "fe.noFeed",
+     "t": "textarea",
+     "x": 600,
+     "src": "P6,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "fe.seat",
+     "t": "radio",
+     "o": [
+      "highchair",
+      "booster",
+      "child",
+      "adult"
+     ],
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.bed",
+     "t": "text",
+     "x": 60,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.wake",
+     "t": "text",
+     "x": 60,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.nap",
+     "t": "text",
+     "x": 120,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.trouble",
+     "t": "textarea",
+     "x": 600,
+     "src": "P8,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.mood",
+     "t": "text",
+     "x": 120,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "sl.comfort",
+     "t": "textarea",
+     "x": 400,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.trained",
+     "t": "radio",
+     "o": [
+      "yes",
+      "learning",
+      "no"
+     ],
+     "r": 1,
+     "src": "P5,P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.method",
+     "t": "textarea",
+     "x": 600,
+     "s": [
+      "not",
+      [
+       "eq",
+       "po.trained",
+       "yes"
+      ]
+     ],
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.assist",
+     "t": "textarea",
+     "x": 400,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.signs",
+     "t": "textarea",
+     "x": 400,
+     "src": "P7,A§12",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.diaperAck",
+     "t": "check",
+     "r": [
+      "any",
+      [
+       "eq",
+       "po.trained",
+       "no"
+      ],
+      [
+       "eq",
+       "po.trained",
+       "learning"
+      ]
+     ],
+     "s": [
+      "any",
+      [
+       "eq",
+       "po.trained",
+       "no"
+      ],
+      [
+       "eq",
+       "po.trained",
+       "learning"
+      ]
+     ],
+     "src": "A§6/1.2.1,OAC 5180:2-12-23",
+     "pdf": "fam"
+    },
+    {
+     "id": "po.care",
+     "t": "textarea",
+     "x": 600,
+     "src": "A§6/1.2.1,OAC 5180:2-12-23",
+     "pdf": "fam"
+    }
+   ]
+  },
+  {
+   "id": "emtrans",
+   "fields": [
+    {
+     "id": "et.choice",
+     "t": "radio",
+     "o": [
+      "give",
+      "deny"
+     ],
+     "r": 1,
+     "src": "NEW2,P5,A§13,OAC 5180:2-12-16",
+     "pdf": "ohio"
+    },
+    {
+     "id": "et.denyAction",
+     "t": "textarea",
+     "x": 600,
+     "r": [
+      "eq",
+      "et.choice",
+      "deny"
+     ],
+     "s": [
+      "eq",
+      "et.choice",
+      "deny"
+     ],
+     "src": "NEW2,P5,A§13",
+     "pdf": "ohio"
+    }
+   ]
+  },
+  {
+   "id": "school",
+   "s": [
+    "all",
+    [
+     "any",
+     [
+      "eq",
+      "c.program",
+      "preschool"
+     ],
+     [
+      "eq",
+      "c.program",
+      "school-age"
+     ]
+    ],
+    [
+     "eq",
+     "c.schoolTransport",
+     "yes"
+    ]
+   ],
+   "fields": [
+    {
+     "id": "st.school",
+     "t": "text",
+     "x": 100,
+     "r": 1,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.addr",
+     "t": "text",
+     "x": 160,
+     "r": 1,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.teacher",
+     "t": "text",
+     "x": 100,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.room",
+     "t": "text",
+     "x": 20,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.arrive",
+     "t": "time",
+     "r": 1,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.depart",
+     "t": "time",
+     "r": 1,
+     "v": "after:st.arrive",
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.days",
+     "t": "checks",
+     "r": 1,
+     "o": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri"
+     ],
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.when",
+     "t": "radio",
+     "o": [
+      "before",
+      "after",
+      "both"
+     ],
+     "r": 1,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.exit",
+     "t": "text",
+     "x": 120,
+     "r": 1,
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.phone",
+     "t": "tel",
+     "r": 1,
+     "x": 32,
+     "v": "phone",
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.parentName",
+     "t": "text",
+     "x": 100,
+     "r": 1,
+     "ac": "name",
+     "src": "P14,A§14",
+     "pdf": "school"
+    },
+    {
+     "id": "st.parentPhone",
+     "t": "tel",
+     "r": 1,
+     "x": 32,
+     "v": "phone",
+     "src": "P14,A§14",
+     "pdf": "school"
+    }
+   ]
+  },
+  {
+   "id": "media",
+   "fields": [
+    {
+     "id": "m.internal",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P11,A§18",
+     "pdf": "media"
+    },
+    {
+     "id": "m.marketing",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "r": 1,
+     "src": "P11,A§18",
+     "pdf": "media"
+    }
+   ]
+  },
+  {
+   "id": "agreements",
+   "fields": [
+    {
+     "id": "ag.handbook",
+     "t": "radio",
+     "o": [
+      "received",
+      "pending"
+     ],
+     "r": 1,
+     "src": "P10,NEW2,A§17",
+     "pdf": "handbook"
+    },
+    {
+     "id": "ag.resCommunity",
+     "t": "radio",
+     "o": [
+      "received",
+      "pending"
+     ],
+     "r": 1,
+     "src": "P12,A§17",
+     "pdf": "resources"
+    },
+    {
+     "id": "ag.transIn",
+     "t": "radio",
+     "o": [
+      "received",
+      "pending"
+     ],
+     "r": 1,
+     "src": "P12,A§17",
+     "pdf": "resources"
+    },
+    {
+     "id": "ag.transWithin",
+     "t": "radio",
+     "o": [
+      "received",
+      "pending"
+     ],
+     "r": 1,
+     "src": "P12,A§17",
+     "pdf": "resources"
+    },
+    {
+     "id": "ag.transOut",
+     "t": "radio",
+     "o": [
+      "received",
+      "pending"
+     ],
+     "r": 1,
+     "src": "P12,A§17",
+     "pdf": "resources"
+    },
+    {
+     "id": "ag.absenceAck",
+     "t": "check",
+     "r": 1,
+     "src": "P9,A§16",
+     "pdf": "absence"
+    },
+    {
+     "id": "ag.contractAck",
+     "t": "check",
+     "r": 1,
+     "src": "P1,A§15",
+     "pdf": "contract"
+    }
+   ]
+  },
+  {
+   "id": "review",
+   "fields": []
+  },
+  {
+   "id": "sign",
+   "fields": []
+  }
+ ],
+ "acks": [
+  {
+   "id": "accuracy",
+   "src": "NEW2,P6,A§20"
+  },
+  {
+   "id": "esign",
+   "src": "A§20"
+  },
+  {
+   "id": "emtrans",
+   "src": "NEW2,P5,A§13"
+  },
+  {
+   "id": "pickup",
+   "s": [
+    "eq",
+    "pu.has",
+    "yes"
+   ],
+   "src": "P13,A§8"
+  },
+  {
+   "id": "school",
+   "s": [
+    "all",
+    [
+     "any",
+     [
+      "eq",
+      "c.program",
+      "preschool"
+     ],
+     [
+      "eq",
+      "c.program",
+      "school-age"
+     ]
+    ],
+    [
+     "eq",
+     "c.schoolTransport",
+     "yes"
+    ]
+   ],
+   "src": "P14,A§14"
+  },
+  {
+   "id": "media",
+   "src": "P11,A§18"
+  },
+  {
+   "id": "receipts",
+   "s": [
+    "any",
+    [
+     "eq",
+     "ag.handbook",
+     "received"
+    ],
+    [
+     "eq",
+     "ag.resCommunity",
+     "received"
+    ],
+    [
+     "eq",
+     "ag.transIn",
+     "received"
+    ],
+    [
+     "eq",
+     "ag.transWithin",
+     "received"
+    ],
+    [
+     "eq",
+     "ag.transOut",
+     "received"
+    ]
+   ],
+   "src": "P10,P12,A§17"
+  },
+  {
+   "id": "conscience",
+   "s": [
+    "eq",
+    "d.immun",
+    "conscience"
+   ],
+   "src": "P16,A§19"
+  },
+  {
+   "id": "pending",
+   "src": "P1,P9,A§15,A§16"
+  }
+ ],
+ "fns": {
+  "hcpNeeded": [
+   "any",
+   [
+    "eq",
+    "h.allergyAction",
+    "yes"
+   ],
+   [
+    "eq",
+    "h.chronic",
+    "yes"
+   ],
+   [
+    "all",
+    [
+     "eq",
+     "h.meds",
+     "yes"
+    ],
+    [
+     "eq",
+     "h.medsAtCare",
+     "yes"
+    ]
+   ],
+   [
+    "eq",
+    "h.dietModified",
+    "yes"
+   ]
+  ]
+ }
+}

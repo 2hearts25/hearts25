@@ -14,6 +14,8 @@ const confirmation = document.querySelector("[data-confirmation]");
 if (confirmation) {
   if (sessionStorage.getItem("h2h-confirmation") === location.pathname) {
     confirmation.hidden = false;
+    const refSlot = confirmation.querySelector("[data-enroll-ref]");
+    if (refSlot) { try { refSlot.textContent = sessionStorage.getItem("h2h-enroll-ref") || ""; } catch { /* reference is also emailed */ } }
   } else {
     location.replace(new URL("../", location.href));
   }

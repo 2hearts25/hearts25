@@ -1,6 +1,5 @@
 import { registrationMailId, sendRegistrationWelcome } from "./registration-welcome.ts";
-import { familyMessage } from "./brand-mail.ts";
-import { interestMessage } from "./interest-message.ts";
+import { genericAcknowledgment } from "./generic-ack.ts";
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void };
 
@@ -108,9 +107,12 @@ Deno.serve(async request => {
   const details = tour ? {
     start_month:value("start_month"), tour_window:value("tour_window"),
     heard_about_us:value("heard_about_us"), notes:value("notes")
-  } : information ? { interests, questions } : null;
+  } : information ? { interests, questions, ...(value("contactMethod") ? { contactMethod: value("contactMethod") } : {}) } : null;
   if ((tour || information) && !p0) return reply(422,"invalid");
-  if (!Array.isArray(interests) || interests.length > 8 || interests.some(item => typeof item !== "string" || !/^[0-7]$/.test(item)) ||
+  // Information requests offer 11 areas of interest (values "0".."10") and an optional preferred contact method.
+  if (!Array.isArray(interests) || interests.length > 11 || interests.some(item => typeof item !== "string" || !/^(?:[0-9]|10)$/.test(item)) ||
+      new Set(interests).size !== interests.length || !["","email","phone","text","none"].includes(value("contactMethod")) ||
+      (value("contactMethod") && !information) ||
       questions.length > 500 || (tour && (value("notes").length > 500 ||
         value("heard_about_us").length > 100 || value("start_month").length > 7 ||
         !["","morning","afternoon","either"].includes(value("tour_window"))))) return reply(422,"invalid");
@@ -208,7 +210,8 @@ Deno.serve(async request => {
           (registering ? "Table: website_private.child_registrations" : "Table: website_private.inquiries") + ", column: reference (search for the Reference above).\n" +
           "This email intentionally contains no child names or form text."));
         if (!registering) {
-          const family = locale === "en" ? interestMessage(name) : familyMessage("information", name, locale);
+          // 1.2.1: one approved generic acknowledgment (translated) for information requests; routing is unchanged.
+          const family = genericAcknowledgment(name, locale);
           deliveries.push(send("information", mailId, email, family.subject, family.text, family.html));
         }
       }

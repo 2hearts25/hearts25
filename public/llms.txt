@@ -40,9 +40,9 @@
 - [Safety and Licensing](https://hearts25.com/safety/)
 - [FAQ](https://hearts25.com/faq/)
 - [Contact](https://hearts25.com/contact/)
-- [Schedule a Tour](https://hearts25.com/tour/)
-- [Register](https://hearts25.com/register/)
-- [Request More Information](https://hearts25.com/request-information/)
+- [Schedule a Tour](https://hearts25.com/tour/): request a visit; no registration required
+- [Register a Child](https://hearts25.com/register/): digital child enrollment application in English, Spanish, French, Arabic and Swahili; works on phones and computers
+- [Request More Information](https://hearts25.com/request-information/): ask about programs, free childcare for eligible families, transportation and family support; no registration required
 - [Privacy](https://hearts25.com/privacy/)
 
 ## Localized homepages

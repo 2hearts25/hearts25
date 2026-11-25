@@ -35,3 +35,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Generated test artifacts (synthetic PDFs/screenshots) - regenerate with enrollment/test scripts; never commit real records
+enrollment/test/*.png
+enrollment/test/*.pdf

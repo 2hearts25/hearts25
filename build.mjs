@@ -1,7 +1,8 @@
 
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { inquiryForm } from './inquiry-form.mjs';
+import { requestInfoForm } from './request-info-form.mjs';
 import { netlifyTourForm } from './netlify-tour-form.mjs';
 
 const read = async file => JSON.parse((await readFile(new URL(file, import.meta.url), 'utf8')).replace(/^\uFEFF/, ''));
@@ -12,6 +13,10 @@ const p0 = await read('./p0.json');
 const p0Safety = await read('./p0-safety.json');
 const registrations = await read('./registration.json');
 const p1 = await read('./p1.json');
+const enrollI18n = Object.fromEntries(await Promise.all(['en','es','fr','ar','sw'].map(async code => [code, (await import('./enrollment/i18n/' + code + '.mjs')).default])));
+const requestInfo = await read('./request-info.json');
+const enrollEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/submit-enrollment';
+const enrollVersion = '1.2.0-E1';
 const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/website-inquiry';
 const agePages = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
 const languages = Object.keys(locales);
@@ -61,7 +66,7 @@ function frame(language, slug, title, description, body, meta = {}) {
   const home = path(language);
   const page = slug === '404' ? '' : slug;
   const confirmations = ['thank-you','registration-received','information-received'];
-  const formScript = ['enrollment','contact','register','tour','request-information',...confirmations].includes(slug) ? '<script defer src="/assets/inquiry.js"></script>' : '';
+  const formScript = slug === 'register' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/app.js"></script>' : ['enrollment','contact','tour','request-information',...confirmations].includes(slug) ? '<script defer src="/assets/inquiry.js"></script>' : '';
   const url = site + path(language, page);
   const tour = button(path(language,'tour'), t.tour);
   const register = button(path(language,'register'), registrations[language].title);
@@ -81,7 +86,7 @@ ${[...confirmations,'404'].includes(slug) ? '<meta name="robots" content="noinde
 </head><body>
 ${link('#main',t.skip,'class="skip"')}
 <div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span>${dropdown(language,page)}</div></div>
-<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${register}</nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${navigation}${link(path(language,'tour'),t.tour)}${register}</nav></details></div></header>
+<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${register}</nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${navigation}${link(path(language,'tour'),t.tour)}${link(path(language,'request-information'),p0[language][0])}${register}</nav></details></div></header>
 ${suggestion}
 <main id="main" tabindex="-1"${confirmations.includes(slug) ? ' data-confirmation hidden' : ''}>${body}</main>
 <footer class="footer"><div class="wrap">
@@ -101,7 +106,7 @@ function homepage(language) {
   const route = key => path(language,key);
   return `<section class="hero-band"><div class="hero wrap">
 <div class="hero-copy"><span class="eyebrow">${escape(t.where)}</span><h1>${escape(t.home[0])}<em>${escape(t.home[1])}</em></h1><p>${escape(t.home[2])}</p>
-<div class="actions">${button(route('register'),registrations[language].title)}${button(route('tour'),t.tour,true)}${button(tel,t.call,true)}</div></div>
+<div class="actions">${button(route('register'),registrations[language].title)}${button(route('tour'),t.tour,true)}${button(route('request-information'),p0[language][0],true)}${button(tel,t.call,true)}</div></div>
 ${photo(t,'classroom',0,true)}</div></section>
 <section class="wrap section">${p0Content(language,true)}</section>
 ${servicesSection(language)}
@@ -163,18 +168,21 @@ function virtualTour(language) {
 }
 function registrationPages(language) {
   const copy = registrations[language];
+  const ui = enrollI18n[language].ui;
   const t = locales[language];
-  const form = inquiryForm({ copy:forms[language], language, kind:'registration', path, locales, escape, action:formEndpoint, registration:copy });
+  const page = path(language,'register');
   return {
     register: {
-      title:copy.title,
-      intro:copy.intro,
-      body:`<article class="page section wrap"><h1>${escape(copy.title)}</h1><p class="intro">${escape(copy.intro)}</p><p class="offer">${escape(forms[language].waiver)}</p>${form}<section>${p0Content(language)}</section><section><h2>${escape(copy.next)}</h2><p>${escape(copy.notice)}</p></section></article>`
+      title:ui.title,
+      intro:ui.lead,
+      body:`<article class="page section wrap"><h1>${escape(ui.title)}</h1><p class="intro">${escape(ui.lead)}</p>
+<noscript><p class="note">${escape(ui.jsRequired)}</p><div class="actions">${button(tel,t.call,true)}${button(path(language,'tour'),t.tour,true)}${button(path(language,'request-information'),p0[language][0],true)}</div></noscript>
+<div id="enroll-app" class="enroll" lang="${language}" dir="${enrollI18n[language].dir}" data-lang="${language}" data-endpoint="${enrollEndpoint}" data-version="${enrollVersion}"><p class="loading" role="status">${escape(ui.saving)}</p></div></article>`
     },
     'registration-received': {
-      title:copy.received,
-      intro:copy.confirmation,
-      body:`<article class="page section wrap"><h1>${escape(copy.received)}</h1><p class="intro">${escape(copy.confirmation)}</p>${button(tel,t.call,true)}</article>`
+      title:ui.doneTitle,
+      intro:ui.doneBody,
+      body:`<article class="page section wrap"><div class="enroll done"><h1>${escape(ui.doneTitle)}</h1><p class="intro">${escape(ui.doneBody)}</p><p><strong>${escape(ui.doneRef)}</strong><br><span class="ref" data-enroll-ref dir="ltr"></span></p><p>${escape(ui.doneKeep)}</p><p>${escape(ui.doneEmail)}</p><p>${escape(ui.pdfNote)}</p><p><a href="${tel}">${phone}</a><br>${escape(ui.doneHours)}<br>${escape(ui.address)}</p><div class="actions">${button(path(language),ui.home)}</div></div></article>`
     }
   };
 }
@@ -185,9 +193,9 @@ function p0Content(language, promo = false) {
     '<div class="actions">'+button(path(language,'request-information'),c[0],true)+'</div>';
 }
 function informationPage(language) {
-  const c=p0[language];
-  const form=inquiryForm({copy:forms[language],language,kind:'information',path,locales,escape,action:formEndpoint,information:c});
-  return {title:c[0],intro:c[1],body:'<article class="page section wrap"><h1>'+escape(c[0])+'</h1><p class="intro">'+escape(c[1])+'</p>'+form+'</article>'};
+  const ui = requestInfo[language];
+  const form = requestInfoForm({ copy: { ...forms[language], type: p0[language][0], consent: p0[language][2] }, ui, language, path, locales, escape, action: formEndpoint });
+  return { title: ui.h1, intro: ui.lead, body: '<article class="page section wrap"><h1>' + escape(ui.h1) + '</h1><p class="intro">' + escape(ui.lead) + '</p><section class="note" aria-labelledby="overview-heading"><h2 id="overview-heading">' + escape(ui.overview) + '</h2><ul>' + ui.items.map(item => '<li>' + escape(item) + '</li>').join('') + '</ul></section>' + form + '</article>' };
 }
 function pageContent(language, slug) {
   const t = locales[language];
@@ -246,6 +254,12 @@ for (const name of ['inquiry.js','analytics.js']) {
   const clientScript = new URL('assets/' + name,dist);
   await writeFile(clientScript,(await readFile(clientScript,'utf8')).replace('__H2H_PUBLIC_ANON_KEY__',anonKey),'utf8');
 }
+await mkdir(new URL('assets/enrollment/i18n/',dist),{recursive:true});
+await copyFile(new URL('./enrollment/core.mjs',import.meta.url),new URL('assets/enrollment/core.js',dist));
+await copyFile(new URL('./enrollment/schema.json',import.meta.url),new URL('assets/enrollment/schema.json',dist));
+await copyFile(new URL('./enrollment/document-links.json',import.meta.url),new URL('assets/enrollment/document-links.json',dist));
+for (const [code,data] of Object.entries(enrollI18n)) await writeFile(new URL('assets/enrollment/i18n/' + code + '.json',dist),JSON.stringify(data),'utf8');
+{ const appFile = new URL('assets/enrollment/app.js',dist); await writeFile(appFile,(await readFile(appFile,'utf8')).replace('__H2H_PUBLIC_ANON_KEY__',anonKey),'utf8'); }
 let count = 0;
 const indexable = [];
 for (const language of languages) {
@@ -254,7 +268,8 @@ for (const language of languages) {
   const jsonld = {'@context':'https://schema.org','@type':['ChildCare','LocalBusiness'],name:brand,url:site + path(language),description:seoHome.home_desc,telephone:'+1-216-938-6771',image:site + '/assets/classroom-1200.webp',address:{'@type':'PostalAddress',streetAddress:'3095 W. 25th Street',addressLocality:'Cleveland',addressRegion:'OH',postalCode:'44113',addressCountry:'US'},identifier:{'@type':'PropertyValue',name:'Ohio child care center license number',value:'000000300622'},areaServed:{'@type':'City',name:'Cleveland, Ohio'},inLanguage:language};
   const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:seoHome.home_desc,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language)};
   const infoConfirmation = forms[language].received;
-  pagesForLocale['information-received'] = {title:infoConfirmation,intro:p0[language][1],body:`<article class="page section wrap"><h1>${escape(infoConfirmation)}</h1><p class="intro">${escape(p0[language][1])}</p></article>`};
+  const ri = requestInfo[language];
+  pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};
   for (const slug of Object.keys(pages)) pagesForLocale[slug] = pageContent(language,slug);
   for (const [slug,page] of Object.entries(pagesForLocale)) {
     const route = path(language,slug === '404' ? '' : slug).slice(1);

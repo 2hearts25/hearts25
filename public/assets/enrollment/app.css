@@ -1,0 +1,55 @@
+/* Child enrollment application (v1.2.0). Logical properties throughout so Arabic (RTL) mirrors automatically. */
+.enroll { max-width: 46rem; margin-block: 1.5rem 3rem; background: var(--white); border: 1px solid var(--line); border-block-start: .35rem solid var(--coral); border-radius: 1rem; padding: clamp(1rem, 3.5vw, 2.25rem); box-shadow: 0 .5rem 1.6rem #12204f0d; }
+.enroll[hidden], .enroll [hidden] { display: none !important; }
+.enroll h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); letter-spacing: -.02em; margin-block-end: .5rem; }
+.enroll h3 { font-size: 1.15rem; letter-spacing: 0; margin-block: 1.25rem .35rem; }
+[dir=rtl] .enroll h2, [dir=rtl] .enroll h3 { letter-spacing: normal; }
+.enroll .bar { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; justify-content: space-between; margin-block-end: 1rem; }
+.enroll .bar label { display: flex; gap: .5rem; align-items: center; width: auto; font-size: .9rem; }
+.enroll .bar select { min-height: 2.4rem; padding: .3rem .5rem; border: 1px solid #778a80; border-radius: .4rem; font: inherit; background: #fff; color: var(--ink); }
+.enroll .meter { display: block; width: 100%; height: .6rem; accent-color: var(--coral); }
+.enroll .meter-label { font-weight: 700; font-size: .9rem; margin-block-end: .25rem; }
+.enroll .help { margin-block-end: 1rem; }
+.enroll .field { margin-block: 1rem; }
+.enroll .field > label, .enroll legend { display: block; font-weight: 650; width: 100%; }
+.enroll fieldset { border: 0; padding: 0; margin: 1rem 0; min-inline-size: 0; }
+.enroll legend { padding: 0; margin-block-end: .35rem; }
+.enroll input:not([type=checkbox]):not([type=radio]), .enroll select, .enroll textarea { display: block; width: 100%; min-height: 2.9rem; margin-block-start: .35rem; padding: .6rem .7rem; background: #fff; color: var(--ink); border: 1px solid #778a80; border-radius: .45rem; font: inherit; font-weight: 400; }
+.enroll textarea { min-height: 6rem; resize: vertical; }
+.enroll [aria-invalid=true] { border-color: var(--coral); outline: 2px solid var(--coral); }
+.enroll .opt { display: flex; gap: .65rem; align-items: flex-start; padding: .55rem .25rem; font-weight: 400; width: 100%; cursor: pointer; }
+.enroll .opt input { flex: none; width: 1.3rem; height: 1.3rem; margin-block-start: .2rem; accent-color: var(--ink); }
+.enroll .opt:hover { background: #f4f8ff; border-radius: .4rem; }
+.enroll .req { color: var(--coral); font-weight: 800; }
+.enroll .err { color: #a30049; font-weight: 650; font-size: .92rem; margin-block-start: .3rem; }
+.enroll .errsum { background: #fff0f6; border: 2px solid var(--coral); border-radius: .6rem; padding: .75rem 1rem; margin-block-end: 1rem; }
+.enroll .errsum ul { margin: .4rem 0 0; padding-inline-start: 1.25rem; }
+.enroll .notice { background: #fff8d6; border: 1px solid #e3c63a; border-radius: .6rem; padding: .75rem 1rem; margin-block: 1rem; color: var(--ink); }
+.enroll .nav { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; margin-block-start: 1.75rem; }
+.enroll .nav .button { min-width: 8.5rem; }
+.enroll .nav .spacer { flex: 1; }
+.enroll button.linkish { background: none; border: 0; padding: .5rem 0; color: var(--deep-blue); text-decoration: underline; font: inherit; cursor: pointer; }
+.enroll .card { border: 1px solid var(--line); border-radius: .75rem; padding: .25rem 1rem 1rem; margin-block: 1rem; background: #fcfdff; }
+.enroll .card > h3 { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.enroll .review dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin: .5rem 0 0; }
+.enroll .review dt { color: var(--muted); font-size: .85rem; margin-block-start: .6rem; }
+.enroll .review dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; white-space: pre-wrap; }
+.enroll .review .head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-block-start: 1.25rem; border-block-end: 1px solid var(--line); }
+.enroll .review .head h3 { margin: 0 0 .25rem; }
+.enroll .muted { color: var(--muted); font-weight: 400; }
+.enroll .modes { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin-block: .5rem; }
+.enroll .padwrap { position: relative; max-width: 36rem; }
+.enroll canvas.pad { display: block; width: 100%; aspect-ratio: 3 / 1; background: #fff; border: 2px dashed #778a80; border-radius: .6rem; touch-action: none; cursor: crosshair; }
+.enroll .padhint { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 1rem; color: #6b7794; pointer-events: none; }
+.enroll .padline { position: absolute; inset-inline: 8%; inset-block-end: 28%; border-block-end: 1px solid #c9d5ed; pointer-events: none; }
+.enroll .typedsig { font: italic 1.9rem/1.3 "Brush Script MT", "Segoe Script", cursive; }
+.enroll .done { text-align: start; }
+.enroll .done .ref { font-size: 1.6rem; font-weight: 800; letter-spacing: .03em; background: var(--sage); padding: .4rem .8rem; border-radius: .5rem; display: inline-block; margin-block: .25rem; }
+.enroll .idle { position: sticky; inset-block-start: .5rem; z-index: 5; background: #fff8d6; border: 2px solid #e3c63a; border-radius: .6rem; padding: .6rem .9rem; margin-block-end: 1rem; font-weight: 650; }
+.enroll .links { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+.enroll .hp { position: absolute; inset-inline-start: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.enroll .loading { padding: 2rem 0; text-align: center; }
+@media (max-width: 30rem) { .enroll .nav .button { width: 100%; } }
+@media (prefers-reduced-motion: no-preference) { .enroll .meter { transition: all .2s } }
+
+.enroll .policy{border:1px solid var(--line,#c9d5ed);border-radius:10px;padding:14px 16px;margin:14px 0;background:#fff}.enroll .policy h3{margin:0 0 8px}.enroll .policy h4{margin:12px 0 4px;color:#12204f}.enroll .policy p{margin:0 0 8px}

@@ -1,6 +1,5 @@
 
-import { familyMessage } from "./brand-mail.ts";
-import { interestMessage } from "./interest-message.ts";
+import { genericAcknowledgment } from "./generic-ack.ts";
 
 const formId = "6b05b2aec298f9f8127361bd";
 const siteId = "2c0a0593-ea18-4f4f-88bc-dd30a5d39ac5";
@@ -85,7 +84,8 @@ const response = (status: number, code: string) => Response.json(
 );
 
 function welcome(data: Values) {
-  return data.language && data.language !== "en" ? familyMessage("tour", data.name, data.language) : interestMessage(data.name);
+  // 1.2.1: the same one generic acknowledgment (translated) as information requests; no separate substantive tour copy.
+  return genericAcknowledgment(data.name, data.language);
 }
 
 function staffMessage(data: Values) {
