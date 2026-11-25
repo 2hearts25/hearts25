@@ -13,6 +13,7 @@ const p0 = await read('./p0.json');
 const p0Safety = await read('./p0-safety.json');
 const registrations = await read('./registration.json');
 const p1 = await read('./p1.json');
+const trust = await read('./trust-content.json');
 const enrollI18n = Object.fromEntries(await Promise.all(['en','es','fr','ar','sw'].map(async code => [code, (await import('./enrollment/i18n/' + code + '.mjs')).default])));
 const requestInfo = await read('./request-info.json');
 const enrollEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/submit-enrollment';
@@ -21,14 +22,17 @@ const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/webs
 const agePages = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
 const languages = Object.keys(locales);
 const policyLabels = {en:'Nondiscrimination',es:'No discriminación',ar:'عدم التمييز',sw:'Kutobagua',fr:'Non-discrimination'};
-const safetyNotes = {en:'Find the center in Ohio Child Care Search by license number 000000300622.',es:'Busca el centro en el registro de Ohio con el número de licencia 000000300622.',ar:'ابحث عن المركز في سجل أوهايو برقم الترخيص 000000300622.',sw:'Tafuta kituo katika orodha ya Ohio kwa nambari ya leseni 000000300622.',fr:'Recherchez le centre dans le registre de l’Ohio avec le numéro 000000300622.'};
 const nav = ['programs', 'our-day', 'enrollment', 'family-support', 'safety', 'about', 'faq', 'contact'];
 const brand = 'Heart to Heart Enrichment Center';
+const licenseNumber = '000000300622';
+const awardAsset = '/assets/ohio-sutq-bronze.png';
 const tel = 'tel:+12169386771';
 const phone = '<bdi dir="ltr">(216) 938-6771</bdi>';
 const address = '<bdi dir="ltr">3095 W. 25th Street<br>Cleveland, OH 44113</bdi>';
 const external = {
   license: 'https://childcaresearch.ohio.gov/',
+  provider: 'https://childcaresearch.ohio.gov/provider/300622/',
+  sutq: 'https://childrenandyouth.ohio.gov/for-providers/step-up-to-quality',
   county: 'https://hhs.cuyahogacounty.gov/programs/child-care-assistance-programs',
   ohio: 'https://childrenandyouth.ohio.gov/for-families/early-care-education/child-care',
   pfcc: 'https://hhs.cuyahogacounty.gov/programs/child-care-assistance-programs',
@@ -68,9 +72,11 @@ function frame(language, slug, title, description, body, meta = {}) {
   const confirmations = ['thank-you','registration-received','information-received'];
   const formScript = slug === 'register' ? '<link rel="stylesheet" href="/assets/enrollment/app.css"><script type="module" src="/assets/enrollment/app.js"></script>' : ['enrollment','contact','tour','request-information',...confirmations].includes(slug) ? '<script defer src="/assets/inquiry.js"></script>' : '';
   const url = site + path(language, page);
-  const tour = button(path(language,'tour'), t.tour);
-  const register = button(path(language,'register'), registrations[language].title);
-  const navigation = nav.map((key,i) => link(path(language,key),t.nav[i],current(key,slug))).join('');
+  const q = trust[language];
+  const tour = link(path(language,'tour'), t.tour, `class="button" ${current('tour',slug)}`);
+  const register = button(path(language,'register'), registrations[language].title, true);
+  const navigation = nav.map((key,i) => link(path(language,key),key === 'safety' ? q.safety : t.nav[i],current(key,slug))).join('');
+  const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations].includes(slug);
   const foot = t.footer;
   const alternate = slug === '404' ? '' : languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">`;
   const suggestion = Object.entries({es:'¿Prefieres ver el sitio en español?',ar:'هل تفضّل عرض الموقع بالعربية؟',sw:'Je, ungependa kuona tovuti kwa Kiswahili?',fr:'Préférez-vous consulter le site en français ?'}).map(([code,prompt]) => `<div class="suggestion" lang="${code}" dir="${code === 'ar' ? 'rtl' : 'ltr'}" data-suggest="${code}" hidden>${link(path(code,page),prompt,`data-language="${code}"`)}</div>`).join('');
@@ -83,17 +89,17 @@ ${[...confirmations,'404'].includes(slug) ? '<meta name="robots" content="noinde
 <link rel="canonical" href="${url}">${alternate}
 <meta property="og:title" content="${escape(meta.fullTitle ?? meta.metaTitle ?? title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="${language}"><meta property="og:site_name" content="${brand}"><meta property="og:image" content="${site}/assets/classroom-1200.webp">${meta.jsonld ? '<script type="application/ld+json">' + JSON.stringify(meta.jsonld).replace(/</g,'\\u003c') + '</script>' : ''}
 <link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script><script defer src="/assets/analytics.js"></script>${formScript}
-</head><body>
+</head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
 <div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span>${dropdown(language,page)}</div></div>
-<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${register}</nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${navigation}${link(path(language,'tour'),t.tour)}${link(path(language,'request-information'),p0[language][0])}${register}</nav></details></div></header>
+<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${tour}${register}</nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${tour}${register}${link(path(language,'request-information'),p0[language][0],current('request-information',slug))}${navigation}</nav></details></div></header>
 ${suggestion}
 <main id="main" tabindex="-1"${confirmations.includes(slug) ? ' data-confirmation hidden' : ''}>${body}</main>
 <footer class="footer"><div class="wrap">
-<div>${logo(language)}<address>${address}<br><a href="${tel}">${phone}</a><br>${escape(p0[language][10])}</address></div>
-<div><strong>${escape(foot[0])}</strong>${list([link(path(language,'about'),t.nav[5]),link(path(language,'programs'),t.nav[0]),link(path(language,'safety'),t.nav[4]),link(path(language,'contact'),t.nav[7]),link(path(language,'community'),foot[6])])}</div>
-<div><strong>${escape(foot[1])}</strong>${list([link(path(language,'register'),registrations[language].title),link(path(language,'request-information'),p0[language][0]),link(path(language,'parents'),foot[5]),link(path(language,'virtual-tour'),foot[4]),link(path(language,'privacy'),foot[2]),link(path(language,'accessibility'),foot[3]),link(path(language,'nondiscrimination'),policyLabels[language])])}${dropdown(language,page)}</div>
-</div></footer><div class="mobile-bar">${button(tel,t.call,true)}${tour}</div>
+<div>${logo(language)}<address>${address}<br><a href="${tel}">${phone}</a><br>${escape(p0[language][10])}</address><p class="footer-rating">${link(path(language,'safety'),q.rating)}</p></div>
+<div><strong>${escape(foot[0])}</strong>${list([link(path(language,'about'),t.nav[5]),link(path(language,'programs'),t.nav[0]),link(path(language,'safety'),q.safety),link(path(language,'contact'),t.nav[7]),link(path(language,'community'),foot[6])])}</div>
+<div><strong>${escape(foot[1])}</strong>${list([link(path(language,'register'),registrations[language].title),link(path(language,'tour'),t.tour),link(path(language,'request-information'),p0[language][0]),link(path(language,'parents'),foot[5]),link(path(language,'privacy'),foot[2]),link(path(language,'accessibility'),foot[3]),link(path(language,'nondiscrimination'),policyLabels[language])])}${dropdown(language,page)}</div>
+</div></footer>${showMobileBar ? `<div class="mobile-bar">${button(tel,t.call,true)}${tour}</div>` : ''}
 </body></html>`;
 }
 
@@ -103,32 +109,54 @@ function photo(t, name, index, eager = false) {
 
 function homepage(language) {
   const t = locales[language];
+  const q = trust[language];
+  const offer = p0[language];
   const route = key => path(language,key);
   return `<section class="hero-band"><div class="hero wrap">
 <div class="hero-copy"><span class="eyebrow">${escape(t.where)}</span><h1>${escape(t.home[0])}<em>${escape(t.home[1])}</em></h1><p>${escape(t.home[2])}</p>
 <div class="actions">${button(route('register'),registrations[language].title)}${button(route('tour'),t.tour,true)}${button(route('request-information'),p0[language][0],true)}${button(tel,t.call,true)}</div></div>
 ${photo(t,'classroom',0,true)}</div></section>
-<section class="wrap section">${p0Content(language,true)}</section>
+${qualitySection(language,true)}
+<section class="wrap section affordability"><h2>${escape(offer[7])}</h2><p class="offer">${escape(offer[9])}</p>
+${list([...q.offer.slice(0,2),offer[12],offer[11]].map(escape))}
+<p>${escape(q.offer[2])}</p><div class="actions">${button(route('tuition-assistance'),q.assistance)}${button(route('request-information'),offer[0],true)}</div></section>
 ${servicesSection(language)}
-<div class="quick"><div class="wrap">${link(route('safety'),t.quick[0] + ' · #000000300622')}${link(route('tuition-assistance'),t.quick[1])}${link(external.map,t.quick[2],'dir="ltr"')}</div></div>
-<section class="section wrap"><div class="section-header"><div><h2>${escape(t.lead[0])}</h2><p>${escape(t.lead[1])}</p></div>${button(route('programs'),t.lead[2],true)}</div>
+<div class="quick"><div class="wrap">${link(route('safety'),q.safety)}${link(route('tuition-assistance'),t.quick[1])}${link(external.map,t.quick[2],'dir="ltr"')}</div></div>
+<section class="section wrap"><div class="section-header"><div><h2>${escape(t.lead[0])}</h2><p>${escape(q.programLead)}</p></div>${button(route('programs'),t.lead[2],true)}</div>
 ${careBenefits(t)}
-<div class="cards">${t.cards.map(([title,description], index) => `<article class="card"><span class="card-icon" aria-hidden="true">${['✦','✿','☀'][index]}</span><h3>${link(route(agePages[index]),title)}</h3><p>${escape(description)}</p></article>`).join('')}</div></section>
+<div class="cards">${t.cards.map(([title], index) => `<article class="card"><span class="card-icon" aria-hidden="true">${['✦','✿','☀'][index]}</span><h3>${link(route(agePages[index]),title)}</h3><p>${escape(q.programs[index])}</p></article>`).join('')}</div></section>
 <section class="family section"><div class="wrap split">${photo(t,'families',1)}<div><h2>${escape(t.family[0])}</h2><p>${escape(t.family[1])}</p><div class="actions">${button(route('family-support'),t.family[2],true)}</div></div></div></section>
-<section class="section wrap split"><h2>${escape(t.day[0])}</h2><div><p>${escape(t.day[1])}</p><div class="actions">${button(route('our-day'),t.day[2],true)}</div></div></section>
-<section class="section wrap split"><h2>${escape(t.nav[4])}</h2><div><p>${escape(safetyNotes[language])}</p><div class="actions">${button(route("safety"),t.quick[0],true)}</div></div></section>
-${virtualTour(language)}
-<section class="section wrap"><div class="callout"><div><h2>${escape(t.visit[0])}</h2><p>${escape(t.visit[1])}</p></div>${button(route('tour'),t.tour)}</div></section>`;
+<section class="section wrap split"><h2>${escape(t.day[0])}</h2><div><p>${escape(q.day)}</p>${list(q.rhythm.map(escape))}<div class="actions">${button(route('our-day'),t.day[2],true)}</div></div></section>
+<section class="section wrap"><div class="callout"><div><h2>${escape(t.visit[0])}</h2><p>${escape(q.visit)}</p></div>${button(route('tour'),t.tour)}</div></section>`;
 }
 
 const overrides = await read('./page-translations.json');
 
+function qualitySection(language, onHome = false) {
+  const q = trust[language];
+  const t = locales[language];
+  const ratingHeading = onHome ? 'h3' : 'h2';
+  return `<section class="quality" aria-labelledby="quality-heading"><div class="${onHome ? 'wrap ' : ''}quality-inner">
+<img class="quality-award" src="${awardAsset}" width="256" height="364" alt="${escape(q.alt)}">
+<div class="quality-copy">
+${onHome ? `<h2 id="quality-heading">${escape(q.heading)}</h2>` : ''}
+<${ratingHeading}${onHome ? '' : ' id="quality-heading"'}>${escape(q.rating)}</${ratingHeading}>
+<p>${escape(onHome ? q.recognition : q.system)}</p>
+<p class="quality-facts"><strong>${escape(q.licensed)}</strong><span>${escape(q.number)} <bdi dir="ltr">${licenseNumber}</bdi></span><span>${escape(q.since)}</span>${onHome ? `<span>${escape(p0[language][10])}</span>` : ''}</p>
+${onHome ? list(q.policies.map(escape)) : `<p>${escape(q.licenseDetails)}</p>`}
+<div class="quality-links">${link(external.provider,q.verify)}${onHome ? '' : link(external.sutq,q.programLink)}</div>
+${onHome ? `<div class="actions">${button(path(language,'safety'),q.safety,true)}${button(path(language,'tour'),t.tour)}</div>` : ''}
+</div></div></section>`;
+}
+
 function servicesSection(language) {
   const c = p1[language].home;
+  const q = trust[language];
   const icons = ['🤝','🧭','💛','📚','🧸','🍽','🚌','🌍'];
   const targets = ['family-support','family-support','tuition-assistance','programs/school-age','programs/infants-toddlers','faq','programs/school-age','community'];
+  const headings = [q.services[0],q.services[1],c.cards[2][0],...q.services.slice(2),c.cards[7][0]];
   return `<section class="section wrap services" aria-labelledby="services-heading"><div class="section-header"><div><h2 id="services-heading">${escape(c.h)}</h2><p>${escape(c.intro)}</p></div></div>
-<div class="cards services-grid">${c.cards.map(([title,description],index) => `<article class="card"><span class="card-icon" aria-hidden="true">${icons[index]}</span><h3>${link(path(language,targets[index]),title)}</h3><p>${escape(description)}</p></article>`).join('')}</div>
+<div class="cards services-grid">${c.cards.map(([,description],index) => `<article class="card"><span class="card-icon" aria-hidden="true">${icons[index]}</span><h3>${link(path(language,targets[index]),headings[index])}</h3><p>${escape(index === 6 ? p0[language][11] : description)}</p></article>`).join('')}</div>
 <div class="actions">${button(path(language,'family-support'),c.cta[0])}${button(path(language,'request-information'),c.cta[1],true)}${button(path(language,'tour'),c.cta[2],true)}</div></section>`;
 }
 
@@ -139,19 +167,22 @@ function resourcesSection(language) {
 
 function faqTarget(language, key) {
   const routes = {register:'register',tour:'tour',info:'request-information',safety:'safety',support:'family-support',programs:'programs',tuition:'tuition-assistance',contact:'contact',privacy:'privacy'};
-  return key === 'license' ? external.license : path(language, routes[key]);
+  return key === 'provider' ? external.provider : key === 'license' ? external.license : path(language, routes[key]);
 }
 
 function p1Override(language, slug) {
   const c = p1[language];
-  const programs = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
-  if (programs.includes(slug)) {
+  const q = trust[language];
+  if (agePages.includes(slug)) {
     const texts = c.prog[slug.split('/')[1]];
     const extra = slug === 'programs/school-age' ? [[c.hw.h, c.hw.p, c.hw.b]] : slug === 'programs/infants-toddlers' ? [[c.potty.h, c.potty.p, c.potty.b]] : [];
-    return { intro: texts[0], sections: [...texts.slice(1).map((text,index) => [c.prog.heads[index + 1], text]), ...extra] };
+    return { intro: q.programs[agePages.indexOf(slug)], sections: [...texts.slice(1).map((text,index) => [c.prog.heads[index + 1], text]), ...extra] };
   }
+  if (slug === 'programs') return { intro:q.programLead, sections:[], links:locales[language].cards.map(([title],index) => [title,agePages[index]]) };
+  if (slug === 'our-day') return { intro:q.day, sections:[] };
+  if (slug === 'safety') return { title:q.safety, intro:q.recognition, sections:[], links:[] };
   if (slug === 'family-support') return { sections: [...c.fs.sections, c.fs.direct], links: [] };
-  if (slug === 'faq') return { questions: c.faq };
+  if (slug === 'faq') return { questions: [[q.question,q.answer,'provider'],...c.faq] };
   if (slug === 'privacy') return { privacyExtra: c.privacy };
   if (slug === 'enrollment') return { enrollExtra: [c.prog.heads[4], c.prog['school-age'][4]] };
   return {};
@@ -161,11 +192,6 @@ function careBenefits(t) {
   return `<ul class="care-benefits" role="list">${t.careBenefits.map((label, index) => `<li><span aria-hidden="true">${['🚌','🍽'][index]}</span>${escape(label)}</li>`).join('')}</ul>`;
 }
 
-function virtualTour(language) {
-  const t = locales[language];
-  const intro = overrides[language]?.['virtual-tour'].intro ?? pages['virtual-tour'].intro;
-  return `<section class="section family"><div class="wrap split"><div><p class="eyebrow">${escape(virtualStatus[language])}</p><h2>${escape(t.footer[4])}</h2></div><div><p>${escape(intro)}</p><div class="actions">${button(path(language,'virtual-tour'),t.footer[4],true)}${button(path(language,'tour'),t.tour)}</div></div></div></section>`;
-}
 function registrationPages(language) {
   const copy = registrations[language];
   const ui = enrollI18n[language].ui;
@@ -186,10 +212,9 @@ function registrationPages(language) {
     }
   };
 }
-function p0Content(language, promo = false) {
+function p0Content(language) {
   const c = p0[language];
-  return (promo ? '<p class="offer">'+escape(c[9])+'</p>' : '') +
-    '<h2>'+escape(c[7])+'</h2>'+c.slice(8,13).filter((_,i)=>i!==1).map(text=>'<p>'+escape(text)+'</p>').join('')+
+  return '<h2>'+escape(c[7])+'</h2>'+c.slice(8,13).filter((_,i)=>i!==1).map(text=>'<p>'+escape(text)+'</p>').join('')+
     '<div class="actions">'+button(path(language,'request-information'),c[0],true)+'</div>';
 }
 function informationPage(language) {
@@ -199,6 +224,7 @@ function informationPage(language) {
 }
 function pageContent(language, slug) {
   const t = locales[language];
+  const q = trust[language];
   const english = pages[slug];
   const form = forms[language];
   const isForm = ['enrollment','tour','contact'].includes(slug);
@@ -207,7 +233,7 @@ function pageContent(language, slug) {
   const formContent = slug === 'tour' ? netlifyTourForm({language,path,locales,escape,copy:form,endpoint:formEndpoint})
     : isForm ? inquiryForm({ copy:form, language, kind:slug, path, locales, escape, action:formEndpoint }) : '';
   const common = {
-    tour: {title: language === 'en' ? english.title : t.visit[0], intro:t.tourBody},
+    tour: {title: language === 'en' ? english.title : t.visit[0], intro:q.visit},
     contact: {title: language === 'en' ? english.title : t.nav[7], intro:t.contactBody},
     enrollment: {title: language === 'en' ? english.title : t.nav[2], intro:t.enrollBody}
   };
@@ -224,19 +250,24 @@ function pageContent(language, slug) {
     ? `<div class="actions">${button(tel,t.call)}${button(external.map,t.directions,true)}</div>`
     : `<div class="actions">${button(tourPath,t.tour)}</div>`;
   const localAddress = ['tour','contact'].includes(slug) ? `<section class="note"><address>${address}</address><a href="${tel}">${phone}</a></section>` : '';
-  const safety = slug === 'safety' ? `<section class="note"><strong>${brand} · 000000300622</strong><p>${link(external.license,t.quick[0])}</p></section>${p0Safety[language].map(item=>{const [heading,paragraph]=item.split('|');return `<section><h2>${escape(heading)}</h2><p>${escape(paragraph)}</p></section>`}).join('')}<div class="actions">${['09','10','14','18','19'].map(rule=>link('https://codes.ohio.gov/ohio-administrative-code/rule-5180:2-12-'+rule,'OAC 5180:2-12-'+rule)).join(' ')} ${link('https://codes.ohio.gov/ohio-revised-code/section-5104.034','ORC 5104.034')}</div><div class="actions">${button(path(language,'request-information'),p0[language][0],true)}</div>` : '';
+  const safety = slug === 'safety' ? `${qualitySection(language)}${p0Safety[language].map(item=>{const [heading,paragraph]=item.split('|');return `<section><h2>${escape(heading)}</h2><p>${escape(paragraph)}</p></section>`}).join('')}<div class="actions">${['09','10','14','18','19'].map(rule=>link('https://codes.ohio.gov/ohio-administrative-code/rule-5180:2-12-'+rule,'OAC 5180:2-12-'+rule)).join(' ')} ${link('https://codes.ohio.gov/ohio-revised-code/section-5104.034','ORC 5104.034')}</div><div class="actions">${button(path(language,'request-information'),p0[language][0],true)}</div>` : '';
   const links = page.links?.map(([label,target]) => link(external[target] ?? path(language,target),label));
+  const showRating = ['about','enrollment','faq'].includes(slug);
   const seo = p1[language].seo.meta[slug];
   return {
-    title: page.title, intro:page.intro, metaTitle: seo?.[0], description: seo?.[1],
+    title: page.title, intro:page.intro, metaTitle: seo?.[0], description: showRating ? `${q.rating}. ${seo?.[1] ?? page.intro}` : seo?.[1],
     body: `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
 ${slug === 'virtual-tour' ? `<p class="eyebrow">${escape(virtualStatus[language])}</p>` : ''}${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}
+${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
+${showRating && slug !== 'faq' ? `<p class="note">${link(path(language,'safety'),q.rating)}</p>` : ''}
+${slug === 'our-day' ? list(q.rhythm.map(escape)) : ''}
+${slug === 'programs' ? page.links.map(([title,target],index) => `<section><h2>${link(path(language,target),title)}</h2><p>${escape(q.programs[index])}</p></section>`).join('') : ''}
 ${['programs','enrollment','contact','tuition-assistance','faq','family-support'].includes(slug) ? `<section>${p0Content(language)}</section>` : ''}
 ${slug === 'privacy' ? `<p>${escape(registrations[language].privacy)}</p>` : ''}
 ${safety}
 <div${detailAttrs("sections")}>${slug !== 'safety' ? (page.sections?.map(([heading,text,bullets]) => `<section><h2>${escape(heading)}</h2><p>${escape(text)}</p>${bullets ? list(bullets.map(escape)) : ''}</section>`).join('') ?? '') : ''}${page.enrollExtra ? `<section><h2>${escape(page.enrollExtra[0])}</h2><p>${escape(page.enrollExtra[1])}</p></section>` : ''}${page.privacyExtra ? `<section><h2>${escape(page.privacyExtra[0])}</h2><p>${escape(page.privacyExtra[1])}</p></section>` : ''}</div>${slug === 'family-support' ? resourcesSection(language) : ''}
-<div${detailAttrs("questions")}>${page.questions?.map(([question,answer,key]) => `<details><summary>${escape(question)}</summary><p>${escape(answer)}</p>${key ? `<p>${link(faqTarget(language,key),p1[language].faqLinks[key],key === 'license' ? 'rel="noopener"' : '')}</p>` : ''}</details>`).join('') ?? ''}</div>
-<div${detailAttrs("links")}>${links ? list(links) : ''}</div>${localAddress}${actions}${formContent}</article>`
+<div${detailAttrs("questions")}>${page.questions?.map(([question,answer,key]) => `<details><summary>${escape(question)}</summary><p>${escape(answer)}</p>${key ? `<p>${link(faqTarget(language,key),key === 'provider' ? q.verify : p1[language].faqLinks[key],key === 'license' ? 'rel="noopener"' : '')}</p>` : ''}</details>`).join('') ?? ''}</div>
+<div${detailAttrs("links")}>${links?.length && slug !== 'programs' ? list(links) : ''}</div>${localAddress}${actions}${formContent}</article>`
   };
 }
 
@@ -265,8 +296,10 @@ const indexable = [];
 for (const language of languages) {
   const t = locales[language];
   const seoHome = p1[language].seo;
-  const jsonld = {'@context':'https://schema.org','@type':['ChildCare','LocalBusiness'],name:brand,url:site + path(language),description:seoHome.home_desc,telephone:'+1-216-938-6771',image:site + '/assets/classroom-1200.webp',address:{'@type':'PostalAddress',streetAddress:'3095 W. 25th Street',addressLocality:'Cleveland',addressRegion:'OH',postalCode:'44113',addressCountry:'US'},identifier:{'@type':'PropertyValue',name:'Ohio child care center license number',value:'000000300622'},areaServed:{'@type':'City',name:'Cleveland, Ohio'},inLanguage:language};
-  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:seoHome.home_desc,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language)};
+  const q = trust[language];
+  const description = `${q.rating}. ${seoHome.home_desc}`;
+  const jsonld = {'@context':'https://schema.org','@type':['ChildCare','LocalBusiness'],name:brand,url:site + path(language),description,telephone:'+1-216-938-6771',image:site + '/assets/classroom-1200.webp',address:{'@type':'PostalAddress',streetAddress:'3095 W. 25th Street',addressLocality:'Cleveland',addressRegion:'OH',postalCode:'44113',addressCountry:'US'},identifier:{'@type':'PropertyValue',name:'Ohio child care center license number',value:licenseNumber},award:q.rating,sameAs:external.provider,areaServed:{'@type':'City',name:'Cleveland, Ohio'},inLanguage:language};
+  const pagesForLocale = {'':{title:t.home.slice(0,2).join(''),intro:description,fullTitle:seoHome.home_title,jsonld,body:homepage(language)},...registrationPages(language),'request-information':informationPage(language)};
   const infoConfirmation = forms[language].received;
   const ri = requestInfo[language];
   pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};

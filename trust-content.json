@@ -1,0 +1,297 @@
+{
+  "en": {
+    "safety": "Safety & Trust",
+    "heading": "Recognized for Quality. Committed to Care.",
+    "rating": "Ohio Step Up To Quality — Bronze Rated",
+    "alt": "Ohio Step Up To Quality Bronze Award",
+    "licensed": "Licensed Ohio childcare center",
+    "number": "License number",
+    "since": "Licensed since 2014",
+    "licenseDetails": "The Ohio Department of Children and Youth issued our continuous childcare license on September 11, 2014.",
+    "verify": "Verify our Ohio license and rating",
+    "programLink": "Learn about Step Up To Quality",
+    "recognition": "Heart to Heart Enrichment Center holds a Bronze rating through Ohio’s Step Up To Quality program, reflecting our commitment to quality early care and education.",
+    "system": "Step Up To Quality is Ohio’s quality rating and improvement system for early care and education programs.",
+    "policies": [
+      "Comprehensive staff background screening requirements",
+      "CPR and first aid training policies",
+      "Communicable disease prevention and training",
+      "Active classroom supervision",
+      "Secure pickup and release to authorized people"
+    ],
+    "question": "What is Heart to Heart’s Step Up To Quality rating?",
+    "answer": "Heart to Heart Enrichment Center holds a Bronze rating through Ohio’s Step Up To Quality program. Families can verify our rating and licensing information through the official Ohio Child Care Search website.",
+    "assistance": "Learn how to apply for childcare assistance",
+    "offer": [
+      "We welcome families in Ohio’s Publicly Funded Child Care (PFCC) program.",
+      "Eligible families with full PFCC coverage pay no tuition. PFCC families pay no registration fee.",
+      "We can help you understand how to apply. Ohio’s PFCC program determines eligibility, authorized coverage and any copay."
+    ],
+    "services": [
+      "Supporting Your Entire Family",
+      "Connecting Families With Available Benefits",
+      "Helping Children Stay on Track",
+      "Building Confidence and Independence",
+      "Supporting Growing Children",
+      "Making the School Day Easier"
+    ],
+    "programLead": "Explore care for infants and toddlers, preschoolers and school-age children.",
+    "programs": [
+      "Nurturing care supports early development, growing independence, exploration and age-appropriate routines, with potty training support for toddlers.",
+      "Age-appropriate activities and play encourage curiosity, creativity, social development and early learning.",
+      "A supportive setting for school-age children offers dedicated homework time, help when needed and opportunities to build positive relationships. Free school pickup is offered within 10 miles, subject to school and route availability."
+    ],
+    "day": "A day may include the routines below. The rhythm varies with children’s ages, developmental needs and program schedules.",
+    "rhythm": [
+      "Arrival and settling in",
+      "Meals and daily care routines",
+      "Age-appropriate learning and play",
+      "Social interaction and creative activities",
+      "Rest and quiet time, as appropriate",
+      "Homework time for school-age children",
+      "Family pickup and communication"
+    ],
+    "visit": "Come see Heart to Heart for yourself. Request an in-person tour and learn more about our center.",
+    "about": [
+      "For 16 years, Heart to Heart has welcomed families through the same door on West 25th Street in Cleveland.",
+      "A first drop-off can feel like a big step. A family may be getting used to a new morning routine, or looking for a place where their school-age child can settle in after class. Our West 25th Street location has been part of those everyday moments for families in the neighborhood.",
+      "Our work extends beyond the center. We take an active part in the Cleveland community and partner with local nonprofits to connect families with a wide range of services and experiences. Those relationships help us point families toward local resources and give them more ways to take part in community life."
+    ]
+  },
+  "es": {
+    "safety": "Seguridad y confianza",
+    "heading": "Reconocidos por la calidad. Comprometidos con el cuidado.",
+    "rating": "Step Up To Quality de Ohio — Calificación Bronce",
+    "alt": "Premio Bronce de Step Up To Quality de Ohio",
+    "licensed": "Centro de cuidado infantil con licencia de Ohio",
+    "number": "Número de licencia",
+    "since": "Con licencia desde 2014",
+    "licenseDetails": "El Departamento de Niños y Jóvenes de Ohio emitió nuestra licencia continua de cuidado infantil el 11 de septiembre de 2014.",
+    "verify": "Verifica nuestra licencia y calificación en Ohio",
+    "programLink": "Conoce Step Up To Quality",
+    "recognition": "Heart to Heart Enrichment Center tiene una calificación Bronce en el programa Step Up To Quality de Ohio, que refleja nuestro compromiso con el cuidado y la educación de calidad en la primera infancia.",
+    "system": "Step Up To Quality es el sistema de Ohio para calificar y mejorar la calidad de los programas de cuidado y educación en la primera infancia.",
+    "policies": [
+      "Requisitos de verificación integral de antecedentes del personal",
+      "Políticas de capacitación en RCP y primeros auxilios",
+      "Prevención de enfermedades transmisibles y capacitación",
+      "Supervisión activa en las aulas",
+      "Recogida segura y entrega a personas autorizadas"
+    ],
+    "question": "¿Qué calificación tiene Heart to Heart en Step Up To Quality?",
+    "answer": "Heart to Heart Enrichment Center tiene una calificación Bronce en el programa Step Up To Quality de Ohio. Las familias pueden verificar la calificación y la licencia en el sitio oficial Ohio Child Care Search.",
+    "assistance": "Aprende cómo solicitar ayuda para el cuidado infantil",
+    "offer": [
+      "Aceptamos a familias del Programa de Cuidado Infantil con Fondos Públicos de Ohio (PFCC).",
+      "Las familias elegibles con cobertura completa de PFCC no pagan por el cuidado. Las familias de PFCC no pagan cuota de inscripción.",
+      "Podemos orientarte sobre la solicitud. El programa PFCC de Ohio determina la elegibilidad, la cobertura autorizada y cualquier copago."
+    ],
+    "services": [
+      "Apoyamos a toda tu familia",
+      "Te orientamos sobre los beneficios disponibles",
+      "Ayudamos a los niños a seguir el ritmo escolar",
+      "Fomentamos la confianza y la autonomía",
+      "Apoyamos a los niños en su crecimiento",
+      "Facilitamos la jornada escolar"
+    ],
+    "programLead": "Conoce las opciones de cuidado para bebés, niños pequeños, preescolares y niños en edad escolar.",
+    "programs": [
+      "Ofrecemos un cuidado afectuoso que apoya el desarrollo temprano, la autonomía, la exploración y las rutinas adecuadas para cada edad, con apoyo para que los niños pequeños aprendan a usar el baño.",
+      "Las actividades y el juego adecuados para cada edad estimulan la curiosidad, la creatividad, el desarrollo social y el aprendizaje temprano.",
+      "Ofrecemos un entorno acogedor con tiempo para las tareas escolares, ayuda cuando se necesita y oportunidades para entablar relaciones positivas. La recogida escolar gratuita se ofrece dentro de 10 millas, según la disponibilidad de escuelas y rutas."
+    ],
+    "day": "El día puede incluir estas rutinas. El ritmo varía según las edades, las necesidades de desarrollo y los horarios de los programas.",
+    "rhythm": [
+      "Llegada y adaptación al inicio del día",
+      "Comidas y rutinas de cuidado diario",
+      "Aprendizaje y juego adecuados para cada edad",
+      "Interacción social y actividades creativas",
+      "Descanso y tiempo tranquilo, según corresponda",
+      "Tiempo para las tareas de los niños en edad escolar",
+      "Recogida y comunicación con las familias"
+    ],
+    "visit": "Ven a conocer Heart to Heart. Solicita una visita presencial y descubre más sobre nuestro centro.",
+    "about": [
+      "Desde hace 16 años, Heart to Heart recibe a las familias por la misma puerta en West 25th Street, en Cleveland.",
+      "Dejar a un niño por primera vez puede ser un gran paso. Tal vez una familia esté adaptándose a una nueva rutina matutina o buscando un lugar donde su hijo en edad escolar pueda sentirse a gusto después de clases. En nuestro centro de West 25th Street acompañamos a las familias del barrio en esos momentos cotidianos.",
+      "Nuestro trabajo va más allá del centro. Participamos activamente en la comunidad de Cleveland y colaboramos con organizaciones locales sin fines de lucro para conectar a las familias con una amplia variedad de servicios y experiencias. Estas alianzas nos ayudan a orientar a las familias hacia recursos locales y a ofrecerles más formas de participar en la vida de la comunidad."
+    ]
+  },
+  "fr": {
+    "safety": "Sécurité et confiance",
+    "heading": "Une qualité reconnue, un engagement au quotidien.",
+    "rating": "Step Up To Quality de l’Ohio — Niveau Bronze",
+    "alt": "Prix Bronze du programme Step Up To Quality de l’Ohio",
+    "licensed": "Centre de garde agréé par l’Ohio",
+    "number": "Numéro d’agrément",
+    "since": "Agréé depuis 2014",
+    "licenseDetails": "Le Département de l’enfance et de la jeunesse de l’Ohio a délivré notre agrément de garde à durée indéterminée le 11 septembre 2014.",
+    "verify": "Vérifier notre agrément et notre niveau en Ohio",
+    "programLink": "Découvrir Step Up To Quality",
+    "recognition": "Heart to Heart Enrichment Center a obtenu le niveau Bronze du programme Step Up To Quality de l’Ohio, qui témoigne de notre engagement pour la qualité de l’accueil et de l’éducation des jeunes enfants.",
+    "system": "Step Up To Quality est le système de l’Ohio qui évalue et améliore la qualité des programmes d’accueil et d’éducation de la petite enfance.",
+    "policies": [
+      "Exigences de vérification complète des antécédents du personnel",
+      "Politiques de formation à la RCR et aux premiers secours",
+      "Prévention des maladies transmissibles et formation",
+      "Surveillance active dans les salles",
+      "Départ sécurisé avec une personne autorisée"
+    ],
+    "question": "Quel niveau Heart to Heart a-t-il obtenu dans Step Up To Quality ?",
+    "answer": "Heart to Heart Enrichment Center a obtenu le niveau Bronze du programme Step Up To Quality de l’Ohio. Les familles peuvent vérifier ce niveau et les informations sur notre agrément sur le site officiel Ohio Child Care Search.",
+    "assistance": "Découvrir comment demander une aide à la garde d’enfants",
+    "offer": [
+      "Nous accueillons les familles du programme de garde financée par des fonds publics de l’Ohio (PFCC).",
+      "Les familles admissibles entièrement couvertes par le PFCC ne paient pas de frais de garde. Les familles du PFCC ne paient pas de frais d’inscription.",
+      "Nous pouvons vous expliquer comment déposer une demande. Le programme PFCC de l’Ohio détermine l’admissibilité, la couverture autorisée et tout reste à charge."
+    ],
+    "services": [
+      "Accompagner toute votre famille",
+      "Vous orienter vers les aides disponibles",
+      "Accompagner les enfants dans leur travail scolaire",
+      "Encourager la confiance et l’autonomie",
+      "Bien nourrir les enfants qui grandissent",
+      "Faciliter la journée d’école"
+    ],
+    "programLead": "Découvrez nos options de garde pour les nourrissons, les tout-petits et les enfants d’âge préscolaire ou scolaire.",
+    "programs": [
+      "Un accueil bienveillant favorise le développement, l’autonomie, l’exploration et des routines adaptées à l’âge. Nous accompagnons les tout-petits dans l’apprentissage de la propreté.",
+      "Les activités et les jeux adaptés à l’âge encouragent la curiosité, la créativité, la socialisation et les premiers apprentissages.",
+      "Un cadre accueillant prévoit du temps pour les devoirs, une aide au besoin et des occasions de nouer des liens positifs. Le transport gratuit depuis les écoles situées dans un rayon de 10 miles dépend des établissements et des trajets disponibles."
+    ],
+    "day": "La journée peut comprendre les moments ci-dessous. Le rythme varie selon l’âge des enfants, leurs besoins de développement et les horaires des programmes.",
+    "rhythm": [
+      "Arrivée et installation",
+      "Repas et soins quotidiens",
+      "Apprentissage et jeux adaptés à l’âge",
+      "Échanges et activités créatives",
+      "Repos et temps calme selon les besoins",
+      "Temps consacré aux devoirs pour les enfants d’âge scolaire",
+      "Départ et échanges avec les familles"
+    ],
+    "visit": "Venez découvrir Heart to Heart. Demandez une visite sur place pour en savoir plus sur notre centre.",
+    "about": [
+      "Depuis 16 ans, Heart to Heart accueille les familles à la même adresse, sur West 25th Street à Cleveland.",
+      "Le premier jour de garde peut être une grande étape. Une famille s’habitue parfois à une nouvelle routine du matin, ou cherche un lieu où son enfant d’âge scolaire pourra se détendre après les cours. Dans notre centre de West 25th Street, nous accompagnons les familles du quartier dans ces moments du quotidien.",
+      "Notre action se poursuit au-delà du centre. Nous participons activement à la vie de Cleveland et travaillons avec des organismes locaux sans but lucratif pour donner aux familles accès à un large éventail de services et d’expériences. Ces liens nous permettent de les orienter vers des ressources locales et de leur offrir davantage d’occasions de participer à la vie du quartier."
+    ]
+  },
+  "ar": {
+    "safety": "السلامة والثقة",
+    "heading": "تقدير لجودتنا والتزامنا بالرعاية",
+    "rating": "برنامج Step Up To Quality في أوهايو — التصنيف البرونزي",
+    "alt": "جائزة المستوى البرونزي من برنامج Step Up To Quality في أوهايو",
+    "licensed": "مركز رعاية أطفال مرخّص في أوهايو",
+    "number": "رقم الترخيص",
+    "since": "مرخّص منذ عام ٢٠١٤",
+    "licenseDetails": "أصدرت إدارة الأطفال والشباب في أوهايو ترخيصنا المستمر لرعاية الأطفال في ١١ سبتمبر ٢٠١٤.",
+    "verify": "تحقّق من ترخيصنا وتصنيفنا في أوهايو",
+    "programLink": "تعرّف على برنامج Step Up To Quality",
+    "recognition": "حصل مركز Heart to Heart Enrichment Center على التصنيف البرونزي في برنامج Step Up To Quality في أوهايو، وهو يعكس التزامنا بجودة الرعاية والتعليم في مرحلة الطفولة المبكرة.",
+    "system": "برنامج Step Up To Quality هو نظام ولاية أوهايو لتقييم جودة برامج الرعاية والتعليم في مرحلة الطفولة المبكرة وتحسينها.",
+    "policies": [
+      "متطلبات الفحص الشامل لخلفيات العاملين",
+      "سياسات التدريب على الإنعاش القلبي الرئوي والإسعافات الأولية",
+      "الوقاية من الأمراض المعدية والتدريب عليها",
+      "إشراف فعّال داخل الصفوف",
+      "استلام آمن وتسليم الأطفال للأشخاص المخوّلين"
+    ],
+    "question": "ما تصنيف مركز هارت تو هارت في برنامج Step Up To Quality؟",
+    "answer": "يحمل مركز Heart to Heart Enrichment Center التصنيف البرونزي في برنامج Step Up To Quality في أوهايو. يمكن للأسر التحقّق من التصنيف ومعلومات الترخيص عبر الموقع الرسمي Ohio Child Care Search.",
+    "assistance": "تعرّف على طريقة التقديم للحصول على مساعدة في تكلفة رعاية الأطفال",
+    "offer": [
+      "نرحّب بالأسر المشاركة في برنامج رعاية الأطفال المموّل من القطاع العام في أوهايو (PFCC).",
+      "لا تدفع الأسر المؤهلة ذات التغطية الكاملة رسوم الرعاية. ولا تدفع الأسر المشاركة في البرنامج رسوم التسجيل.",
+      "يمكننا مساعدتك في فهم طريقة التقديم. يحدد برنامج PFCC في أوهايو الأهلية والتغطية المعتمدة وأي مساهمة مالية."
+    ],
+    "services": [
+      "ندعم أسرتك بأكملها",
+      "نساعد الأسر على فهم المساعدات المتاحة",
+      "نساند الأطفال في متابعة واجباتهم المدرسية",
+      "نشجّع الثقة والاستقلالية",
+      "ندعم الأطفال في مرحلة النمو",
+      "نجعل اليوم الدراسي أسهل"
+    ],
+    "programLead": "تعرّف على خيارات الرعاية للرضّع والأطفال الصغار وأطفال ما قبل المدرسة والأطفال في سن المدرسة.",
+    "programs": [
+      "رعاية حانية تدعم النمو المبكر والاستقلالية والاستكشاف والروتين المناسب للعمر، مع مساعدة الأطفال الصغار على التدرّب على استخدام المرحاض.",
+      "أنشطة وألعاب ملائمة للعمر تشجّع الفضول والإبداع والنمو الاجتماعي والتعلّم المبكر.",
+      "بيئة داعمة للأطفال في سن المدرسة، فيها وقت مخصّص للواجبات ومساعدة عند الحاجة وفرص لبناء علاقات إيجابية. يتوفر نقل مجاني من المدارس ضمن ١٠ أميال حسب توفر المدارس والمسارات."
+    ],
+    "day": "قد يتضمن اليوم الروتين الموضّح أدناه. ويختلف إيقاعه بحسب أعمار الأطفال واحتياجاتهم النمائية ومواعيد البرامج.",
+    "rhythm": [
+      "الوصول والاستقرار في بداية اليوم",
+      "الوجبات وروتين الرعاية اليومية",
+      "التعلّم واللعب المناسبان للعمر",
+      "التفاعل الاجتماعي والأنشطة الإبداعية",
+      "الراحة والهدوء بحسب الحاجة",
+      "وقت للواجبات للأطفال في سن المدرسة",
+      "استلام الأطفال والتواصل مع الأسر"
+    ],
+    "visit": "تفضّل بزيارة هارت تو هارت لتتعرف عليه بنفسك. اطلب جولة حضورية واعرف المزيد عن مركزنا.",
+    "about": [
+      "منذ ١٦ عامًا، يستقبل مركز هارت تو هارت الأسر في الموقع نفسه في شارع ٢٥ الغربي في كليفلاند.",
+      "قد يكون ترك الطفل في المركز لأول مرة خطوة كبيرة. ربما تعتاد الأسرة روتينًا صباحيًا جديدًا، أو تبحث عن مكان يستريح فيه طفلها بعد المدرسة. في مركزنا في شارع ٢٥ الغربي، نرافق أسر الحي في مثل هذه اللحظات اليومية.",
+      "يمتد عملنا إلى خارج المركز. نشارك بفاعلية في مجتمع كليفلاند ونتعاون مع منظمات محلية غير ربحية لربط الأسر بمجموعة واسعة من الخدمات والتجارب. وتساعدنا هذه الشراكات على تعريف الأسر بالموارد المحلية وإتاحة مزيد من الفرص لها للمشاركة في الحياة المجتمعية."
+    ]
+  },
+  "sw": {
+    "safety": "Usalama na Uaminifu",
+    "heading": "Tumetambuliwa kwa Ubora. Tumejitolea kwa Malezi.",
+    "rating": "Step Up To Quality ya Ohio — Daraja la Shaba",
+    "alt": "Tuzo ya Shaba ya Step Up To Quality ya Ohio",
+    "licensed": "Kituo cha malezi ya watoto chenye leseni ya Ohio",
+    "number": "Nambari ya leseni",
+    "since": "Ina leseni tangu 2014",
+    "licenseDetails": "Idara ya Watoto na Vijana ya Ohio ilitoa leseni yetu ya kudumu ya malezi ya watoto tarehe 11 Septemba 2014.",
+    "verify": "Thibitisha leseni na daraja letu huko Ohio",
+    "programLink": "Fahamu kuhusu Step Up To Quality",
+    "recognition": "Heart to Heart Enrichment Center ina daraja la Shaba katika mpango wa Step Up To Quality wa Ohio, linaloonyesha kujitolea kwetu kwa malezi na elimu bora ya watoto wadogo.",
+    "system": "Step Up To Quality ni mfumo wa Ohio wa kutathmini na kuboresha ubora wa programu za malezi na elimu ya watoto wadogo.",
+    "policies": [
+      "Masharti ya uhakiki wa kina wa historia ya wafanyakazi",
+      "Sera za mafunzo ya CPR na huduma ya kwanza",
+      "Mafunzo na kinga dhidi ya magonjwa ya kuambukiza",
+      "Uangalizi wa karibu darasani",
+      "Watoto hukabidhiwa kwa usalama kwa watu walioidhinishwa"
+    ],
+    "question": "Heart to Heart ina daraja gani katika mpango wa Step Up To Quality?",
+    "answer": "Heart to Heart Enrichment Center ina daraja la Shaba katika mpango wa Step Up To Quality wa Ohio. Familia zinaweza kuthibitisha daraja na taarifa za leseni kwenye tovuti rasmi ya Ohio Child Care Search.",
+    "assistance": "Fahamu jinsi ya kuomba msaada wa gharama za malezi ya watoto",
+    "offer": [
+      "Tunakaribisha familia zinazoshiriki katika mpango wa Ohio wa Malezi ya Watoto Yanayofadhiliwa na Serikali (PFCC).",
+      "Familia zinazostahili na kupata ufadhili kamili wa PFCC hazilipi ada ya malezi. Familia za PFCC hazilipi ada ya usajili.",
+      "Tunaweza kukusaidia kuelewa jinsi ya kutuma ombi. Mpango wa PFCC wa Ohio huamua ustahiki, huduma zinazolipiwa na mchango wowote wa familia."
+    ],
+    "services": [
+      "Kusaidia Familia Yako Nzima",
+      "Kuelekeza Familia kwenye Misaada Inayopatikana",
+      "Kuwasaidia Watoto Kuendelea na Masomo",
+      "Kukuza Kujiamini na Kujitegemea",
+      "Kusaidia Watoto Wanaokua",
+      "Kurahisisha Siku ya Shule"
+    ],
+    "programLead": "Fahamu huduma za malezi kwa watoto wachanga, watoto wadogo, watoto wa shule ya awali na watoto wa umri wa kwenda shule.",
+    "programs": [
+      "Malezi ya upendo yanasaidia ukuaji wa awali, kujitegemea, kugundua mambo mapya na mazoea yanayofaa umri. Watoto wadogo pia hupata msaada wa kujifunza kutumia choo.",
+      "Shughuli na michezo inayofaa umri huchochea udadisi, ubunifu, ukuaji wa kijamii na kujifunza mapema.",
+      "Watoto wa umri wa kwenda shule hupata muda wa kufanya kazi za shule, msaada wanapouhitaji na nafasi ya kujenga mahusiano mazuri. Tunawachukua watoto shuleni bila malipo hadi umbali wa maili 10, kulingana na shule na njia zinazopatikana."
+    ],
+    "day": "Siku inaweza kujumuisha mambo yaliyo hapa chini. Utaratibu hutegemea umri wa watoto, mahitaji yao ya ukuaji na ratiba za programu.",
+    "rhythm": [
+      "Kuwasili na kuzoea mazingira",
+      "Milo na malezi ya kila siku",
+      "Kujifunza na kucheza kulingana na umri",
+      "Kushirikiana na kufanya shughuli za ubunifu",
+      "Kupumzika na muda wa utulivu inapohitajika",
+      "Muda wa kazi za shule kwa watoto wa umri wa kwenda shule",
+      "Familia kuwachukua watoto na kuwasiliana na wafanyakazi"
+    ],
+    "visit": "Karibu ujionee Heart to Heart. Omba kutembelea kituo ana kwa ana ili ufahamu zaidi kuhusu huduma zetu.",
+    "about": [
+      "Kwa miaka 16, Heart to Heart imekaribisha familia katika eneo lilelile kwenye West 25th Street, Cleveland.",
+      "Kumwacha mtoto kituoni kwa mara ya kwanza kunaweza kuwa hatua kubwa. Familia inaweza kuwa inazoea utaratibu mpya wa asubuhi au inatafuta mahali ambapo mtoto wake anaweza kutulia baada ya shule. Katika kituo chetu cha West 25th Street, tunazipokea familia za mtaa huu katika nyakati kama hizo za kila siku.",
+      "Kazi yetu inaendelea hata nje ya kituo. Tunashiriki kikamilifu katika jamii ya Cleveland na kushirikiana na mashirika ya eneo letu yasiyo ya faida ili familia zipate huduma mbalimbali na fursa za kushiriki katika shughuli tofauti. Ushirikiano huo hutusaidia kuzielekeza familia kwenye rasilimali za karibu na kuzipa njia zaidi za kushiriki katika maisha ya jamii."
+    ]
+  }
+}
