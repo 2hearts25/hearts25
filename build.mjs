@@ -136,7 +136,7 @@ function frame(language, slug, title, description, body, meta = {}) {
   const register = button(path(language,'register'), registrations[language].title, true);
   const portal = link(path(language,portalSlug),portalByLocale[language].ui.title,current(portalSlug,slug));
   const virtualNav = link(path(language,'virtual-tour'),virtualTour[language].title,current('virtual-tour',slug));
-  const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations].includes(slug);
+  const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations,...privatePages].includes(slug);
   const foot = t.footer;
   const alternate = slug === '404' ? '' : languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">`;
   const suggestion = Object.entries({es:'¿Prefieres ver el sitio en español?',ar:'هل تفضّل عرض الموقع بالعربية؟',sw:'Je, ungependa kuona tovuti kwa Kiswahili?',fr:'Préférez-vous consulter le site en français ?'}).map(([code,prompt]) => `<div class="suggestion" lang="${code}" dir="${code === 'ar' ? 'rtl' : 'ltr'}" data-suggest="${code}" hidden>${link(path(code,page),prompt,`data-language="${code}"`)}</div>`).join('');
@@ -430,7 +430,7 @@ for (const language of languages) {
   const ri = requestInfo[language];
   pagesForLocale['information-received'] = {title:ri.doneTitle,intro:ri.doneBody,body:`<article class="page section wrap"><div class="done"><h1>${escape(ri.doneTitle)}</h1><p class="intro">${escape(ri.doneBody)}</p><p>${escape(ri.doneCall)} <a href="${tel}">${phone}</a><br>${escape(ri.hours)}</p><div class="actions">${button(path(language),ri.home)}</div></div></article>`};
   for (const slug of Object.keys(pages)) pagesForLocale[slug] = pageContent(language,slug);
-  if (language === 'en') pagesForLocale['staff/documents'] = {title:'Enrollment documents — staff',intro:'Authorized staff only.',body:`<article class="page section wrap"><noscript><p class="note">JavaScript is required.</p></noscript><div id="staff-app" class="enroll" data-endpoint="${enrollEndpoint}" data-auth="${supabaseAuth}"><p class="loading" role="status">Loading…</p></div></article>`};
+  pagesForLocale['staff/documents'] = {title:'Enrollment documents — staff',intro:'Authorized staff only.',body:`<article class="page section wrap"><noscript><p class="note">JavaScript is required.</p></noscript><div id="staff-app" class="enroll" data-endpoint="${enrollEndpoint}" data-auth="${supabaseAuth}"><p class="loading" role="status">Loading…</p></div></article>`};
   for (const [slug,page] of Object.entries(pagesForLocale)) {
     const route = path(language,slug === '404' ? '' : slug).slice(1);
     const destination = join(route,slug === '404' ? '404.html' : 'index.html');

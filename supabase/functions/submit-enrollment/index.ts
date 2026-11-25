@@ -41,7 +41,7 @@ function cors(origin: string | null): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin === allowedOrigin() ? origin : allowedOrigin(),
     "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-admin-secret, x-client-info, x-upload-token, x-upload-category, x-upload-name, x-upload-replaces",
-    "Access-Control-Allow-Methods": "POST, OPTIONS", Vary: "Origin",
+    "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Expose-Headers": "Content-Disposition", Vary: "Origin",
   };
 }
 const json = (body: unknown, status: number, origin: string | null, extra: Record<string, string> = {}) =>

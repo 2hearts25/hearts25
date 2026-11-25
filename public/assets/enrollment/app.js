@@ -190,12 +190,17 @@ function control(f, { get, set, ctx, path, cond }) {
 const fmtSize = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
 const upEndpoint = p => ENDPOINT.replace(/\/+$/, '') + '/upload/' + p;
 const authHeaders = () => ({ apikey: PUBLIC_KEY, Authorization: 'Bearer ' + PUBLIC_KEY });
-async function uploadToken() {
-  if (S.uploadToken) return S.uploadToken;
-  const r = await fetch(upEndpoint('session'), { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(20000) });
-  if (r.status === 503) { S.uploadsOff = true; throw new Error('off'); }
-  if (!r.ok) throw new Error('session');
-  S.uploadToken = (await r.json()).token; return S.uploadToken;
+// One upload session per application: concurrent uploads (e.g. both insurance card photos at once) share one in-flight request.
+let sessionP = null;
+function uploadToken() {
+  if (S.uploadToken) return Promise.resolve(S.uploadToken);
+  const owner = S;
+  return (sessionP ??= (async () => {
+    const r = await fetch(upEndpoint('session'), { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(20000) });
+    if (r.status === 503) { owner.uploadsOff = true; throw new Error('off'); }
+    if (!r.ok) throw new Error('session');
+    owner.uploadToken = (await r.json()).token; return owner.uploadToken;
+  })().finally(() => { sessionP = null; }));
 }
 function sendFile(item, token) {
   return new Promise(resolve => {
