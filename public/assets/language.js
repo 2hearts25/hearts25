@@ -30,3 +30,26 @@ if (tour) {
   const age = tour.elements.age_group;
   if (Array.from(age.options).some(option => option.value === requestedAge)) age.value = requestedAge;
 }
+
+const openDropdowns = () => document.querySelectorAll("details[data-dropdown][open]");
+
+document.addEventListener("click", event => {
+  for (const dropdown of openDropdowns()) {
+    if (!dropdown.contains(event.target)) dropdown.open = false;
+  }
+});
+
+document.addEventListener("focusin", event => {
+  for (const dropdown of openDropdowns()) {
+    if (!dropdown.contains(event.target)) dropdown.open = false;
+  }
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+  for (const dropdown of openDropdowns()) {
+    const hadFocus = dropdown.contains(document.activeElement);
+    dropdown.open = false;
+    if (hadFocus) dropdown.querySelector("summary")?.focus();
+  }
+});

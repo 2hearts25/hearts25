@@ -26,6 +26,8 @@ const agePages = ['programs/infants-toddlers','programs/preschool','programs/sch
 const languages = Object.keys(locales);
 const policyLabels = {en:'Nondiscrimination',es:'No discriminación',ar:'عدم التمييز',sw:'Kutobagua',fr:'Non-discrimination'};
 const nav = ['programs', 'our-day', 'enrollment', 'family-support', 'safety', 'about', 'faq', 'contact'];
+const navPriority = {programs:1,'our-day':3,enrollment:1,'family-support':2,safety:2,contact:3};
+const moreLabels = {en:'More',es:'Más',ar:'المزيد',sw:'Zaidi',fr:'Plus'};
 const portalSlug = 'parent-portal';
 const brand = 'Heart to Heart Enrichment Center';
 const licenseNumber = '000000300622';
@@ -61,6 +63,8 @@ const button = (url, text, secondary = false) => link(url, text, `class="button$
 const current = (left, right) => left === right ? 'aria-current="page"' : '';
 const list = entries => `<ul>${entries.map(entry => `<li>${entry}</li>`).join('')}</ul>`;
 const globe = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>';
+const chevron = '<svg class="chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
+const menuIcon = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="bars" d="M4 7h16M4 12h16M4 17h16"/><path class="cross" d="M6 6l12 12M18 6 6 18"/></svg>';
 const heart = '<span class="mark" aria-hidden="true"><span>♥</span><span>♥</span><span>♥</span><span>♥</span></span>';
 const logo = language => `<a class="brand" href="${path(language)}">${heart}<span lang="en"><strong>Heart to Heart</strong><small>Enrichment Center</small></span></a>`;
 
@@ -82,9 +86,30 @@ const portalByLocale = Object.fromEntries(languages.map(language => {
   return [language, { ui, documents }];
 }));
 
-function dropdown(language, page) {
+function dropdown(language, page, inHeader = false) {
   const labels = {en:'Website language',es:'Idioma del sitio',ar:'لغة الموقع',sw:'Lugha ya tovuti',fr:'Langue du site'};
-  return `<details class="language"><summary aria-label="${labels[language]} · ${escape(locales[language].language)}">${globe}<span lang="${language}">${escape(locales[language].language)}</span></summary>${list(languages.map(option => link(path(option, page), locales[option].language, `data-language="${option}" lang="${option}" hreflang="${option}" ${current(option,language)}`)))}</details>`;
+  return `<details class="language" data-dropdown><summary aria-label="${labels[language]} · ${escape(locales[language].language)}">${globe}<span lang="${language}">${escape(locales[language].language)}</span>${inHeader ? chevron : ''}</summary>${list(languages.map(option => link(path(option, page), locales[option].language, `data-language="${option}" lang="${option}" hreflang="${option}" ${current(option,language)}`)))}</details>`;
+}
+
+function header(language, page, slug, {tour, register, portal, virtualNav}) {
+  const t = locales[language];
+  const label = escape(t.menu);
+  const info = p0[language][0];
+  const navigation = nav.map((key, index) => ({
+    priority:navPriority[key], url:path(language,key),
+    text:key === 'safety' ? trust[language].safety : t.nav[index], active:current(key,slug)
+  }));
+  const navigationLink = ({url,text,active}) => link(url,text,active);
+  const desktop = navigation.filter(item => item.priority).map(({priority,url,text,active}) =>
+    link(url,text,`data-priority="${priority}" ${active}`)).join('');
+  const requestInfo = link(path(language,'request-information'),info,current('request-information',slug));
+  const more = navigation.filter(item => item.priority !== 1).map(item =>
+    `<li${item.priority ? ` data-priority="${item.priority}"` : ''}>${navigationLink(item)}</li>`).join('');
+  const moreExtras = [virtualNav,portal,requestInfo].map(item => `<li>${item}</li>`).join('');
+  return `<div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span><div class="top-links"><a class="top-phone" href="${tel}">${phone}</a>${link(path(language,portalSlug),portalByLocale[language].ui.title,`class="top-portal" ${current(portalSlug,slug)}`)}${dropdown(language,page,true)}</div></div></div>
+<header class="header"><div class="wrap">${logo(language)}
+<nav class="desktop" aria-label="${label}"><div class="nav-links">${desktop}<details class="nav-more" data-dropdown><summary>${moreLabels[language]}${chevron}</summary><ul>${more}${moreExtras}</ul></details></div><div class="nav-conversion">${tour}${register}</div></nav>
+<details class="mobile" data-dropdown><summary>${menuIcon}<span>${label}</span></summary><nav aria-label="${label}"><div class="menu-actions">${register}${tour}${button(path(language,'request-information'),info,true)}</div><div class="menu-links">${navigation.map(navigationLink).join('')}</div><div class="menu-links menu-secondary">${portal}${virtualNav}${link(tel,t.call)}</div></nav></details></div></header>`;
 }
 
 function frame(language, slug, title, description, body, meta = {}) {
@@ -97,7 +122,6 @@ function frame(language, slug, title, description, body, meta = {}) {
   const q = trust[language];
   const tour = link(path(language,'tour'), t.tour, `class="button" ${current('tour',slug)}`);
   const register = button(path(language,'register'), registrations[language].title, true);
-  const navigation = nav.map((key,i) => link(path(language,key),key === 'safety' ? q.safety : t.nav[i],current(key,slug))).join('');
   const portal = link(path(language,portalSlug),portalByLocale[language].ui.title,current(portalSlug,slug));
   const virtualNav = link(path(language,'virtual-tour'),virtualTour[language].title,current('virtual-tour',slug));
   const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations].includes(slug);
@@ -115,8 +139,7 @@ ${[...confirmations,'404'].includes(slug) ? '<meta name="robots" content="noinde
 <link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script><script defer src="/assets/analytics.js"></script>${formScript}
 </head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
-<div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span>${dropdown(language,page)}</div></div>
-<header class="header"><div class="wrap">${logo(language)}<nav class="desktop" aria-label="${escape(t.menu)}">${navigation}${portal}${virtualNav}<div class="nav-conversion">${tour}${register}</div></nav><details class="mobile"><summary>${escape(t.menu)}</summary><nav aria-label="${escape(t.menu)}">${tour}${register}${portal}${link(path(language,'request-information'),p0[language][0],current('request-information',slug))}${virtualNav}${navigation}</nav></details></div></header>
+${header(language,page,slug,{tour,register,portal,virtualNav})}
 ${suggestion}
 <main id="main" tabindex="-1"${confirmations.includes(slug) ? ' data-confirmation hidden' : ''}>${body}</main>
 <footer class="footer"><div class="wrap">
@@ -207,7 +230,7 @@ function servicesSection(language) {
   const c = p1[language].home;
   const copy = homeCopy[language];
   return `<section class="wrap home-section services" aria-labelledby="services-heading"><h2 id="services-heading">${escape(c.h)}</h2><p>${escape(copy.servicesIntro)}</p>
-<div class="cards home-cards">${copy.services.map(([title,description]) => `<article class="card"><h3>${escape(title)}</h3><p>${escape(description)}</p></article>`).join('')}</div>
+<div class="cards home-cards">${copy.services.map(([title,description]) => `<article class="card"><span class="card-icon" aria-hidden="true">♥</span><h3>${escape(title)}</h3><p>${escape(description)}</p></article>`).join('')}</div>
 <div class="actions">${button(path(language,'family-support'),c.cta[0],true)}</div></section>`;
 }
 
