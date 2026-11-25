@@ -18,6 +18,7 @@ const enrollI18n = Object.fromEntries(await Promise.all(['en','es','fr','ar','sw
 const requestInfo = await read('./request-info.json');
 const documentManifest = await read('./enrollment/document-links.json');
 const virtualTour = await read('./virtual-tour-content.json');
+const homeCopy = await read('./homepage-content.json');
 const enrollEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/submit-enrollment';
 const enrollVersion = '1.2.0-E1';
 const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/website-inquiry';
@@ -155,18 +156,22 @@ ${categories}
 
 function virtualTourPreview(language, standalone = false) {
   const copy = virtualTour[language];
-  const heading = standalone ? 'h1' : 'h2';
-  const subheading = standalone ? 'h2' : 'h3';
+  const tour = path(language,'tour');
+  if (!standalone) return `<section class="virtual-preview virtual-summary" aria-labelledby="virtual-title"><div class="wrap">
+<p class="virtual-status">${escape(copy.title)} — ${escape(virtualStatus[language])}</p>
+<h2 id="virtual-title">${escape(copy.heading)}</h2><p>${escape(homeCopy[language].virtual)}</p>
+<div class="actions">${button(tour,locales[language].tour)}</div></div></section>`;
   return `<section class="virtual-preview" aria-labelledby="virtual-title"><div class="wrap virtual-layout">
-<div class="virtual-title-card"><${heading} id="virtual-title">${escape(copy.title)}</${heading}><p class="virtual-status">${escape(virtualStatus[language])}</p></div>
-<div class="virtual-copy"><${subheading}>${escape(copy.heading)}</${subheading}><p>${escape(copy.intro)}</p><p>${escape(copy.preview)}</p>
-<p>${escape(copy.visit)}</p><div class="actions">${button(path(language,'tour'),copy.action)}${standalone ? '' : button(path(language,'virtual-tour'),copy.title,true)}</div></div>
+<div class="virtual-title-card"><h1 id="virtual-title">${escape(copy.title)}</h1><p class="virtual-status">${escape(virtualStatus[language])}</p></div>
+<div class="virtual-copy"><h2>${escape(copy.heading)}</h2><p>${escape(copy.intro)}</p><p>${escape(copy.preview)}</p>
+<p>${escape(copy.visit)}</p><div class="actions">${button(tour,copy.action)}</div></div>
 </div></section>`;
 }
 
 function homepage(language) {
   const t = locales[language];
   const q = trust[language];
+  const c = homeCopy[language];
   const offer = p0[language];
   const route = key => path(language,key);
   return `<section class="hero-band"><div class="hero wrap">
@@ -174,48 +179,36 @@ function homepage(language) {
 <div class="actions">${button(route('register'),registrations[language].title)}<div class="tour-choices">${button(route('tour'),t.tour,true)}${link(route('virtual-tour'),virtualTour[language].title,'class="virtual-pill"')}</div>${button(route('request-information'),p0[language][0],true)}${button(tel,t.call,true)}</div></div>
 ${photo(t,'classroom',0,true)}</div></section>
 ${qualitySection(language,true)}
-<section class="wrap section affordability"><h2>${escape(offer[7])}</h2><p class="offer">${escape(offer[9])}</p>
-${list([...q.offer.slice(0,2),offer[12],offer[11]].map(escape))}
-<p>${escape(q.offer[2])}</p><div class="actions">${button(route('tuition-assistance'),q.assistance)}${button(route('request-information'),offer[0],true)}</div></section>
+<section class="wrap home-section affordability"><h2>${escape(offer[7])}</h2>
+${list([q.offer[1],offer[9],offer[12],offer[11]].map(escape))}
+<p>${escape(q.offer[0])} ${escape(q.offer[2])}</p><div class="actions">${button(route('tuition-assistance'),q.assistance,true)}</div></section>
+<section class="wrap home-section home-programs" aria-labelledby="programs-heading"><h2 id="programs-heading">${escape(c.programsHeading)}</h2>
+<div class="cards home-cards">${t.cards.map(([title],index) => `<article class="card"><h3>${link(route(agePages[index]),title)}</h3><p>${escape(c.programs[index])}</p></article>`).join('')}</div>
+<div class="actions">${button(route('programs'),c.programsAction,true)}</div></section>
 ${servicesSection(language)}
-<div class="quick"><div class="wrap">${link(route('safety'),q.safety)}${link(route('tuition-assistance'),t.quick[1])}${link(external.map,t.quick[2],'dir="ltr"')}</div></div>
-<section class="section wrap"><div class="section-header"><div><h2>${escape(t.lead[0])}</h2><p>${escape(q.programLead)}</p></div>${button(route('programs'),t.lead[2],true)}</div>
-${careBenefits(t)}
-<div class="cards">${t.cards.map(([title], index) => `<article class="card"><span class="card-icon" aria-hidden="true">${['✦','✿','☀'][index]}</span><h3>${link(route(agePages[index]),title)}</h3><p>${escape(q.programs[index])}</p></article>`).join('')}</div></section>
-<section class="family section"><div class="wrap split">${photo(t,'families',1)}<div><h2>${escape(t.family[0])}</h2><p>${escape(t.family[1])}</p><div class="actions">${button(route('family-support'),t.family[2],true)}</div></div></div></section>
-<section class="section wrap split"><h2>${escape(t.day[0])}</h2><div><p>${escape(q.day)}</p>${list(q.rhythm.map(escape))}<div class="actions">${button(route('our-day'),t.day[2],true)}</div></div></section>
-${virtualTourPreview(language)}
-<section class="section wrap"><div class="callout"><div><h2>${escape(t.visit[0])}</h2><p>${escape(q.visit)}</p></div>${button(route('tour'),t.tour)}</div></section>`;
+${virtualTourPreview(language)}`;
 }
 
 const overrides = await read('./page-translations.json');
 
 function qualitySection(language, onHome = false) {
   const q = trust[language];
-  const t = locales[language];
-  const ratingHeading = onHome ? 'h3' : 'h2';
-  return `<section class="quality" aria-labelledby="quality-heading"><div class="${onHome ? 'wrap ' : ''}quality-inner">
+  return `<section class="quality${onHome ? ' quality-summary' : ''}" aria-labelledby="quality-heading"><div class="${onHome ? 'wrap ' : ''}quality-inner">
 <img class="quality-award" src="${awardAsset}" width="256" height="364" alt="${escape(q.alt)}">
 <div class="quality-copy">
-${onHome ? `<h2 id="quality-heading">${escape(q.heading)}</h2>` : ''}
-<${ratingHeading}${onHome ? '' : ' id="quality-heading"'}>${escape(q.rating)}</${ratingHeading}>
-<p>${escape(onHome ? q.recognition : q.system)}</p>
-<p class="quality-facts"><strong>${escape(q.licensed)}</strong><span>${escape(q.number)} <bdi dir="ltr">${licenseNumber}</bdi></span><span>${escape(q.since)}</span>${onHome ? `<span>${escape(p0[language][10])}</span>` : ''}</p>
-${onHome ? list(q.policies.map(escape)) : `<p>${escape(q.licenseDetails)}</p>`}
-<div class="quality-links">${link(external.provider,q.verify)}${onHome ? '' : link(external.sutq,q.programLink)}</div>
-${onHome ? `<div class="actions">${button(path(language,'safety'),q.safety,true)}${button(path(language,'tour'),t.tour)}</div>` : ''}
+<h2 id="quality-heading">${escape(q.rating)}</h2>
+<p>${escape(onHome ? homeCopy[language].licensed : q.system)}</p>
+${onHome ? '' : `<p class="quality-facts"><strong>${escape(q.licensed)}</strong><span>${escape(q.number)} <bdi dir="ltr">${licenseNumber}</bdi></span><span>${escape(q.since)}</span></p><p>${escape(q.licenseDetails)}</p>`}
+<div class="quality-links">${onHome ? link(path(language,'safety'),q.safety) : ''}${link(external.provider,q.verify)}${onHome ? '' : link(external.sutq,q.programLink)}</div>
 </div></div></section>`;
 }
 
 function servicesSection(language) {
   const c = p1[language].home;
-  const q = trust[language];
-  const icons = ['🤝','🧭','💛','📚','🧸','🍽','🚌','🌍'];
-  const targets = ['family-support','family-support','tuition-assistance','programs/school-age','programs/infants-toddlers','faq','programs/school-age','community'];
-  const headings = [q.services[0],q.services[1],c.cards[2][0],...q.services.slice(2),c.cards[7][0]];
-  return `<section class="section wrap services" aria-labelledby="services-heading"><div class="section-header"><div><h2 id="services-heading">${escape(c.h)}</h2><p>${escape(c.intro)}</p></div></div>
-<div class="cards services-grid">${c.cards.map(([,description],index) => `<article class="card"><span class="card-icon" aria-hidden="true">${icons[index]}</span><h3>${link(path(language,targets[index]),headings[index])}</h3><p>${escape(index === 6 ? p0[language][11] : description)}</p></article>`).join('')}</div>
-<div class="actions">${button(path(language,'family-support'),c.cta[0])}${button(path(language,'request-information'),c.cta[1],true)}${button(path(language,'tour'),c.cta[2],true)}</div></section>`;
+  const copy = homeCopy[language];
+  return `<section class="wrap home-section services" aria-labelledby="services-heading"><h2 id="services-heading">${escape(c.h)}</h2><p>${escape(copy.servicesIntro)}</p>
+<div class="cards home-cards">${copy.services.map(([title,description]) => `<article class="card"><h3>${escape(title)}</h3><p>${escape(description)}</p></article>`).join('')}</div>
+<div class="actions">${button(path(language,'family-support'),c.cta[0],true)}</div></section>`;
 }
 
 function resourcesSection(language) {
@@ -246,9 +239,6 @@ function p1Override(language, slug) {
   return {};
 }
 
-function careBenefits(t) {
-  return `<ul class="care-benefits" role="list">${t.careBenefits.map((label, index) => `<li><span aria-hidden="true">${['🚌','🍽'][index]}</span>${escape(label)}</li>`).join('')}</ul>`;
-}
 
 function registrationPages(language) {
   const copy = registrations[language];
@@ -317,7 +307,7 @@ function pageContent(language, slug) {
     title: page.title, intro:page.intro, metaTitle: seo?.[0], description: showRating ? `${q.rating}. ${seo?.[1] ?? page.intro}` : seo?.[1],
     body: `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
 ${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}
-${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
+${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${escape(p1[language].home.cards[7][1])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
 ${showRating && slug !== 'faq' ? `<p class="note">${link(path(language,'safety'),q.rating)}</p>` : ''}
 ${['enrollment','parents'].includes(slug) ? `<p class="actions">${button(path(language,portalSlug),portalByLocale[language].ui.title,true)}</p>` : ''}
 ${slug === 'tour' ? `<p>${link(path(language,'virtual-tour'),virtualTour[language].title)} · ${escape(virtualStatus[language])}</p>` : ''}
