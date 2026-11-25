@@ -60,10 +60,11 @@ Not testable here: real Resend delivery to real inboxes, real Supabase Storage/A
 
 ## 6. Activation (two phases)
 
-### Phase A — backend, safe while the 1.2.0 site is live (no behaviour change)
-1. Apply the migration `v130_enrollment_completion` to project `zebeclcvrdmisnxkwode`. All flags are created **off**.
-2. Deploy `submit-enrollment` from this branch (`verify_jwt` stays on). With flags off it behaves exactly like 1.2.1 for 1.2.0-E1 submissions.
-3. Smoke test: one synthetic 1.2.0-E1 application through the live site → both PDFs + Director email + parent welcome, as today. Remove the synthetic record afterwards.
+### Phase A — backend, safe while the 1.2.0 site is live (no behaviour change) — **DONE 2026-11-25 (approved by Justin)**
+1. ✅ Migration `v130_enrollment_completion` applied to project `zebeclcvrdmisnxkwode` at ~13:24 UTC. Before applying, the live `enrollment_mark_p1` / `enrollment_unfinished_p1` were compared with the 1.2.1 source the supersets were written from (identical). Verified after: 8 new tables, RLS on every `website_private` table, 19 `_p2` functions, anon/authenticated cannot read any table or execute any enrollment function, private bucket `enrollment-documents` (10.5 MB), all four flags **off**, the 3 existing applications unchanged (`complete`, `access_email_status = none`), sweep selector returns nothing.
+2. ✅ `submit-enrollment` **version 6** deployed (`verify_jwt` on). The deployed entry file (`docs/deploy/submit-enrollment-v6-entry.ts`) imports the function from the immutable commit `85e638270c6783b54e6d2ab0f6d887aec92487bc` of this branch; Supabase bundles that source at deploy time, so production runs byte-for-byte the tested files (GitHub copies verified identical before deploying).
+3. ✅ Smoke test, live, non-destructive (no application created, no email sent): CORS preflight 204 for `https://hearts25.com`; other origins 403; 1.2.0-E1 validation returns exactly the same 54 field errors as the frozen 1.2.0 validator (no 1.3.0 field required); unknown version 409; 1.3.0-E2 refused 409 while `enrollment_v130` is off; `/upload/session`, `/access/open`, `/staff` 503 while their flags are off; `/sweep` 202 and the 10-minute cron keeps succeeding; Supabase security advisor shows only the expected INFO "RLS enabled, no policy" notices (service-role-only design, same as the 1.2.x tables).
+   A full end-to-end 1.2.0-E1 test application was **not** sent through production, because it would email the Director; it was run end to end locally against the real SQL (19 checks). Run it live only if management agrees to receive one marked test email.
 
 ### Phase B — with the website publication (not before)
 1. Build: `H2H_PUBLIC_ANON_KEY=<anon key> tools/make-prebuilt-bundle.sh /tmp/h2h-deploy` (or use the prebuilt bundle in the release package) and publish it (management's Netlify step).
@@ -77,4 +78,5 @@ Not testable here: real Resend delivery to real inboxes, real Supabase Storage/A
 * **Website:** republish Netlify deploy `6b06684dc0e09d6017e415df` (current 1.2.x production).
 * **Backend features:** `update website_private.feature_flags set enabled = false;` — takes effect within 30 seconds; 1.3.0 submissions are then refused with "reload", uploads and links stop, 1.2.0 continues.
 * **Edge Function:** redeploy `submit-enrollment` version 5 source (git `release/november-content`, `supabase/functions/submit-enrollment/`), which ignores every new table and column.
+* **Superset functions only (rarely needed):** `supabase/rollback/v121_functions_restore.sql` restores the exact 1.2.1 definitions of `enrollment_mark_p1` and `enrollment_unfinished_p1` captured before Phase A.
 * **Database:** nothing needs to be removed; the migration is additive and the old functions keep working with the superset definitions. Do not drop evidence tables — they hold signed records.
