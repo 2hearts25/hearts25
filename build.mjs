@@ -25,8 +25,6 @@ const formEndpoint = 'https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/webs
 const agePages = ['programs/infants-toddlers','programs/preschool','programs/school-age'];
 const languages = Object.keys(locales);
 const policyLabels = {en:'Nondiscrimination',es:'No discriminación',ar:'عدم التمييز',sw:'Kutobagua',fr:'Non-discrimination'};
-const nav = ['programs', 'our-day', 'enrollment', 'family-support', 'safety', 'about', 'faq', 'contact'];
-const navPriority = {programs:1,'our-day':3,enrollment:1,'family-support':2,safety:2,contact:3};
 const moreLabels = {en:'More',es:'Más',ar:'المزيد',sw:'Zaidi',fr:'Plus'};
 const portalSlug = 'parent-portal';
 const brand = 'Heart to Heart Enrichment Center';
@@ -95,21 +93,29 @@ function header(language, page, slug, {tour, register, portal, virtualNav}) {
   const t = locales[language];
   const label = escape(t.menu);
   const info = p0[language][0];
-  const navigation = nav.map((key, index) => ({
-    priority:navPriority[key], url:path(language,key),
-    text:key === 'safety' ? trust[language].safety : t.nav[index], active:current(key,slug)
-  }));
-  const navigationLink = ({url,text,active}) => link(url,text,active);
-  const desktop = navigation.filter(item => item.priority).map(({priority,url,text,active}) =>
-    link(url,text,`data-priority="${priority}" ${active}`)).join('');
-  const requestInfo = link(path(language,'request-information'),info,current('request-information',slug));
-  const more = navigation.filter(item => item.priority !== 1).map(item =>
-    `<li${item.priority ? ` data-priority="${item.priority}"` : ''}>${navigationLink(item)}</li>`).join('');
-  const moreExtras = [virtualNav,portal,requestInfo].map(item => `<li>${item}</li>`).join('');
+  const navLink = (key, text) => link(path(language,key),text,current(key,slug));
+  const primary = [
+    navLink('programs',t.nav[0]),
+    navLink('enrollment',t.nav[2]),
+    navLink('safety',trust[language].safety),
+    navLink('contact',t.nav[7])
+  ].join('');
+  const tuition = overrides[language]?.['tuition-assistance']?.title ?? pages['tuition-assistance'].title;
+  const information = [
+    navLink('about',t.nav[5]),
+    navLink('our-day',t.nav[1]),
+    navLink('family-support',t.nav[3]),
+    navLink('tuition-assistance',tuition),
+    navLink('community',t.footer[6]),
+    navLink('faq',t.nav[6]),
+    portal,
+    virtualNav
+  ];
+  const more = list([...information,navLink('request-information',info)]);
   return `<div class="top"><div class="wrap"><span class="location">${escape(t.where)}</span><div class="top-links"><a class="top-phone" href="${tel}">${phone}</a>${link(path(language,portalSlug),portalByLocale[language].ui.title,`class="top-portal" ${current(portalSlug,slug)}`)}${dropdown(language,page,true)}</div></div></div>
 <header class="header"><div class="wrap">${logo(language)}
-<nav class="desktop" aria-label="${label}"><div class="nav-links">${desktop}<details class="nav-more" data-dropdown><summary>${moreLabels[language]}${chevron}</summary><ul>${more}${moreExtras}</ul></details></div><div class="nav-conversion">${tour}${register}</div></nav>
-<details class="mobile" data-dropdown><summary>${menuIcon}<span>${label}</span></summary><nav aria-label="${label}"><div class="menu-actions">${register}${tour}${button(path(language,'request-information'),info,true)}</div><div class="menu-links">${navigation.map(navigationLink).join('')}</div><div class="menu-links menu-secondary">${portal}${virtualNav}${link(tel,t.call)}</div></nav></details></div></header>`;
+<nav class="desktop" aria-label="${label}"><div class="nav-links">${primary}<details class="nav-more" data-dropdown><summary>${moreLabels[language]}${chevron}</summary>${more}</details></div><div class="nav-conversion">${tour}${register}</div></nav>
+<details class="mobile" data-dropdown><summary>${menuIcon}<span>${label}</span></summary><nav aria-label="${label}"><div class="menu-actions">${register}${tour}${button(path(language,'request-information'),info,true)}</div><div class="menu-links">${primary}</div><div class="menu-links menu-secondary">${information.join('')}${link(tel,t.call)}</div></nav></details></div></header>`;
 }
 
 function frame(language, slug, title, description, body, meta = {}) {
