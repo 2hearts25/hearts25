@@ -3,6 +3,8 @@
 export const PHONE_RE = /^\+?[0-9 ().\-]{7,32}$/;
 export const EMAIL_RE = /^[^\s@<>()[\],;:"\\]+@[^\s@<>()[\],;:"\\]+\.[^\s@<>()[\],;:"\\]{2,}$/;
 export const digits = s => String(s ?? '').replace(/\D/g, '');
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+export const MONEY_RE = /^\$?\s?(\d{1,3})(\.\d{1,2})?$/; // weekly copayment as reported by the parent: 0–999.99
 
 export function evalCond(c, d, schema) {
   if (c === undefined || c === null || c === 0 || c === false) return false;
@@ -15,6 +17,7 @@ export function evalCond(c, d, schema) {
     case 'any': return c.slice(1).some(x => evalCond(x, d, schema));
     case 'not': return !evalCond(a, d, schema);
     case 'fn': return evalCond(schema.fns[a], d, schema);
+    case 'cfg': return Boolean(schema.cfg && schema.cfg[a]); // server-side switch shipped inside the schema (agreements.mjs)
     default: throw new Error('bad condition ' + op);
   }
 }
@@ -33,6 +36,8 @@ export function checkValue(f, v, d, today) {
   if (f.t === 'radio' || f.t === 'select') { if (!f.o.includes(v)) return 'choice'; }
   if (f.t === 'checks') { if (!Array.isArray(v) || v.some(x => !f.o.includes(x))) return 'choice'; }
   if (f.t === 'check') { if (typeof v !== 'boolean') return 'type'; }
+  if (f.t === 'upload') { if (!Array.isArray(v) || v.some(x => typeof x !== 'string' || !UUID_RE.test(x))) return 'type'; if (new Set(v).size !== v.length) return 'type'; if (v.length > (f.max || 1)) return 'tooMany'; }
+  if (f.v === 'money') { if (typeof v !== 'string' || !MONEY_RE.test(v.trim())) return 'money'; }
   if (f.t === 'state') { if (!/^[A-Z]{2}$/.test(v)) return 'choice'; }
   if (f.t === 'email' || f.v === 'email') { if (typeof v !== 'string' || v.length > 254 || !EMAIL_RE.test(v.trim())) return 'email'; }
   if (f.t === 'tel' || f.v === 'phone') { if (!PHONE_RE.test(v) || digits(v).length < 10 || digits(v).length > 15) return 'phone'; }

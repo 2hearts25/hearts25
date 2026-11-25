@@ -289,6 +289,17 @@ begin
   return pg_catalog.jsonb_build_object('ok', true, 'documents', out);
 end $f$;
 
+-- Read-only pre-check used BEFORE an application is stored: every referenced id must be a stored file of this session and category.
+create or replace function public.enrollment_docs_check_p2(p_token_hash text, p_docs jsonb) returns jsonb
+language sql stable set search_path to '' as $f$
+  select pg_catalog.jsonb_build_object('ok', count(*) filter (where d.id is null) = 0,
+           'bad', coalesce(pg_catalog.jsonb_agg(w->>'id') filter (where d.id is null), '[]'::jsonb),
+           'documents', coalesce(pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('id', d.id, 'category', d.category, 'mime', d.mime, 'bytes', d.bytes, 'sha256', d.sha256)) filter (where d.id is not null), '[]'::jsonb))
+    from pg_catalog.jsonb_array_elements(coalesce(p_docs, '[]'::jsonb)) w
+    left join website_private.enrollment_upload_sessions s on s.token_hash = p_token_hash and s.status = 'open' and s.expires_at > now() - interval '1 hour'
+    left join website_private.enrollment_documents d on d.session_id = s.id and d.id::text = w->>'id' and d.category = w->>'category' and d.status = 'stored';
+$f$;
+
 -- Store application-level 1.3.0 metadata (never answers) and the immutable evidence rows, in one call.
 create or replace function public.enrollment_record_v130_p2(p_application uuid, p_meta jsonb, p_agreements jsonb, p_terms jsonb) returns jsonb
 language plpgsql set search_path to '' as $f$
@@ -507,6 +518,7 @@ do $$ declare f text; begin
     'public.enrollment_doc_reject_p2(text,uuid,text)',
     'public.enrollment_doc_remove_p2(text,uuid)',
     'public.enrollment_docs_attach_p2(text,uuid,jsonb)',
+    'public.enrollment_docs_check_p2(text,jsonb)',
     'public.enrollment_record_v130_p2(uuid,jsonb,jsonb,jsonb)',
     'public.enrollment_terms_confirm_p2(text,integer,text,text)',
     'public.enrollment_docs_for_app_p2(text)',

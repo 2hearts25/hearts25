@@ -27,3 +27,17 @@ export const sample = {
   'ag.contractAck': true, 'ag.absenceAck': true, 'ag.handbook': 'pending', 'ag.resCommunity': 'received', 'ag.transIn': 'received', 'ag.transWithin': 'pending', 'ag.transOut': 'pending',
   'm.internal': 'yes', 'm.marketing': 'no',
 };
+
+// 1.3.0-E2 additions (synthetic). Upload ids are placeholders; real ids are issued by the server per upload session.
+export const SAMPLE_DOC_IDS = { immun: '0b1c2d3e-4f50-4617-8899-aabbccddee01', insFront: '0b1c2d3e-4f50-4617-8899-aabbccddee02', custody: '0b1c2d3e-4f50-4617-8899-aabbccddee03' };
+export const sample130 = {
+  ...sample,
+  'ins.status': 'medicaid', 'ins.plan': 'Example Medicaid Plan (synthetic)', 'ins.member': 'SYN-0000-1234', 'ins.holder': 'فاطمة الأحمد (اختبار)', 'ins.holderRel': 'Mother',
+  'up.insFront': [SAMPLE_DOC_IDS.insFront], 'up.immun': [SAMPLE_DOC_IDS.immun], 'up.custody': [SAMPLE_DOC_IDS.custody], 'd.separate': true,
+  'ag.wt': 'ack', 'pf.auth': 'pending', 'pf.copay': 'amount', 'pf.copayAmt': '12.50', 'pf.dueDay': 'fri', 'pf.ack': true,
+};
+export const sampleDocs130 = [
+  { id: SAMPLE_DOC_IDS.immun, category: 'immunization', mime: 'application/pdf', bytes: 81234, sha256: 'a'.repeat(64) },
+  { id: SAMPLE_DOC_IDS.insFront, category: 'insurance-front', mime: 'image/jpeg', bytes: 512000, sha256: 'b'.repeat(64) },
+  { id: SAMPLE_DOC_IDS.custody, category: 'custody', mime: 'application/pdf', bytes: 120000, sha256: 'c'.repeat(64) },
+];

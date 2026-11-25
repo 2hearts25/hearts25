@@ -150,6 +150,8 @@ export async function createKit({ lib, fonts, schema, en, data: raw, meta, doc: 
       case 'date': return fmtDate(v);
       case 'time': return fmtTime(v);
       case 'textna': return v === 'N/A' ? 'N/A (nothing to report)' : v;
+      // 1.3.0: uploads print as a status only — files are never embedded in either PDF
+      case 'upload': return Array.isArray(v) && v.length ? `${v.length} file${v.length === 1 ? '' : 's'} uploaded online — NOT yet reviewed or verified by staff` : null;
       default: return String(v);
     }
   }

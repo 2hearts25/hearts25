@@ -16,30 +16,32 @@ const LONG = Object.values(words).join('. ') + '. ' + 'Long synthetic note that 
 const mk = (f, lang, i) => {
   const base = words[lang] + ' ' + f.id;
   switch (f.t) {
-    case 'text': return (base + ' ' + i).slice(0, Math.min(f.x || 60, 60)); case 'textarea': return f.x >= 1000 ? LONG.slice(0, 900) : base.slice(0, f.x);
+    case 'text': return f.v === 'money' ? '12.50' : (base + ' ' + i).slice(0, Math.min(f.x || 60, 60)); case 'textarea': return f.x >= 1000 ? LONG.slice(0, 900) : base.slice(0, f.x);
     case 'textna': return rnd() < 0.2 ? 'N/A' : base.slice(0, 80);
     case 'tel': return '(216) 555-0' + (100 + Math.floor(rnd() * 800)); case 'email': return `synthetic${i}@example.com`;
     case 'date': return '2026-12-15'; case 'time': return f.id.endsWith('to') || f.id.includes('depart') ? '17:00' : '08:00';
     case 'state': return 'OH'; case 'radio': case 'select': return pick(f.o);
     case 'checks': return f.o.filter(() => rnd() < 0.6).concat(f.o[0]).filter((v, k, a) => a.indexOf(v) === k);
-    case 'check': return rnd() < 0.5; case 'rep': return Array.from({ length: 1 + Math.floor(rnd() * Math.min(f.max, 3)) }, (_, r) => Object.fromEntries(f.f.map(g => [g.id, g.t === 'radio' ? pick(g.o) : g.t === 'tel' ? '(216) 555-01' + (10 + r) : g.t === 'state' ? 'OH' : (words[lang] + ' ' + g.id).slice(0, 40)])));
+    case 'check': return rnd() < 0.5; case 'upload': return Array.from({ length: 1 + Math.floor(rnd() * f.max) }, (_, k) => `0b1c2d3e-4f50-4617-8899-aabbccdd${String(i).padStart(2, '0')}${String(k).padStart(2, '0')}`); case 'rep': return Array.from({ length: 1 + Math.floor(rnd() * Math.min(f.max, 3)) }, (_, r) => Object.fromEntries(f.f.map(g => [g.id, g.t === 'radio' ? pick(g.o) : g.t === 'tel' ? '(216) 555-01' + (10 + r) : g.t === 'state' ? 'OH' : (words[lang] + ' ' + g.id).slice(0, 40)])));
   }
 };
 const exercised = { ohio: new Set(), h2h: new Set() };
 let variants = 0, missing = 0;
 const langs = Object.keys(words);
 for (let i = 0; i < 40; i++) {
+  // the last variant switches on the (inactive) late-pickup terms so their printing is proven before management activates them
+  const S = i === 39 ? { ...schema, cfg: { ...schema.cfg, latePickup: true } } : schema;
   const lang = langs[i % 5]; const raw = {};
-  for (const st of schema.steps) for (const f of st.fields) raw[f.id] = mk(f, lang, i);
+  for (const st of S.steps) for (const f of st.fields) raw[f.id] = mk(f, lang, i);
   // push a few branches deliberately
   if (i % 4 === 0) raw['p2.has'] = 'yes'; if (i % 3 === 0) raw['c.program'] = 'school-age'; if (i % 3 === 1) raw['c.program'] = 'infant-toddler'; if (i % 5 === 2) raw['c.schoolTransport'] = 'yes';
-  const data = settle(raw, schema);
+  const data = settle(raw, S);
   const meta = baseMeta({ language: lang, parent2Mode: data['p2.has'] === 'yes' ? 'later' : 'na' });
-  const { ohio, h2h } = await buildEnrollmentPdfs({ lib, fonts, schema, en, data, meta });
+  const { ohio, h2h } = await buildEnrollmentPdfs({ lib, fonts, schema: S, en, data, meta });
   const printed = { ohio: ohio.printed, h2h: h2h.printed };
   const all = new Set();
-  for (const st of schema.steps) if (stepShown(st, data, schema)) for (const f of st.fields) {
-    if (!fieldShown(f, data, schema)) continue; const v = data[f.id];
+  for (const st of S.steps) if (stepShown(st, data, S)) for (const f of st.fields) {
+    if (!fieldShown(f, data, S)) continue; const v = data[f.id];
     const answered = f.t === 'rep' ? (v || []).length > 0 : v !== undefined && v !== '' && v !== null && !(f.t === 'checks' && v.length === 0);
     if (!answered) continue; all.add(f.id);
     for (const d of docsOf(f.id)) { exercised[d].add(f.id); if (!printed[d].has(f.id)) { missing++; console.error(`MISSING variant ${i} (${lang}): ${f.id} not printed in ${d}`); } }

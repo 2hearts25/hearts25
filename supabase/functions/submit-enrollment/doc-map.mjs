@@ -22,9 +22,13 @@ const exact = {
   'pe.devInfo': B, 'pe.routines': B, 'po.care': B, 'fe.noFeed': B,
   // handbook receipt: the state form asks for receipt; the centre also keeps the detailed acknowledgment
   'ag.handbook': B,
+  // 1.3.0: supporting health documents are state-record items, so their upload status prints in both documents (never the files).
+  'up.immun': B, 'up.physical': B, 'up.hcp': B, 'up.med': B, 'up.diet': B, 'd.separate': B,
 };
 const prefix = [ // first match wins; p2.* is classified like p1.*
   ['p1.', O], ['ec', O], ['h.', O], ['d.', O], ['et.', O],
+  // 1.3.0: insurance (kept OUT of the Ohio PDF), other uploads, PFCC copayment agreement, late pickup
+  ['ins.', H], ['up.', H], ['pf.', H], ['lp.', H],
   ['pu', H], ['f.', H], ['pe.', H], ['fe.', H], ['sl.', H], ['po.', H], ['st.', H], ['m.', H], ['ag.', H],
 ];
 export const docsOf = id => {

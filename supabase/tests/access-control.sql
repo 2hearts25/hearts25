@@ -44,6 +44,8 @@ select pg_temp.ok((public.enrollment_doc_stored_p2('tokA', :'doc_a1'::uuid, 'str
 select public.enrollment_doc_begin_p2('tokA','immunization','image/jpeg',2000,'shaA2','fn',:'doc_a1'::uuid,5)->>'id' as doc_a2 \gset
 select public.enrollment_doc_stored_p2('tokA', :'doc_a2'::uuid, 'structure_checked');
 select pg_temp.ok((select status from website_private.enrollment_documents where id = :'doc_a1') = 'replaced', 'replaced document retired');
+select pg_temp.ok((public.enrollment_docs_check_p2('tokA', jsonb_build_array(jsonb_build_object('id', :'doc_a2', 'category', 'immunization')))->>'ok')::boolean, 'pre-check accepts own stored file');
+select pg_temp.ok(not (public.enrollment_docs_check_p2('tokB', jsonb_build_array(jsonb_build_object('id', :'doc_a2', 'category', 'immunization')))->>'ok')::boolean, 'pre-check refuses another family''s file');
 -- cross-family attach is refused; wrong category refused; correct attach succeeds and is idempotent per application
 select pg_temp.ok(public.enrollment_docs_attach_p2('tokB', :'app_b'::uuid, jsonb_build_array(jsonb_build_object('id', :'doc_a2', 'category', 'immunization')))->>'reason' = 'documents', 'family B cannot attach family A''s file');
 select pg_temp.ok(public.enrollment_docs_attach_p2('tokA', :'app_a'::uuid, jsonb_build_array(jsonb_build_object('id', :'doc_a2', 'category', 'custody')))->>'reason' = 'documents', 'category must match the answer');

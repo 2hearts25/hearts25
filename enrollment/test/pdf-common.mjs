@@ -11,6 +11,6 @@ const fd = '../../public/assets/fonts/'; const rd = f => new Uint8Array(readFile
 export const fonts = { notoRegular: rd('NotoSans-Regular.subset.ttf'), notoBold: rd('NotoSans-Bold.subset.ttf'), cairoRegular: rd('Cairo-Regular.subset.ttf'), cairoBold: rd('Cairo-Bold.subset.ttf') };
 export const png = new Uint8Array(readFileSync(new URL('./sig-sample.png', import.meta.url)));
 export const baseMeta = (over = {}) => ({
-  applicationId: 'H2H-20261124-SAMPLE01', submittedAt: '2026-11-24T22:41:07.000Z', language: 'en', languageName: 'English', formVersion: '1.2.0-E1',
+  applicationId: 'H2H-20261124-SAMPLE01', submittedAt: '2026-11-24T22:41:07.000Z', language: 'en', languageName: 'English', formVersion: '1.3.0-E2', v130: { documents: [], contractVersion: 'PPC-2026.11-R1', agreements: [] },
   acks: ['accuracy', 'esign', 'emtrans', 'pickup', 'school', 'media', 'receipts', 'conscience', 'pending'],
   signatures: [{ role: 'parent1', name: 'Test Parent', relation: 'Mother', method: 'drawn', png, signedAt: '2026-11-24T22:40:31.000Z' }], parent2Mode: 'na', ...over });
