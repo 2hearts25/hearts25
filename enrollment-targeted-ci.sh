@@ -6,7 +6,7 @@ test -x /usr/lib/postgresql/16/bin/pg_ctl || { sudo apt-get update && sudo apt-g
 cd "$GITHUB_WORKSPACE"
 printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aS5sAAAAASUVORK5CYII=' | base64 -d > enrollment/test/sig-sample.png
 sed '/^\/\/ fixtures (synthetic)/,$d' enrollment/test/e2e-v130.mjs > enrollment/test/targeted-ci.mjs
-sed -i "s/method: 'drawn', png/method: 'typed'/" enrollment/test/targeted-ci.mjs
+sed -i "s/method: 'drawn', png/method: 'typed', typedAck: true/" enrollment/test/targeted-ci.mjs
 cat >> enrollment/test/targeted-ci.mjs <<'JS'
 try {
   await pg.db.query("update website_private.feature_flags set enabled=true where key='enrollment_v130'");
