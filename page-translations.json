@@ -58,7 +58,16 @@
     },
     "community": {
       "title": "Comunidad y eventos",
-      "intro": "Pregunta al centro por los próximos eventos o por opciones para compartir información de cuidado infantil con tu organización."
+      "intro": "Pregunta al centro por los próximos eventos o por opciones para compartir información de cuidado infantil con tu organización.",
+      "thanksgiving": [
+        "Cena familiar de Acción de Gracias",
+        "Miércoles 25 de noviembre de 2026 | 1:00–3:00 p. m.",
+        "¡Acompáñenos en Heart to Heart Enrichment Center para una cena especial de Acción de Gracias al estilo familiar! Invitamos a todas las familias y amistades de Heart to Heart a reunirse, compartir una comida y celebrar esta temporada de gratitud.",
+        "Disfrute de los platos tradicionales de Acción de Gracias junto con opciones vegetarianas y no tradicionales, con algo para todos los gustos.",
+        "Esperamos reunir a nuestra comunidad de Heart to Heart para una tarde de comida, convivencia y celebración.",
+        "Lugar:",
+        "Para más información:"
+      ]
     },
     "privacy": {
       "title": "Privacidad del sitio",
@@ -132,7 +141,16 @@
     },
     "community": {
       "title": "المجتمع والفعاليات",
-      "intro": "اسأل المركز عن الفعاليات المقبلة أو عن مشاركة معلومات رعاية الأطفال مع مؤسستك."
+      "intro": "اسأل المركز عن الفعاليات المقبلة أو عن مشاركة معلومات رعاية الأطفال مع مؤسستك.",
+      "thanksgiving": [
+        "Dîner familial de Thanksgiving",
+        "Mercredi 25 novembre 2026 | 13 h–15 h",
+        "Rejoignez-nous au Heart to Heart Enrichment Center pour un dîner spécial de Thanksgiving à partager en famille ! Toutes les familles et les amis de Heart to Heart sont les bienvenus pour se retrouver, partager un repas et célébrer cette période placée sous le signe de la gratitude.",
+        "Savourez les plats traditionnels de Thanksgiving, ainsi que des options végétariennes et des plats qui sortent de la tradition. Il y en aura pour tous les goûts.",
+        "Nous avons hâte de réunir la communauté de Heart to Heart pour un après-midi de repas partagé, de convivialité et de fête.",
+        "Lieu :",
+        "Pour plus de renseignements :"
+      ]
     },
     "privacy": {
       "title": "خصوصية الموقع",
@@ -206,7 +224,16 @@
     },
     "community": {
       "title": "Jamii na matukio",
-      "intro": "Uliza kituo kuhusu matukio yajayo au jinsi ya kushiriki taarifa za malezi na shirika lako."
+      "intro": "Uliza kituo kuhusu matukio yajayo au jinsi ya kushiriki taarifa za malezi na shirika lako.",
+      "thanksgiving": [
+        "عشاء عيد الشكر العائلي",
+        "الأربعاء، 25 نوفمبر 2026 | من 1:00 إلى 3:00 مساءً",
+        "انضموا إلينا في Heart to Heart Enrichment Center لتناول عشاء خاص بعيد الشكر على الطريقة العائلية! نرحب بجميع عائلات Heart to Heart وأصدقائهم لنجتمع ونتشارك وجبة ونحتفل بموسم الامتنان.",
+        "استمتعوا بالأطباق التقليدية المفضلة في عيد الشكر إلى جانب خيارات نباتية وأطباق غير تقليدية، بما يناسب مختلف الأذواق.",
+        "نتطلع إلى جمع مجتمع Heart to Heart لقضاء فترة بعد الظهر معًا وتناول الطعام والاحتفال في أجواء من الألفة.",
+        "المكان:",
+        "لمزيد من المعلومات:"
+      ]
     },
     "privacy": {
       "title": "Faragha ya tovuti",
@@ -280,7 +307,16 @@
     },
     "community": {
       "title": "Communauté et événements",
-      "intro": "Renseignez-vous auprès du centre sur les prochains événements ou sur les possibilités de partager de l’information avec votre organisme."
+      "intro": "Renseignez-vous auprès du centre sur les prochains événements ou sur les possibilités de partager de l’information avec votre organisme.",
+      "thanksgiving": [
+        "Chakula cha Jioni cha Familia cha Sikukuu ya Shukrani",
+        "Jumatano, tarehe 25 Novemba 2026 | 1:00–3:00 alasiri",
+        "Jiungeni nasi katika Heart to Heart Enrichment Center kwa chakula maalum cha jioni cha Sikukuu ya Shukrani kitakachotolewa kwa mtindo wa familia! Familia na marafiki wote wa Heart to Heart wanakaribishwa kukutana, kula pamoja na kusherehekea msimu wa kutoa shukrani.",
+        "Furahieni vyakula vya jadi vinavyopendwa vya Sikukuu ya Shukrani pamoja na chaguo za vyakula visivyo na nyama na vyakula tofauti na vya jadi. Kutakuwa na kitu cha kufurahia kwa kila mtu.",
+        "Tunatazamia kuileta pamoja jumuiya yetu ya Heart to Heart kwa alasiri ya kula pamoja, kushirikiana na kusherehekea.",
+        "Mahali:",
+        "Kwa maelezo zaidi:"
+      ]
     },
     "privacy": {
       "title": "Confidentialité du site",

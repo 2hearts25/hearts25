@@ -240,7 +240,16 @@
   },
   "community": {
     "title": "Community and events",
-    "intro": "Contact Heart to Heart to ask about upcoming family events or to discuss sharing childcare information with your organization."
+    "intro": "Contact Heart to Heart to ask about upcoming family events or to discuss sharing childcare information with your organization.",
+    "thanksgiving": [
+      "Family Thanksgiving Dinner",
+      "Wednesday, November 25, 2026 | 1:00–3:00 PM",
+      "Join us at Heart to Heart Enrichment Center for a special family-style Thanksgiving dinner! All Heart to Heart families and friends are welcome to come together, share a meal and celebrate the season of gratitude.",
+      "Enjoy traditional Thanksgiving favorites alongside vegetarian and non-traditional offerings, with something for everyone to enjoy.",
+      "We look forward to bringing our Heart to Heart community together for an afternoon of food, fellowship and celebration.",
+      "Location:",
+      "For more information:"
+    ]
   },
   "privacy": {
     "title": "Website privacy",

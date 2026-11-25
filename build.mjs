@@ -299,6 +299,12 @@ function informationPage(language) {
   const form = requestInfoForm({ copy: { ...forms[language], type: p0[language][0], consent: p0[language][2] }, ui, language, path, locales, escape, action: formEndpoint });
   return { title: ui.h1, intro: ui.lead, body: '<article class="page section wrap"><h1>' + escape(ui.h1) + '</h1><p class="intro">' + escape(ui.lead) + '</p><section class="note" aria-labelledby="overview-heading"><h2 id="overview-heading">' + escape(ui.overview) + '</h2><ul>' + ui.items.map(item => '<li>' + escape(item) + '</li>').join('') + '</ul></section>' + form + '</article>' };
 }
+function thanksgivingDinner([title, date, invitation, menu, closing, locationLabel, contactLabel]) {
+  return `<section><h2>${escape(title)}</h2><p><strong>${escape(date)}</strong></p>
+<p>${escape(invitation)}</p><p>${escape(menu)}</p><p>${escape(closing)}</p>
+<p><strong>${escape(locationLabel)}</strong> <bdi dir="ltr">Heart to Heart Enrichment Center</bdi><br><bdi dir="ltr">3095 W. 25th Street</bdi><br><bdi dir="ltr">Cleveland, OH 44113</bdi></p>
+<p><strong>${escape(contactLabel)}</strong> <bdi dir="ltr">${link(tel, phone)}</bdi></p></section>`;
+}
 function pageContent(language, slug) {
   if (slug === 'virtual-tour') return {title:virtualTour[language].title,intro:virtualTour[language].preview,body:virtualTourPreview(language,true)};
   const t = locales[language];
@@ -335,7 +341,7 @@ function pageContent(language, slug) {
   return {
     title: page.title, intro:page.intro, metaTitle: seo?.[0], description: showRating ? `${q.rating}. ${seo?.[1] ?? page.intro}` : seo?.[1],
     body: `<article class="page section wrap">${hasEnglish ? `<p class="note">${escape(t.fallback)}</p>` : ''}
-${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}
+${draft ? `<p class="eyebrow">${escape(draft)}</p>` : ''}<h1>${escape(page.title)}</h1><p class="intro">${escape(page.intro)}</p>${offer ? `<p class="offer">${escape(offer)}</p>` : ''}${page.thanksgiving ? thanksgivingDinner(page.thanksgiving) : ''}
 ${slug === 'about' ? `<section><h2>${escape(q.about[0])}</h2><p>${escape(q.about[1])}</p><p>${escape(q.about[2])}</p><p>${escape(p1[language].home.cards[7][1])}</p><p>${link(path(language,'community'),t.footer[6])}</p></section>` : ''}
 ${showRating && slug !== 'faq' ? `<p class="note">${link(path(language,'safety'),q.rating)}</p>` : ''}
 ${['enrollment','parents'].includes(slug) ? `<p class="actions">${button(path(language,portalSlug),portalByLocale[language].ui.title,true)}</p>` : ''}
