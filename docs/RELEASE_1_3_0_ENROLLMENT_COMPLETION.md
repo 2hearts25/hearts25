@@ -66,17 +66,23 @@ Not testable here: real Resend delivery to real inboxes, real Supabase Storage/A
 3. ✅ Smoke test, live, non-destructive (no application created, no email sent): CORS preflight 204 for `https://hearts25.com`; other origins 403; 1.2.0-E1 validation returns exactly the same 54 field errors as the frozen 1.2.0 validator (no 1.3.0 field required); unknown version 409; 1.3.0-E2 refused 409 while `enrollment_v130` is off; `/upload/session`, `/access/open`, `/staff` 503 while their flags are off; `/sweep` 202 and the 10-minute cron keeps succeeding; Supabase security advisor shows only the expected INFO "RLS enabled, no policy" notices (service-role-only design, same as the 1.2.x tables).
    A full end-to-end 1.2.0-E1 test application was **not** sent through production, because it would email the Director; it was run end to end locally against the real SQL (19 checks). Run it live only if management agrees to receive one marked test email.
 
-### Phase B — with the website publication (not before)
-1. Build: `H2H_PUBLIC_ANON_KEY=<anon key> tools/make-prebuilt-bundle.sh /tmp/h2h-deploy` (or use the prebuilt bundle in the release package) and publish it (management's Netlify step).
-2. Immediately turn on the flags (SQL, service role):
-   `update website_private.feature_flags set enabled = true, updated_at = now() where key in ('enrollment_v130','enrollment_uploads','parent_document_access');`
-3. When management names staff: create their Supabase Auth users (Authentication → Users → invite; keep sign-ups disabled), enable the email OTP template, insert them into `website_private.staff_document_access`, then turn on `staff_document_access`.
-4. Smoke test one synthetic 1.3.0 application with a synthetic upload; open the parent link; confirm the Director email; delete the synthetic record and its stored objects.
+### Phase A closeout - migration 2 and function v7
+
+- Production project `zebeclcvrdmisnxkwode` records migration 2 as `20261125145715 v130_financial_and_finalize`. The migration ran first in a rollback-only transaction with financial schema, table and RPC permission assertions.
+- `submit-enrollment` v7 is active with JWT verification enabled. Release source is `debcefd583b41b42f013733d6679b3dd226f4c1e`. The [targeted isolated validation](https://github.com/2hearts25/hearts25/actions/runs/45639481162) matched the candidate tree and verified actual PDF rendering, application finalization retry, parent email retry and rejection of card collection while disabled.
+- Production smoke `H2H-20261125-044BA343` used the existing 1.2.0-E1 flow. The first worker exceeded its CPU limit. A processing retry completed the same submission. Both private PDF objects were verified, and the staff email carried the 6-page Ohio and 8-page Heart to Heart PDFs. Resend confirmed staff and parent deliveries directly. The automatic delivery lookup returned HTTP 401 and marks delivery as unverifiable.
+- The active `h2h-enrollment-sweep` job runs every ten minutes. PDF generation, staff and parent email, and the background retry workflow operate on the existing frontend without a feature toggle.
+- All five optional flags were verified off. The financial store contained zero card records.
+
+### Phase B - separate explicit management authorization required
+
+Use the [accepted prebuilt Netlify ZIP](https://chatgpt.com/library?file_id=libfile_ce43f6fc47248191a5c3267f199aa4a8&account_id=personal) when publication is authorized and credits are available. Coordinate the `enrollment_v130` and `parent_document_access` flags with publication, then run one targeted synthetic enrollment to verify the new flow and parent link. Enable `staff_document_access` only after management identifies authorized staff and Supabase Auth and the allowlist are ready. Enable `enrollment_uploads` after staff retrieval is available and verify the upload path with synthetic data. Keep `financial_card_collection` off until its independent security prerequisites are met.
 
 ## 7. Rollback
 
 * **Website:** republish Netlify deploy `6b06684dc0e09d6017e415df` (current 1.2.x production).
 * **Backend features:** `update website_private.feature_flags set enabled = false;` — takes effect within 30 seconds; 1.3.0 submissions are then refused with "reload", uploads and links stop, 1.2.0 continues.
-* **Edge Function:** redeploy `submit-enrollment` version 5 source (git `release/november-content`, `supabase/functions/submit-enrollment/`), which ignores every new table and column.
+* **Migration 2 / v7 rollback:** restore the v6 entry under `docs/deploy/submit-enrollment-v6-entry.ts` and use `supabase/rollback/v130_migration2_rpc_restore.sql` when the replaced RPC definitions need restoration. Preserve the additive migration objects and signed evidence.
+* **Earlier Edge Function rollback:** redeploy `submit-enrollment` version 5 source (git `release/november-content`, `supabase/functions/submit-enrollment/`), which ignores every new table and column.
 * **Superset functions only (rarely needed):** `supabase/rollback/v121_functions_restore.sql` restores the exact 1.2.1 definitions of `enrollment_mark_p1` and `enrollment_unfinished_p1` captured before Phase A.
 * **Database:** nothing needs to be removed; the migration is additive and the old functions keep working with the superset definitions. Do not drop evidence tables — they hold signed records.
