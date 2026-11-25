@@ -1,7 +1,7 @@
 {
  "version": "1.3.0-E2",
  "cfg": {
-  "latePickup": false,
+  "latePickup": true,
   "privatePay": false
  },
  "steps": [
@@ -2908,6 +2908,57 @@
      "r": 1,
      "src": "P1,A§15,B§5",
      "pdf": "contract"
+    }
+   ]
+  },
+  {
+   "id": "financial",
+   "fields": [
+    {
+     "id": "fin.choice",
+     "t": "radio",
+     "o": [
+      "provide",
+      "skip"
+     ],
+     "r": 1,
+     "src": "B§financial",
+     "pdf": "h2h"
+    },
+    {
+     "id": "fin.consent",
+     "t": "check",
+     "r": [
+      "eq",
+      "fin.choice",
+      "provide"
+     ],
+     "s": [
+      "eq",
+      "fin.choice",
+      "provide"
+     ],
+     "src": "B§financial",
+     "pdf": "h2h"
+    },
+    {
+     "id": "fin.notice",
+     "t": "radio",
+     "o": [
+      "continued"
+     ],
+     "r": [
+      "eq",
+      "fin.choice",
+      "skip"
+     ],
+     "s": [
+      "eq",
+      "fin.choice",
+      "skip"
+     ],
+     "src": "B§financial",
+     "pdf": "h2h"
     }
    ]
   },

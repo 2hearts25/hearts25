@@ -255,6 +255,13 @@ export const schema = {
       F('lp.ack', 'check', { r: cfg('latePickup'), s: cfg('latePickup'), src: 'P1,B§7', pdf: 'h2h' }),
       F('ag.contractAck', 'check', { r: 1, src: 'P1,A§15,B§5', pdf: 'contract' }),
     ] },
+    // Optional financial information (B§financial, management 11/25/2026). The card itself is NOT a schema field: it is validated by
+    // financial.mjs and sent in a separate request field into the restricted financial store. Only the non-secret choices live here.
+    { id: 'financial', fields: [
+      R('fin.choice', ['provide', 'skip'], { r: 1, src: 'B§financial', pdf: 'h2h' }),
+      F('fin.consent', 'check', { r: eq('fin.choice', 'provide'), s: eq('fin.choice', 'provide'), src: 'B§financial', pdf: 'h2h' }),
+      R('fin.notice', ['continued'], { r: eq('fin.choice', 'skip'), s: eq('fin.choice', 'skip'), src: 'B§financial', pdf: 'h2h' }),
+    ] },
     { id: 'review', fields: [] },
     { id: 'sign', fields: [] },
   ],

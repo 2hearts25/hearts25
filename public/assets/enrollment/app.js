@@ -3,6 +3,7 @@
 import { validate, settle, stepShown, fieldShown, fieldRequired, visibleAcks } from './core.js';
 import { CONTRACT, POLICIES } from './agreements.js';
 import { contractView } from './evidence.js';
+import { validateCard, normalizePan, brandOf, maskPan } from './financial.js';
 import { sniff, extOf, TYPES, ACCEPT, MAX_FILE_BYTES } from './file-check.js';
 
 const PUBLIC_KEY = '__H2H_PUBLIC_ANON_KEY__';
@@ -20,7 +21,7 @@ let documentLibrary = {};
 const trCache = {};
 let lang = LANGS.includes(root.dataset.lang) ? root.dataset.lang : 'en';
 let tr = null;
-const fresh = () => ({ uploads: [], uploadToken: null, uploadsOff: false, data: {}, acks: {}, sig: { parent1: blankSig(), parent2: blankSig() }, parent2Mode: null, stepId: 'intro', errors: {}, summary: null, returnToReview: false, key: crypto.randomUUID(), submitting: false, confirmReset: false, notice: '' });
+const fresh = () => ({ card: {}, cardErrors: {}, cardEnabled: null, dialogOpen: false, uploads: [], uploadToken: null, uploadsOff: false, data: {}, acks: {}, sig: { parent1: blankSig(), parent2: blankSig() }, parent2Mode: null, stepId: 'intro', errors: {}, summary: null, returnToReview: false, key: crypto.randomUUID(), submitting: false, confirmReset: false, notice: '' });
 const blankSig = () => ({ mode: matchMedia('(pointer: coarse)').matches ? 'draw' : 'type', name: '', relation: '', strokes: [], ink: 0, png: '', typedAck: false });
 let S = fresh();
 let done = false;
@@ -352,7 +353,94 @@ function documentReference(document, showTitle = false) {
     document.view ? [h('p', { class: 'portal-metadata' }, document.metadata), h('div', { class: 'portal-actions' }, actions)]
       : h('p', { class: 'portal-pending' }, ui.pending));
 }
+
+// ---------- optional card information (1.3.0-E2, management 11/25/2026) ----------
+// The card is NEVER part of S.data (the application answers). It lives only in S.card (memory), travels once in the submit body over HTTPS
+// into the restricted financial store, and is dropped from memory after submit, reset or idle. No CVV, PIN or stripe data is ever requested.
+// Nothing is processed, verified with a card network, or charged. If online collection is switched off, only the "continue without" path exists.
+async function cardAvailability() {
+  if (S.cardEnabled !== null) return;
+  const owner = S;
+  try {
+    const r = await fetch(ENDPOINT.replace(/\/+$/, '') + '/financial/status', { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(10000) });
+    owner.cardEnabled = r.ok ? Boolean((await r.json()).enabled) : false;
+  } catch { owner.cardEnabled = false; }
+  if (S === owner && S.stepId === 'financial') render();
+}
+const MONTHS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+function cardInput(key, label, extra = {}) {
+  const id = 'fin-' + key, code = S.cardErrors[key];
+  const el = h('input', { id, type: 'text', maxlength: extra.max ?? 100, value: S.card[key] ?? '', dir: extra.dir ?? 'auto', autocomplete: extra.ac ?? 'off', inputmode: extra.inputmode, autocapitalize: 'off', spellcheck: 'false',
+    'aria-required': 'true', 'aria-invalid': code ? 'true' : undefined, 'aria-describedby': code ? 'err-' + id : undefined });
+  el.addEventListener('input', e => { S.card[key] = e.target.value; if (S.cardErrors[key]) { delete S.cardErrors[key]; e.target.removeAttribute('aria-invalid'); document.getElementById('err-' + id)?.remove(); } });
+  return h('div', { class: 'field' }, h('label', { for: id }, label, reqMark(true)), el, code ? h('p', { class: 'err', id: 'err-' + id }, msg(code)) : null);
+}
+function cardSelect(key, label, options, errKey = key) {
+  const id = 'fin-' + key, code = S.cardErrors[errKey];
+  const sel = h('select', { id, 'aria-required': 'true', 'aria-invalid': code ? 'true' : undefined }, h('option', { value: '' }, label), options.map(([v, l]) => h('option', { value: v, selected: S.card[key] === v }, l)));
+  sel.addEventListener('change', e => { S.card[key] = e.target.value; delete S.cardErrors[errKey]; });
+  return h('div', { class: 'field' }, h('label', { for: id }, label, reqMark(true)), sel);
+}
+function financialFields() {
+  cardAvailability();
+  const out = [h('p', { class: 'notice' }, t('finLead'))];
+  const on = S.cardEnabled === true;
+  if (!on) {
+    S.data['fin.choice'] = 'skip'; delete S.data['fin.consent']; S.card = {};
+    out.push(h('p', { class: 'notice' }, S.cardEnabled === null ? '…' : t('finOff')));
+    return out;
+  }
+  const f = k => schema.steps.flatMap(s => s.fields).find(x => x.id === k);
+  out.push(control(f('fin.choice'), { get: () => S.data['fin.choice'], set: v => { S.data['fin.choice'] = v; if (v !== 'provide') { S.card = {}; S.cardErrors = {}; delete S.data['fin.consent']; } }, ctx: { label: labelOf('fin.choice'), optId: 'fin.choice' }, path: 'fin.choice' }));
+  if (S.data['fin.choice'] === 'provide') {
+    const y = new Date().getFullYear();
+    out.push(h('fieldset', { class: 'field card-fields' }, h('legend', {}, t('finNoticeTitle')),
+      h('p', { class: 'muted' }, t('finNoCvv')),
+      cardInput('name', t('finName'), { ac: 'cc-name' }),
+      cardInput('number', t('finNumber'), { ac: 'cc-number', inputmode: 'numeric', max: 23, dir: 'ltr' }),
+      cardSelect('expM', t('finExpM'), MONTHS.map(m => [m, m]), 'exp'),
+      cardSelect('expY', t('finExpY'), Array.from({ length: 16 }, (_, i) => [String(y + i), String(y + i)]), 'exp'),
+      S.cardErrors.exp ? h('p', { class: 'err' }, msg(S.cardErrors.exp)) : null,
+      cardInput('addr', t('finAddr'), { ac: 'billing street-address' }), cardInput('city', t('finCity'), { ac: 'billing address-level2', max: 60 }),
+      cardSelect('state', t('finState'), STATES.map(s => [s, s])), cardInput('zip', t('finZip'), { ac: 'billing postal-code', max: 10, inputmode: 'numeric', dir: 'ltr' })));
+    out.push(control(f('fin.consent'), { get: () => S.data['fin.consent'], set: v => { S.data['fin.consent'] = v; }, ctx: { label: labelOf('fin.consent'), optId: 'fin.consent' }, path: 'fin.consent' }));
+  }
+  return out;
+}
+// Accessible confirmation dialog for the "no card information" path. Never blocks: "Continue" always proceeds.
+function askContinueWithoutCard(proceed) {
+  const prev = document.activeElement;
+  const dlg = h('dialog', { class: 'fin-dialog', 'aria-labelledby': 'fin-dlg-h', 'aria-describedby': 'fin-dlg-p' },
+    h('h3', { id: 'fin-dlg-h' }, t('finNoticeTitle')),
+    h('p', { id: 'fin-dlg-p' }, t('finNoticeP1')), h('p', {}, h('strong', {}, t('finNoticeP2'))),
+    h('div', { class: 'nav' },
+      h('button', { type: 'button', class: 'button secondary', id: 'fin-return', onclick: () => { dlg.close(); } }, t('finReturn')),
+      h('span', { class: 'spacer' }),
+      h('button', { type: 'button', class: 'button', id: 'fin-continue', onclick: () => { dlg.dataset.go = '1'; dlg.close(); } }, t('finContinue'))));
+  dlg.addEventListener('close', () => { const go = dlg.dataset.go === '1'; dlg.remove(); if (go) proceed(); else if (prev?.isConnected) prev.focus(); else document.getElementById('step-h')?.focus(); });
+  document.body.appendChild(dlg);
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  document.getElementById('fin-return')?.focus();
+}
+function financialNext(step) {
+  const choice = S.data['fin.choice'];
+  const advance = () => { const target = S.returnToReview ? 'review' : nextStepId(step.id); S.returnToReview = false; goto(target); };
+  if (choice === 'provide' && S.cardEnabled === true) {
+    const errs = validateCard(S.card), schemaErrs = errorsForStep(step);
+    S.cardErrors = errs; S.errors = schemaErrs;
+    if (Object.keys(errs).length || Object.keys(schemaErrs).length) {
+      S.summary = [...Object.keys(errs).map(k => ({ id: 'fin-' + (k === 'exp' ? 'expM' : k), text: t({ name: 'finName', number: 'finNumber', exp: 'finExpM', addr: 'finAddr', city: 'finCity', state: 'finState', zip: 'finZip' }[k]) + ': ' + msg(errs[k]) })), ...summaryOf(schemaErrs, step)];
+      render({ focusSummary: true }); return;
+    }
+    S.cardErrors = {}; advance(); return;
+  }
+  // no card: record the acknowledgment through the dialog, then continue (never blocks)
+  S.data['fin.choice'] = 'skip'; S.card = {};
+  if (S.data['fin.notice'] === 'continued') { advance(); return; }
+  askContinueWithoutCard(() => { S.data['fin.choice'] = 'skip'; S.data['fin.notice'] = 'continued'; advance(); });
+}
 function fieldsFor(step) {
+  if (step.id === 'financial') return financialFields(step);
   const out = [];
   for (const f of step.fields) {
     if (!fieldShown(f, S.data, schema)) continue;
@@ -422,6 +510,7 @@ function renderStep(step) {
   if (S.summary) nodes.push(summaryNode(S.summary));
   nodes.push(...fieldsFor(step));
   nodes.push(navRow(step, () => {
+    if (step.id === 'financial') { financialNext(step); return; }
     if (uploadsBusy()) { S.summary = [{ id: 'step-h', text: t('upWait') }]; render({ focusSummary: true }); return; }
     const errs = errorsForStep(step);
     if (Object.keys(errs).length) { S.errors = errs; S.summary = summaryOf(errs, step); render({ focusSummary: true }); return; }
@@ -559,6 +648,7 @@ async function submit() {
     signatures: ['parent1', ...(hasP2 && S.parent2Mode === 'now' ? ['parent2'] : [])].map(role => { const s = S.sig[role]; return s.mode === 'draw' ? { role, name: s.name.trim(), relation: s.relation.trim(), method: 'drawn', png: s.png } : { role, name: s.name.trim(), relation: s.relation.trim(), method: 'typed', typedAck: true }; }),
     hp: document.getElementById('hp')?.value || '',
     contractVersion: CONTRACT.version, uploadToken: S.uploadToken || undefined,
+    ...(S.data['fin.choice'] === 'provide' && S.cardEnabled === true ? { card: { name: S.card.name.trim(), number: normalizePan(S.card.number), expM: S.card.expM, expY: S.card.expY, addr: S.card.addr.trim(), city: S.card.city.trim(), state: S.card.state, zip: S.card.zip.trim() } } : {}),
   };
   S.submitting = true; render();
   try {

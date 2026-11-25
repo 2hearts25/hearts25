@@ -20,40 +20,45 @@ export const POLICIES = {
 
 export const CONTRACT = {
   id: 'parent-provider-contract',
-  version: 'PPC-2026.11-R1',   // online contract revision presented with form 1.3.0-E2
+  version: 'PPC-2026.11-R2',   // online contract revision presented with form 1.3.0-E2 (R2: management activation of 11/25/2026)
   basis: 'Heart to Heart paper Parent/Provider Contract (supplied 11/25/2026), approved policies, and current Ohio PFCC rules',
   // Order = order shown to the family and printed in the Heart to Heart PDF. The contract is the LAST step of the application.
   sections: [
-    { id: 'parties', status: 'pending' },          // enrollment arrangements, scope (paper: "Signature to Agreement") — online wording awaits approval
-    { id: 'responsibilities', status: 'pending' }, // parent and provider responsibilities — online wording awaits approval
+    { id: 'parties', status: 'final' },            // enrollment arrangements (paper: "Registration" and "Signature to Agreement"), no PFCC advance payment/fees
+    { id: 'responsibilities', status: 'final' },   // parent and provider responsibilities (paper: "Signature to Agreement")
     { id: 'attendance', status: 'final', policy: 'attendance' },
     { id: 'pfcc', status: 'final', law: ['OAC 5180:6-1-05', 'OAC 5180:6-1-09', 'OAC 5180:6-1-10'] },
     { id: 'copayDelinquency', status: 'final', law: ['OAC 5180:6-1-05(K)', 'OAC 5180:6-1-09(H)'] },
-    { id: 'payment', status: 'pending' },          // private-pay tuition, payment deadlines (rates out of scope for this release)
-    { id: 'lateFees', status: 'pending' },         // late-payment fees (paper: $20 / $40 / suspension / weekly balance fee)
-    { id: 'latePickup', status: 'pending', config: 'latePickup' },
-    { id: 'otherFees', status: 'pending' },        // returned-check fee, payment methods, non-refundability, attorney-fee clause
+    { id: 'payment', status: 'pending' },          // private-pay tuition: DEFERRED by management (no rate, schedule or deadline is published or agreed)
+    { id: 'lateFees', status: 'final' },           // no late-payment fee for PFCC care (management 11/25/2026); private-pay late fees wait for private-pay tuition
+    { id: 'latePickup', status: 'final', config: 'latePickup' },
+    { id: 'otherFees', status: 'final' },          // only the late pickup charge is authorized; accepted forms of payment from the paper contract
     { id: 'withdrawal', status: 'final', policy: 'withdrawal' },
     { id: 'esign', status: 'final' },
     { id: 'admin', status: 'final' },
   ],
 };
 
-// Late pickup: the amounts below are transcribed from the paper contract (item 6) so the structure is ready, but they are NOT
-// active, NOT shown to families and NOT charged. To activate: management approves every null field below for online use AND
-// decides whether the charge applies to PFCC families (OAC 5180:6-1-10(M)(1) permits late fees for PFCC families only with a
-// signed agreement). Then set active: true, set the contract section status to 'final', bump CONTRACT.version, rebuild.
+// Late pickup: ACTIVE (management 11/25/2026). The schedule is the paper Parent/Provider Contract, item 6: "$10.00 for up to 10 minutes,
+// and $2.00 per minute thereafter". Management confirmed that the charge starts after center closing. The paper contract does NOT define a grace period, a payment deadline, a cap
+// or exceptions; none is invented here (docs/MANAGEMENT_DECISIONS.md lists them for confirmation). It applies to PFCC families too:
+// OAC 5180:6-1-10(M)(1) permits a late fee for a PFCC family only under a signed agreement, which the dedicated acknowledgment is.
 export const LATE_PICKUP = {
-  active: false,
-  source: 'Paper Parent/Provider Contract, item 6',
+  active: true,
+  source: 'Paper Parent/Provider Contract, item 6; management 11/25/2026',
   paperTerms: { firstBlockMinutes: 10, firstBlockCents: 1000, perMinuteAfterCents: 200 },
-  pickupDeadline: null,     // e.g. closing time (6:00 PM) or the child's scheduled pick-up time — NOT DEFINED on paper
-  graceMinutes: null,       // NOT DEFINED on paper
-  capCents: null,           // NOT DEFINED on paper
-  paymentDeadline: null,    // NOT DEFINED on paper
-  exceptions: null,         // e.g. emergencies, weather — NOT DEFINED on paper
-  appliesToPfcc: null,      // management decision required
+  pickupDeadline: "center_closing_time", graceMinutes: null, capCents: null, paymentDeadline: null, exceptions: null, // not defined on paper: none applied
+  appliesToPfcc: true,
 };
+// Fee for a pickup `minutes` whole minutes late (0 = on time). Used by tests to verify the printed schedule and examples.
+export const latePickupFeeCents = (minutes, t = LATE_PICKUP.paperTerms) => minutes <= 0 ? 0 : t.firstBlockCents + Math.max(0, minutes - t.firstBlockMinutes) * t.perMinuteAfterCents;
+
+// Financial information (optional step after the contract; management 11/25/2026): the family MAY enter a credit or debit card
+// (name, number, expiry, billing address/ZIP, explicit consent to retain). NEVER a CVV, PIN or magnetic-stripe data. This release does
+// NOT process payments, authorize or verify cards, charge anything, or bill repeatedly. Live collection is OFF (feature flag
+// `financial_card_collection`) until the payment-card security checklist in docs/RELEASE_1_3_0_ENROLLMENT_COMPLETION.md is verified.
+export const PAYMENT_FOLLOW_UP_DAYS = 30; // "within 30 days of enrollment"
+export const FINANCIAL = { followUpDays: PAYMENT_FOLLOW_UP_DAYS, collectsCvv: false, processesPayments: false, chargesAuthorized: false, flag: 'financial_card_collection' };
 
 // Private-pay pricing is out of scope for this release: no rate is published or agreed online.
 export const PRIVATE_PAY = { active: false };

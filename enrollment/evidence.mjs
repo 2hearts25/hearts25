@@ -23,7 +23,7 @@ const lines = v => [`${v.title} — ${v.version}`, ...v.sections.flatMap(s => [`
 const choice = (L, id, v) => (v === undefined ? '' : `${L.f[id]}: ${typeof v === 'boolean' ? (v ? L.ui.yes : L.ui.no) : (L.o[id]?.[v] ?? L.o._?.[v] ?? v)}`);
 
 // Returns one record per agreement. `text` = family language, `textEn` = English source of the same agreement.
-export function agreementTexts({ L, EN, data, acks = [], lang }) {
+export function agreementTexts({ L, EN, data, acks = [], lang, card = /** @type {null | { name: string, masked: string, expM: string, expY: string }} */ (null) }) {
   const both = fn => ({ text: fn(L), textEn: fn(EN) });
   const pfcc = data['c.payment'] === 'pfcc';
   const contract = both(X => [lines(contractView(X, data)),
@@ -32,10 +32,16 @@ export function agreementTexts({ L, EN, data, acks = [], lang }) {
     choice(X, 'ag.contractAck', data['ag.contractAck'])].join('\n'));
   const wt = both(X => [X.ui.wtHeading, X.ui.wtMeta.replace('{r}', POLICIES.withdrawal.revision).replace('{d}', POLICIES.withdrawal.effectiveDate), `${X.f['ag.wt']}: ${X.o['ag.wt'][data['ag.wt']] ?? ''}`].join('\n'));
   const att = both(X => [X.ui.absenceTitle, X.ui.absP1, X.ui.absP2, X.ui.absH1, X.ui.absP3, X.ui.absP4, X.ui.absP5, X.ui.absH2, X.ui.absP6, X.ui.absP7, choice(X, 'ag.absenceAck', data['ag.absenceAck'])].join('\n'));
+  // Financial information (B§financial). Never contains a full card number: only the masked number the parent saw.
+  const provided = data['fin.choice'] === 'provide' && card;
+  const fin = both(X => provided
+    ? [X.steps.financial, `${X.f['fin.choice']}: ${X.o['fin.choice'].provide}`, `${X.ui.finName}: ${card.name}`, `${X.ui.finNumber}: ${card.masked}`, `${X.ui.finExpM}/${X.ui.finExpY}: ${card.expM}/${card.expY}`, choice(X, 'fin.consent', data['fin.consent'])].join('\n')
+    : [X.steps.financial, X.ui.finNoticeP1, X.ui.finNoticeP2, `${X.f['fin.choice']}: ${X.o['fin.choice'].skip}`, `${X.f['fin.notice']}: ${X.o['fin.notice'].continued}`].join('\n'));
   const ack = both(X => acks.map(a => '[x] ' + X.acks[a]).join('\n'));
   return [
     { kind: 'contract', version: CONTRACT.version, language: lang, status: CONTRACT.sections.every(s => s.status === 'final') ? 'final' : 'partial', ...contract },
     { kind: 'withdrawal-termination', version: POLICIES.withdrawal.revision, language: lang, status: data['ag.wt'] === 'ack' ? 'acknowledged' : 'not_received', ...wt },
+    { kind: 'financial-information', version: CONTRACT.version, language: lang, status: provided ? 'card_provided_consented' : data['fin.notice'] === 'continued' ? 'no_card_acknowledged' : 'not_received', ...fin },
     { kind: 'attendance', version: POLICIES.attendance.revision, language: lang, status: data['ag.absenceAck'] === true ? 'acknowledged' : 'not_acknowledged', ...att },
     { kind: 'acknowledgments', version: 'form ' + (data.__formVersion || ''), language: lang, status: 'accepted', ...ack },
   ];
@@ -48,3 +54,6 @@ export function reportedTerms(data) {
   return { payment_type: 'pfcc', pfcc_status: data['pf.auth'] ?? null, copay_cents: Number.isFinite(amt) ? amt : null, copay_source: amt === null ? 'none' : 'parent_reported', due_day: data['pf.dueDay'] ?? null, status: amt === null ? 'awaiting_confirmation' : 'parent_reported' };
 }
 export const copayStatus = data => data['c.payment'] !== 'pfcc' ? 'not_pfcc' : data['pf.copay'] === 'amount' ? 'parent_reported' : data['pf.copay'] === 'zero' ? 'zero_reported' : 'unknown';
+
+// Payment-source status used in the PDF, management email and follow-up logic. Never "verified": this release verifies nothing with a card network.
+export const paymentStatus = (data, hasCard) => hasCard ? 'card_on_file' : data['fin.notice'] === 'continued' ? 'follow_up_needed' : 'not_received';

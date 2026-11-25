@@ -87,4 +87,49 @@ select public.enrollment_mark_p1(:'app_b'::uuid, '{"pdf_status":"generated","h2h
 select pg_temp.ok((select status from website_private.enrollment_applications where id = :'app_b') = 'complete', 'legacy status logic unchanged');
 select pg_temp.ok((select access_email_status from website_private.enrollment_applications where id = :'app_b') = 'none', 'legacy application gets no access email');
 reset role;
+
+-- 3. Restricted financial store (synthetic test data only; no real card number appears anywhere in this repository).
+set role anon;
+select pg_temp.expect_denied('select * from website_financial.cards', 'anon select cards');
+select pg_temp.expect_denied($q$select public.enrollment_card_display_p2(gen_random_uuid(), 'pdf')$q$, 'anon card display');
+select pg_temp.expect_denied($q$select public.enrollment_card_store_p2(gen_random_uuid(),'visa','1111','x','y',now(),'z')$q$, 'anon card store');
+reset role;
+set role authenticated;
+select pg_temp.expect_denied('select * from website_financial.cards', 'authenticated select cards');
+select pg_temp.expect_denied($q$select public.enrollment_card_purge_p2(gen_random_uuid(),'x','y')$q$, 'authenticated card purge');
+reset role;
+set role service_role;
+select pg_temp.expect_denied('select * from website_financial.cards', 'service role cannot read the card table directly');
+select pg_temp.expect_denied('select * from website_financial.card_access_log', 'service role cannot read the card log directly');
+select pg_temp.expect_denied('update website_financial.cards set status = ''purged''', 'service role cannot edit cards directly');
+select pg_temp.ok((public.enrollment_flags_p2()->>'financial_card_collection')::boolean = false, 'card collection flag defaults to OFF');
+select pg_temp.ok((public.enrollment_card_store_p2(:'app_a'::uuid,'visa','1111','SYNTHETIC-PAN-BLOB','SYNTHETIC-DISPLAY-BLOB',now(),'abc')->>'duplicate')::boolean = false, 'card stored once');
+select pg_temp.ok((public.enrollment_card_store_p2(:'app_a'::uuid,'visa','9999','OTHER','OTHER',now(),'abc')->>'duplicate')::boolean, 'a retry never rewrites the stored card');
+select pg_temp.ok((public.enrollment_card_display_p2(:'app_a'::uuid)->>'last4') = '1111' and not (public.enrollment_card_display_p2(:'app_a'::uuid) ? 'pan_enc'), 'display returns the mask and never the number blob');
+select pg_temp.ok((public.enrollment_card_display_p2(gen_random_uuid(), 'pdf')) is null, 'unknown application has no card');
+select pg_temp.ok((public.enrollment_card_retention_p2(:'app_a'::uuid, current_date - 1, 'director')->>'ok')::boolean, 'retention date can be set');
+select pg_temp.ok(public.enrollment_card_purge_due_p2(10) = 1, 'retention control purges an expired card');
+select pg_temp.ok((public.enrollment_card_display_p2(:'app_a'::uuid)->>'status') = 'purged' and (public.enrollment_card_display_p2(:'app_a'::uuid)->>'display_enc') is null, 'purged card keeps no data');
+select pg_temp.ok(not (public.enrollment_card_purge_p2(:'app_a'::uuid,'again','director')->>'ok')::boolean, 'purging twice is a no-op');
+reset role;
+-- the audit log lives behind the same wall: read it as the database owner
+select pg_temp.ok((select count(*) from website_financial.card_access_log where application_id = :'app_a'::uuid and action in ('store','display_read','retention_set','purge')) >= 5, 'every store/read/retention/purge is audit-logged');
+do $$ begin begin update website_financial.card_access_log set actor = 'x'; raise exception 'FAIL: log editable'; exception when raise_exception then if sqlerrm like 'FAIL%' then raise; end if; raise notice 'ok  card access log is append-only'; end; end $$;
+set role service_role;
+
+-- 4. Finalization and parent-email retry (reliability repairs).
+select pg_temp.ok((select finalize_status from website_private.enrollment_applications where id = :'app_a') = 'pending', '1.3.0 application starts pending finalization');
+select pg_temp.ok((select finalize_status from website_private.enrollment_applications where id = :'app_b') = 'not_applicable', '1.2.0-E1 application is not subject to finalization');
+select pg_temp.ok(:'ref_a' in (select jsonb_array_elements_text(public.enrollment_unfinished_p1(0, 25))), 'sweep selects a pending-finalization application');
+select public.enrollment_mark_p2(:'app_a'::uuid, '{"pdf_status":"generated","h2h_pdf_path":"p","staff_email_status":"sent"}');
+select pg_temp.ok((select status from website_private.enrollment_applications where id = :'app_a') = 'received', 'not complete while finalization is pending');
+select public.enrollment_mark_p2(:'app_a'::uuid, '{"finalize_status":"done","finalize_error":""}');
+select pg_temp.ok((select status from website_private.enrollment_applications where id = :'app_a') = 'complete', 'complete once finalized');
+select public.enrollment_mark_p2(:'app_a'::uuid, '{"family_email_status":"failed","family_email_error":"rate_limited","family_email_attempts_inc":1}');
+update website_private.enrollment_applications set updated_at = now() - interval '11 minutes' where id = :'app_a';
+select pg_temp.ok(:'ref_a' in (select jsonb_array_elements_text(public.enrollment_unfinished_p1(0, 25))), 'a failed parent email is selected for automatic retry');
+select public.enrollment_mark_p2(:'app_a'::uuid, '{"family_email_status":"failed","family_email_attempts_inc":5,"staff_delivery_status":"delivered"}');
+update website_private.enrollment_applications set updated_at = now() - interval '2 days' where id = :'app_a';
+select pg_temp.ok(:'ref_a' not in (select jsonb_array_elements_text(public.enrollment_unfinished_p1(0, 25))), 'retries are bounded (6 attempts)');
+reset role;
 select 'ALL ACCESS-CONTROL TESTS PASSED' as result;

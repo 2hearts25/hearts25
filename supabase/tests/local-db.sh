@@ -12,5 +12,5 @@ export PGOPTIONS="-c client_min_messages=notice"; P="psql -h $DIR -p 55432 -U po
 $P -c "create database h2h"
 $P -d h2h -f "$ROOT/supabase/tests/stubs.sql"
 for f in "$ROOT"/supabase/migrations/*.sql; do echo "apply $(basename "$f")"; sed -E "/create extension if not exists pg_(net|cron)/d" "$f" > "$DIR/m.sql"; $P -d h2h -f "$DIR/m.sql"; done
-echo "apply again (idempotency of the 1.3.0 migration)"; $P -d h2h -f "$ROOT/supabase/migrations/20261125120000_v130_enrollment_completion.sql"
+echo "apply again (idempotency of the 1.3.0 migrations)"; for m in 20261125120000_v130_enrollment_completion 20261125180000_v130_financial_and_finalize; do $P -d h2h -f "$ROOT/supabase/migrations/$m.sql"; done
 chmod 644 "$DIR"/m.sql; $P -d h2h -o /dev/null -f "$ROOT/supabase/tests/access-control.sql"; echo "ALL ACCESS-CONTROL TESTS PASSED"

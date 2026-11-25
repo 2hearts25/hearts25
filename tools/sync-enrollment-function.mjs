@@ -5,7 +5,7 @@ const root = new URL('../', import.meta.url);
 const src = f => new URL('enrollment/' + f, root), dst = f => new URL('supabase/functions/submit-enrollment/' + f, root);
 await import('../enrollment/build-schema.mjs');
 // 1.3.0: agreements, evidence and upload checks are shared too. The frozen 1.2.0-E1 copy in v120/ is NEVER touched by this script.
-for (const f of ['core.mjs', 'bidi.mjs', 'doc-map.mjs', 'pdf-kit.mjs', 'pdf-ohio.mjs', 'pdf-h2h.mjs', 'pdf.mjs', 'agreements.mjs', 'evidence.mjs', 'file-check.mjs']) copyFileSync(src(f), dst(f));
+for (const f of ['core.mjs', 'bidi.mjs', 'doc-map.mjs', 'pdf-kit.mjs', 'pdf-ohio.mjs', 'pdf-h2h.mjs', 'pdf.mjs', 'agreements.mjs', 'evidence.mjs', 'file-check.mjs', 'financial.mjs']) copyFileSync(src(f), dst(f));
 // The server never reads field-mapping metadata (src/pdf) or autocomplete hints, so they are not shipped.
 const strip = o => Array.isArray(o) ? o.map(strip) : o && typeof o === 'object' ? Object.fromEntries(Object.entries(o).filter(([k]) => !['src', 'pdf', 'ac'].includes(k)).map(([k, v]) => [k, strip(v)])) : o;
 const schema = strip(JSON.parse(readFileSync(src('schema.json'))));

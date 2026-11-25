@@ -139,7 +139,7 @@ try {
     assert.deepEqual(row130.doc_summary, { immunization: 1, 'insurance-front': 1, 'insurance-back': 1, custody: 1 });
     const att = await q('select count(*)::int n from website_private.enrollment_documents where application_id = $1', [row130.id]); assert.equal(att[0].n, 4);
     const agr = await q('select kind, language, status, version from website_private.enrollment_agreements where application_id = $1 order by kind', [row130.id]);
-    assert.deepEqual(agr.map(a => a.kind), ['acknowledgments', 'attendance', 'contract', 'withdrawal-termination']); assert.ok(agr.every(a => a.language === 'es'));
+    assert.deepEqual(agr.map(a => a.kind), ['acknowledgments', 'attendance', 'contract', 'financial-information', 'withdrawal-termination']); assert.ok(agr.every(a => a.language === 'es'));
     const terms = await q('select * from website_private.enrollment_financial_terms where application_id = $1', [row130.id]); assert.equal(terms.length, 1); assert.equal(terms[0].copay_cents, 1250); assert.equal(terms[0].copay_source, 'parent_reported'); assert.equal(terms[0].status, 'parent_reported');
   });
   await t('Director email: same two-PDF attachment set plus a status summary with no names, health details or files', async () => {
@@ -153,7 +153,10 @@ try {
     const o = text(Buffer.from(staffMail.body.attachments[0].content, 'base64')), h = text(Buffer.from(staffMail.body.attachments[1].content, 'base64'));
     const hn = h.replace(/\s+/g, ' ');
     assert.ok(h.indexOf('28. Parent/Provider Contract') > h.indexOf('27. Policy revisions') && h.indexOf('Electronic signatures') > h.indexOf('28. Parent/Provider Contract'), 'contract last, then signatures');
-    assert.ok(/Late pickup — NOT YET IN EFFECT/.test(hn) && /No late pickup charge is in effect/.test(hn) && !/\$10|\$2\.00|per minute/.test(hn), 'late pickup inactive, no paper amounts printed');
+    assert.ok(/Late pickup — IN EFFECT/.test(hn) && /\$10\.00 for up to the first 10 minutes late, then \$2\.00 for each additional minute/.test(hn.replace(/\s+/g, ' ')) && /ACCEPTED/.test(hn) && !/No late pickup charge is in effect/.test(hn), 'late pickup active: schedule + acceptance recorded in the Heart to Heart PDF');
+    assert.ok(/Financial information \(optional\)/.test(hn) && /NO CARD INFORMATION PROVIDED/.test(hn) && /Follow-up deadline/.test(hn) && /No advance payment is required/.test(hn.replace(/\s+/g, ' ')), 'missing payment source: status, notice and follow-up deadline in the Heart to Heart PDF');
+    assert.ok(!/Financial information|Late pickup|NO CARD INFORMATION/.test(o), 'financial and late-pickup sections are in the Heart to Heart PDF ONLY (not the Ohio PDF)');
+    assert.ok(/Private-pay tuition|Payment of tuition/i.test(hn) && /NOT YET IN EFFECT/.test(hn), 'private-pay tuition remains deferred');
     assert.ok(/PARENT-REPORTED amount — NOT confirmed/.test(hn) && /Acknowledged at signing/.test(hn) && /revision v1\.1/.test(hn), 'pfcc / w&t status');
     assert.ok(/Medicaid/.test(h) && !/SYN-0000|Medicaid/.test(o), 'insurance only in the Heart to Heart PDF');
     assert.ok(/Immunization record\s+1 file uploaded online — NOT yet reviewed/.test(o), 'Ohio PDF shows health-document upload status');
@@ -222,7 +225,7 @@ try {
     const mails = mock.emails.length; const r2 = await (await post('', b)).json(); assert.equal(r2.duplicate, true); assert.equal(r2.reference, r1.reference);
     await new Promise(r => setTimeout(r, 1500)); assert.equal(mock.emails.length, mails);
     const row = await appRow(r1.reference); assert.equal(row.copay_status, 'unknown', 'unknown copay never blocks submission');
-    assert.equal((await q('select count(*)::int n from website_private.enrollment_agreements where application_id = $1', [row.id]))[0].n, 4);
+    assert.equal((await q('select count(*)::int n from website_private.enrollment_agreements where application_id = $1', [row.id]))[0].n, 5);
   });
   await t('optional insurance omitted, private pay, no email: accepted; parent email skipped without harming the application', async () => {
     const d = structuredClone(sample130); for (const k of Object.keys(d)) if (/^(ins|up|pf)\./.test(k)) delete d[k]; d['c.payment'] = 'private'; d['p1.contactPath'] = 'phone'; delete d['p1.email']; d['c.first'] = 'NoMail';
@@ -251,7 +254,7 @@ try {
       const j = await (await post('', body130(d, { lang }))).json(); assert.ok(j.reference, JSON.stringify(j));
       assert.ok(await until(async () => (await appRow(j.reference))?.family_email_status === 'sent'));
       const m = mailsTo(`lang.${lang}@example.com`)[0]; assert.match(m.body.subject, subj[lang]); assert.ok(m.body.html.includes(`${lang === 'en' ? '' : lang + '/'}register/documents/#t=`));
-      const agr = await q('select a.language from website_private.enrollment_agreements a join website_private.enrollment_applications p on p.id = a.application_id where p.reference = $1', [j.reference]); assert.ok(agr.length === 4 && agr.every(a => a.language === lang));
+      const agr = await q('select a.language from website_private.enrollment_agreements a join website_private.enrollment_applications p on p.id = a.application_id where p.reference = $1', [j.reference]); assert.ok(agr.length === 5 && agr.every(a => a.language === lang));
     }
   });
   await t('a stale page with an old contract version must reload (409) — no silent change of agreed terms', async () => {

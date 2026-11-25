@@ -9,7 +9,7 @@ import { contractView, copayStatus } from './evidence.mjs';
 
 export const H2H_TITLE = 'Heart to Heart Enrichment Center — Internal Enrollment Records';
 export const h2hFilename = id => `H2H_${id}_Heart_to_Heart.pdf`;
-export const CONTRACT_STATUS = 'PARTIALLY IN EFFECT — only the sections marked IN EFFECT below apply. Sections marked NOT YET IN EFFECT (and any individual fee or copayment amount) have not been agreed and must be provided to the family for review and signature before they apply.';
+export const CONTRACT_STATUS = 'IN EFFECT — approved by management 11/25/2026 and applies once signed and approved by the Director/Administrator. EXCEPT private-pay tuition: the “Payment of tuition” section (and any private-pay rates or private-pay late-payment fees) is NOT YET IN EFFECT and will be provided to the family for review and signature before it applies. No fee other than the late pickup charge and the PFCC copayment set by the county is in effect.';
 export const ABSENCE_STATUS = 'APPROVED by management on 11/24/2026 — Absent Days and Attendance Policy as shown below (shown to the parent in full on the form, above the acknowledgment).';
 
 const CAT = { 'insurance-front': 'Insurance card (front)', 'insurance-back': 'Insurance card (back)', immunization: 'Immunization record', 'physical-exam': 'Physical examination / medical statement', 'health-care-plan': 'Health care plan / doctor’s instructions', 'medication-authorization': 'Medication authorization', 'dietary-statement': 'Special-diet statement', custody: 'Custody / guardianship / court documents', pfcc: 'PFCC authorization or copayment notice', other: 'Other enrollment documents' };
@@ -98,6 +98,7 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   if (d['ag.wt'] === 'noaccess') k.tick('Withdrawal and Termination Policy — PENDING: parent could not open it and asked for a copy; receipt NOT recorded', false);
   if (d['c.payment'] === 'pfcc') k.tick('PFCC copayment amount and due date — confirm in writing and obtain the parent’s acknowledgment (new revision)', false);
   for (const id of pendingSections()) k.tick(`Parent/Provider Contract — “${en.ct[id].title}” is NOT YET IN EFFECT; provide for review and signature once approved`, false);
+  if (v.fin?.status === 'follow_up_needed') k.tick(`Payment source — FOLLOW-UP NEEDED by ${v.fin.followUpDue || '30 days after enrollment'}: no card information on file; ask the family for a payment source or alternative arrangement. No advance payment is required.`, false);
   if (d['d.separate'] === true) k.tick('Parent will provide some documents separately', false);
 
   k.section(25, 'Absent Days and Attendance Policy');
@@ -139,8 +140,28 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
     k.kv('Financial terms status', cs === 'parent_reported' ? 'PARENT-REPORTED amount — NOT confirmed by Heart to Heart; not an executed financial agreement' : cs === 'zero_reported' ? 'Parent reports a $0 copayment — NOT confirmed by Heart to Heart' : 'Copayment not yet determined — awaiting the county notice and confirmation', { pending: true });
     k.para('Heart to Heart does not calculate PFCC eligibility or copayments. When the amount and the mutually agreed due date are confirmed in writing, the family acknowledges them as a new, separately recorded revision; this signed application is never altered.', muted);
   }
+  k.sub('Late pickup schedule and acknowledgment');
+  k.kv('Schedule', 'After center closing: $10.00 for up to the first 10 minutes late, then $2.00 for each additional minute (examples: 10 min = $10.00, 15 min = $20.00, 30 min = $50.00). Applies to every family, including PFCC families. The only center-imposed charge for PFCC families.');
   k.printFields({ ids: ['lp.ack'] });
+  k.kv('Late pickup acceptance', d['lp.ack'] === true ? `ACCEPTED ${meta.submittedAtEastern || meta.submittedAt} — agreement version ${CONTRACT.version}; accepted with the electronic signature(s) shown below.` : 'NOT ACCEPTED — no late pickup charge may be applied.', { pending: d['lp.ack'] !== true });
   k.printFields({ ids: ['ag.contractAck'] });
+  const fin = v.fin || {};
+  k.section(29, 'Financial information (optional) — payment source');
+  k.kv('Collection status', ({ card_on_file: 'CARD INFORMATION ON FILE — stored separately in the restricted, encrypted financial record', follow_up_needed: 'NO CARD INFORMATION PROVIDED — follow-up needed', purged: 'Card information was provided and has since been purged under the retention policy', not_received: 'NOT RECEIVED' })[fin.status] || 'Not applicable', { pending: fin.status === 'follow_up_needed' || fin.status === 'not_received' });
+  if (fin.status === 'card_on_file') {
+    k.kv('Cardholder name', fin.name); k.kv('Card number (masked)', fin.masked); k.kv('Card type', String(fin.brand || 'card')); k.kv('Expiration (month / year)', `${fin.expM} / ${fin.expY}`);
+    k.kv('Billing address', `${fin.addr}, ${fin.city}, ${fin.state}`); k.kv('Billing ZIP code', fin.zip);
+    k.printFields({ ids: ['fin.choice', 'fin.consent'] });
+    k.kv('Signed acknowledgment', `Consent to retain this card information recorded ${meta.submittedAtEastern || meta.submittedAt}, signed electronically below; agreement version ${CONTRACT.version}.`);
+  } else {
+    k.printFields({ ids: ['fin.choice', 'fin.notice'] });
+    if (fin.status === 'follow_up_needed') {
+      if (d['fin.notice'] === 'continued') k.kv('Notice shown to the parent', 'You have not provided credit or debit card information. You may continue with your application. Please provide a payment source or establish an alternative payment arrangement within 30 days of enrollment. No advance payment is required. Do you wish to continue?');
+      k.kv('Follow-up deadline', `${fin.followUpDue || '30 days after the confirmed enrollment date'} (30 days after the requested enrollment date; recalculate from the date the Director confirms)`, { pending: true });
+      if (fin.intended) k.kv('Note', 'The parent entered card information but it could not be saved. Contact the parent.', { pending: true });
+    }
+  }
+  k.para('This record never contains a security code (CVV), PIN or magnetic-stripe data, and never the full card number. This application did NOT process a payment, verify the card with a card network, or charge anything, and sets up no recurring billing. No advance payment is required. Heart to Heart will ask for the family’s separate written permission before any charge. Acceptance of the contract, permission to keep card information, and authorization of future charges are three separate things; only the first two are recorded here.', { size: 8.5, color: [0.36, 0.4, 0.48] });
   const acked = new Set(meta.acks || []);
   k.section(null, 'Signing acknowledgments, electronic signatures and administrator fields');
   for (const a of visibleAcks(d, schema)) if (ackDocs[a.id].includes(H2H)) k.tick(en.acks[a.id], acked.has(a.id));

@@ -412,7 +412,7 @@ for (const name of ['inquiry.js','analytics.js']) {
 await mkdir(new URL('assets/enrollment/i18n/',dist),{recursive:true});
 await copyFile(new URL('./enrollment/core.mjs',import.meta.url),new URL('assets/enrollment/core.js',dist));
 // 1.3.0 shared modules (same files the Edge Function uses), served as .js with their relative imports rewritten
-for (const name of ['agreements','evidence','file-check']) await writeFile(new URL('assets/enrollment/' + name + '.js',dist),(await readFile(new URL('./enrollment/' + name + '.mjs',import.meta.url),'utf8')).replace(/from '\.\/([a-z-]+)\.mjs'/g,"from './$1.js'"),'utf8');
+for (const name of ['agreements','evidence','file-check','financial']) await writeFile(new URL('assets/enrollment/' + name + '.js',dist),(await readFile(new URL('./enrollment/' + name + '.mjs',import.meta.url),'utf8')).replace(/from '\.\/([a-z-]+)\.mjs'/g,"from './$1.js'"),'utf8');
 await copyFile(new URL('./enrollment/schema.json',import.meta.url),new URL('assets/enrollment/schema.json',dist));
 await writeFile(new URL('assets/enrollment/document-links.json',dist),JSON.stringify(portalByLocale),'utf8');
 for (const [code,data] of Object.entries(enrollI18n)) await writeFile(new URL('assets/enrollment/i18n/' + code + '.json',dist),JSON.stringify(data),'utf8');

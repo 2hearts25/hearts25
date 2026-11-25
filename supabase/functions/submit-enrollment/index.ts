@@ -13,7 +13,8 @@ import schema from "./schema.gen.ts";
 import en from "./en.gen.ts";
 import I18N from "./i18n.gen.ts";
 import { CONTRACT, FORM_VERSION, POLICIES, pendingSections } from "./agreements.mjs";
-import { agreementTexts, copayStatus, reportedTerms } from "./evidence.mjs";
+import { agreementTexts, copayStatus, paymentStatus, reportedTerms } from "./evidence.mjs";
+import { validateCard, hasForbiddenFields, normalizePan, brandOf, lastFour, maskPanPlain, followUpDue } from "./financial.mjs";
 import { inspect, safeName, MAX_FILE_BYTES, CATEGORIES } from "./file-check.mjs";
 // ---- 1.2.0-E1 modules (frozen copy of release 1.2.1)
 import { buildEnrollmentPdfs as buildLegacyPdfs } from "./v120/pdf.mjs";
@@ -25,6 +26,7 @@ import { b64, hmacHex, loadKeys, safeEqual, seal, sha256Hex, unb64, unseal, type
 import { getDelivery, sendResend, staffFailureMessage, staffMessage, type Cfg, type StaffSummary } from "./mail.ts";
 import { familyEnrollmentMessage } from "./family-mail.ts";
 import { familyConfirmationWithDocuments, familyDocumentLinkMessage } from "./family-docs-mail.ts";
+import { withPaymentNote } from "./family-payment-note.ts";
 
 const LEGACY_VERSION = "1.2.0-E1";
 const LANGS: Record<string, string> = { en: "English", es: "Spanish (Español)", fr: "French (Français)", ar: "Arabic (العربية)", sw: "Swahili (Kiswahili)" };
@@ -86,17 +88,26 @@ function mailCfg(): Cfg {
     replyTo: env("H2H_REPLY_TO", "hearttoheart3095@yahoo.com"),
   };
 }
-type Flags = { enrollment_v130: boolean; enrollment_uploads: boolean; parent_document_access: boolean; staff_document_access: boolean };
+type Flags = { enrollment_v130: boolean; enrollment_uploads: boolean; parent_document_access: boolean; staff_document_access: boolean; financial_card_collection: boolean };
 let flagCache: { at: number; v: Flags } | null = null;
 // Server-side switches live in the database (website_private.feature_flags). If the 1.3.0 migration is not applied yet, or the
 // lookup fails, every new capability is OFF: the 1.2.0-E1 workflow never depends on them.
 async function flags(): Promise<Flags> {
-  if (flagCache && Date.now() - flagCache.at < 30_000) return flagCache.v;
-  let v: Flags = { enrollment_v130: false, enrollment_uploads: false, parent_document_access: false, staff_document_access: false };
+  if (flagCache && Date.now() - flagCache.at < Number(env("H2H_FLAG_TTL_MS", "30000"))) return flagCache.v;
+  let v: Flags = { enrollment_v130: false, enrollment_uploads: false, parent_document_access: false, staff_document_access: false, financial_card_collection: false };
   try { const f = await rpc("enrollment_flags_p2", {}); v = { ...v, ...Object.fromEntries(Object.keys(v).map((k) => [k, f?.[k] === true])) } as Flags; } catch { /* stay off */ }
   flagCache = { at: Date.now(), v };
   return v;
 }
+
+// ---------- restricted financial store (optional card information) ----------
+// Collection needs BOTH the database flag AND a dedicated key (H2H_FINANCIAL_KEY, different from the application-data key). Without either, the form
+// only offers "continue without card information" and the server refuses any card it is sent. Nothing here contacts a card network or charges anything.
+const FIN_AAD = (id: string, part: string) => `h2h-card-${part}-v1:${id}`;
+let finKeysP: Promise<Keys> | null = null;
+const getFinKeys = () => (finKeysP ??= loadKeys(env("H2H_FINANCIAL_KEY")));
+const finKeyReady = () => Boolean(env("H2H_FINANCIAL_KEY")) && env("H2H_FINANCIAL_KEY") !== env("H2H_APP_DATA_KEY");
+async function cardCollectionOn() { return finKeyReady() && (await flags()).financial_card_collection; }
 
 // ---------- fonts (served by the site; cached per instance) ----------
 let fontsP: Promise<Record<string, Uint8Array>> | null = null;
@@ -162,6 +173,61 @@ function outstandingFor(d: Record<string, any>, docs: { category: string }[]): s
   return out;
 }
 
+// Finalization = write the immutable agreement evidence and attach the uploaded documents. It is IDEMPOTENT (evidence is written once, a
+// replay never rewrites it) and BOUNDED (8 attempts, then the application is flagged needs_attention). Until it succeeds the application is
+// never reported "complete", and nothing is silently skipped: the sealed payload carries everything needed to retry exactly.
+async function finalizeApplication(row: any, payload: any): Promise<boolean> {
+  if (row.finalize_status === "done" || row.finalize_status === "not_applicable") return true;
+  if ((row.finalize_attempts ?? 0) >= 8) return false;
+  const mark = (patch: Record<string, unknown>) => rpc("enrollment_mark_p2", { p_id: row.id, p_patch: patch }).catch(() => null);
+  try {
+    // payment-source status is decided from what is actually in the restricted store, never from the form alone
+    let payStatus = "not_received", due: string | null = payload.payment?.followUpDue ?? null;
+    if (payload.payment) {
+      const card = payload.payment.cardIntended ? await rpc("enrollment_card_display_p2", { p_application: row.id, p_purpose: "finalize" }) : null;
+      payStatus = paymentStatus({ "fin.notice": payload.payment.choice === "skip" ? "continued" : undefined }, card?.status === "stored");
+      if (payload.payment.cardIntended && !card) payStatus = "follow_up_needed";
+      if (payStatus === "follow_up_needed" && !due) due = followUpDue(payload.answers["c.start"]);
+      if (payStatus === "card_on_file") due = null;
+    }
+    const docs: any[] = payload.documents ?? [], counts: Record<string, number> = {}; for (const d of docs) counts[d.category] = (counts[d.category] ?? 0) + 1;
+    const a = payload.answers;
+    const rec = await rpc("enrollment_record_v130_p2", { p_application: row.id, p_agreements: payload.evidence ?? [], p_terms: payload.terms ?? null, p_meta: {
+      agreement_sha256: await sha256Hex(utf8((payload.agreements ?? []).map((x: any) => x.sha256).join("|"))), contract_version: payload.contractVersion, contract_status: pendingSections().length ? "partial" : "final",
+      copay_status: copayStatus(a), wt_ack_status: a["ag.wt"] === "ack" ? "acknowledged" : "not_received", doc_summary: counts,
+      payment_status: payStatus, payment_followup_due: due ?? "",
+      access: String(Boolean(primaryEmail(a)) && (await flags()).parent_document_access) } });
+    if (!rec?.ok) throw new Error("evidence");
+    const wanted = payload.docAttach?.wanted ?? [];
+    if (wanted.length) {
+      const att = await rpc("enrollment_docs_attach_p2", { p_token_hash: payload.docAttach.tokenHash, p_application: row.id, p_docs: wanted });
+      if (!att?.ok) throw new Error("documents");
+    }
+    const finalized = await mark({ finalize_status: "done", finalize_error: "" });
+    if (!finalized?.ok) throw new Error("finalize_status");
+    row.finalize_status = "done"; row.payment_status = payStatus; row.payment_followup_due = due;
+    return true;
+  } catch (e) {
+    console.error("finalization failed (will retry):", errName(e));
+    await mark({ finalize_status: "failed", finalize_attempts_inc: 1, finalize_error: errName(e) });
+    row.finalize_status = "failed"; row.finalize_attempts = (row.finalize_attempts ?? 0) + 1;
+    return false;
+  }
+}
+
+// Payment-source information for the Heart to Heart PDF ONLY: masked number, expiry, cardholder and billing details, status, follow-up date.
+// The full card number is never read here.
+async function financialForPdf(row: any, payload: any) {
+  const status = row.payment_status ?? (payload.payment ? paymentStatus({ "fin.notice": payload.payment.choice === "skip" ? "continued" : undefined }, false) : null);
+  const out: Record<string, unknown> = { status, followUpDue: row.payment_followup_due ?? payload.payment?.followUpDue ?? null, intended: Boolean(payload.payment?.cardIntended) };
+  if (status === "card_on_file") {
+    const d = await rpc("enrollment_card_display_p2", { p_application: row.id, p_purpose: "pdf" });
+    if (!d || d.status !== "stored") out.status = "purged";
+    else Object.assign(out, JSON.parse(new TextDecoder().decode(await unseal(await getFinKeys(), unb64(d.display_enc), FIN_AAD(row.id, "display")))), { brand: d.brand, consentAt: d.consent_at });
+  }
+  return out;
+}
+
 async function processApplication(reference: string, opts: { force?: boolean } = {}) {
   const row = await rpc("enrollment_get_p1", { p_reference: reference });
   if (!row) return { ok: false, error: "not found" };
@@ -170,7 +236,8 @@ async function processApplication(reference: string, opts: { force?: boolean } =
   const payload = JSON.parse(new TextDecoder().decode(await unseal(keys, unb64(row.payload_enc), PAYLOAD_AAD)));
   const cfg = mailCfg();
   let ohio: Uint8Array | null = null, h2h: Uint8Array | null = null;
-  const mark = (patch: Record<string, unknown>) => rpc("enrollment_mark_p1", { p_id: row.id, p_patch: patch }).catch(() => null);
+  const mark = (patch: Record<string, unknown>) => rpc("enrollment_mark_p2", { p_id: row.id, p_patch: patch }).catch(() => null);
+  if (!legacy && !(await finalizeApplication(row, payload))) return { ok: false, error: "finalization" };
 
   // 1+2. Both PDFs are generated from the same stored record and stored privately. Nothing is emailed unless BOTH exist.
   const haveBoth = row.pdf_status === "generated" && row.pdf_path && row.h2h_pdf_path;
@@ -180,7 +247,7 @@ async function processApplication(reference: string, opts: { force?: boolean } =
         applicationId: row.reference, submittedAt: payload.submittedAt, language: payload.lang, languageName: LANGS[payload.lang], formVersion: row.form_version,
         acks: payload.acks, parent2Mode: payload.parent2Mode,
         signatures: payload.signatures.map((s: any) => ({ ...s, png: s.png ? pngInfo(s.png)!.bytes : undefined, signedAt: payload.submittedAt })),
-        ...(legacy ? {} : { v130: { documents: payload.documents ?? [], agreements: payload.agreements ?? [], contractVersion: payload.contractVersion, terms: payload.terms } }),
+        ...(legacy ? {} : { v130: { documents: payload.documents ?? [], agreements: payload.agreements ?? [], contractVersion: payload.contractVersion, terms: payload.terms, fin: await financialForPdf(row, payload) } }),
       };
       const lib = { PDFDocument, rgb, fontkit, PDFName, PDFHexString, PDFOperator };
       const built = legacy
@@ -216,9 +283,11 @@ async function processApplication(reference: string, opts: { force?: boolean } =
           lines: [["Parent language", LANGS[payload.lang] ?? payload.lang], ["Form version", row.form_version],
             ["Contract", `${payload.contractVersion} — ${pendingSections().length ? "partially in effect (sections pending approval)" : "in effect"}`],
             ["PFCC copayment", { not_pfcc: "Not a PFCC application", unknown: "Not yet known — awaiting confirmation", parent_reported: "Parent-reported amount — NOT confirmed", zero_reported: "Parent reports $0 — NOT confirmed", confirmed: "Confirmed" }[copayStatus(a) as string] ?? "—"],
+            ["Late pickup schedule", a["lp.ack"] === true ? "Accepted (after center closing: $10.00 up to 10 minutes late, then $2.00 per additional minute)" : "NOT accepted"],
+            ["Payment source", ({ card_on_file: "ON FILE — card information stored in the restricted financial record (masked in the Heart to Heart PDF; no payment processed or verified)", follow_up_needed: `NEEDS FOLLOW-UP — no card information provided; ask the family for a payment source or alternative arrangement by ${row.payment_followup_due ?? "30 days after enrollment"}. No advance payment is required.`, not_received: "NOT RECEIVED" } as Record<string, string>)[row.payment_status ?? ""] ?? "—"],
             ["Withdrawal & Termination Policy", a["ag.wt"] === "ack" ? `Acknowledged (${POLICIES.withdrawal.revision}, effective ${POLICIES.withdrawal.effectiveDate})` : "NOT received — parent asked for a copy"]],
           received: Object.entries(counts).map(([c, n]) => `${CAT_LABEL[c] ?? c}: ${n} file${n === 1 ? "" : "s"}`),
-          outstanding: outstandingFor(a, docs),
+          outstanding: [...outstandingFor(a, docs), ...(row.finalize_status === "done" || row.finalize_status === "not_applicable" ? [] : ["System: record finalization (agreement evidence / document association) is still retrying automatically — it is not complete yet"])],
           access: docs.length ? "Uploaded files are not attached to this email. Sign in to the staff document page (https://hearts25.com/staff/documents/) with your authorized staff account to review them." : "No files were uploaded with this application.",
         };
       }
@@ -236,13 +305,13 @@ async function processApplication(reference: string, opts: { force?: boolean } =
   }
 
   // 4. parent email (never blocks the Director's documents; a failure here never touches the stored application)
-  if (row.family_email_status === "pending") {
+  if (row.family_email_status === "pending" || (row.family_email_status === "failed" && (row.family_email_attempts ?? 0) < 6)) {
     const email = primaryEmail(payload.answers);
-    if (!email) await mark({ family_email_status: "skipped", ...(row.access_email_status === "pending" ? { access_email_status: "skipped" } : {}) });
+    if (!email) await mark({ family_email_status: "skipped", ...(["pending", "failed"].includes(row.access_email_status) ? { access_email_status: "skipped" } : {}) });
     else {
       let message = familyEnrollmentMessage(String(payload.answers["p1.name"] ?? ""), payload.lang, row.reference);
       let withAccess = false;
-      if (!legacy && row.access_email_status === "pending" && (await flags()).parent_document_access) {
+      if (!legacy && ["pending", "failed"].includes(row.access_email_status) && (await flags()).parent_document_access) {
         // The initial link is derived from the application key and the reference (unguessable without the secret), so a retry or a
         // concurrent sweep of the same email always produces the same link instead of revoking the one already sent.
         const token = (await hmacHex(keys, "access-initial", row.reference)).slice(0, 48);
@@ -250,9 +319,10 @@ async function processApplication(reference: string, opts: { force?: boolean } =
         message = familyConfirmationWithDocuments(String(payload.answers["p1.name"] ?? ""), payload.lang, row.reference, accessUrl(payload.lang, token), ACCESS_DAYS);
         withAccess = true;
       }
+      if (!legacy && row.payment_status === "follow_up_needed") message = withPaymentNote(message, payload.lang, row.payment_followup_due ?? null);
       const res = await sendResend(cfg, { from: cfg.from, to: [email], reply_to: cfg.replyTo, ...message }, `heart-to-heart/enrollment-family/${row.reference}`);
-      await mark(res.ok ? { family_email_status: "sent", family_email_id: res.id, family_email_error: "", ...(withAccess ? { access_email_status: "sent", access_email_id: res.id } : {}) }
-        : { family_email_status: "failed", family_email_error: res.error, ...(withAccess ? { access_email_status: "failed", access_email_error: res.error } : {}) });
+      await mark(res.ok ? { family_email_attempts_inc: 1, family_email_status: "sent", family_email_id: res.id, family_email_error: "", ...(withAccess ? { access_email_status: "sent", access_email_id: res.id } : {}) }
+        : { family_email_attempts_inc: 1, family_email_status: "failed", family_email_error: res.error, ...(withAccess ? { access_email_status: "failed", access_email_error: res.error } : {}) });
       if (res.ok) { row.family_email_status = "sent"; row.family_email_id = res.id; row.family_delivery_status = "in_transit"; if (withAccess) { row.access_email_status = "sent"; row.access_email_id = res.id; row.access_delivery_status = "in_transit"; } }
     }
   }
@@ -318,6 +388,16 @@ async function submit(req: Request, origin: string | null) {
       else documents = chk.documents;
     }
   }
+  // Optional card information (1.3.0-E2). The card is validated here but is NEVER part of the answers, the payload, a log line or an email.
+  let cardIn: { name: string; number: string; expM: string; expY: string; addr: string; city: string; state: string; zip: string } | null = null;
+  if (current) {
+    const c = body.card;
+    if (answers["fin.choice"] === "provide") {
+      if (!(await cardCollectionOn()) || !c || typeof c !== "object" || Array.isArray(c) || hasForbiddenFields(c)) errors["fin.choice"] = "choice";
+      else if (Object.keys(validateCard(c, new Date(easternDate() + "T12:00:00Z"))).length) errors["fin.choice"] = "card";
+      else cardIn = { name: String(c.name).trim(), number: normalizePan(c.number), expM: String(c.expM).padStart(2, "0"), expY: String(c.expY), addr: String(c.addr).trim(), city: String(c.city).trim(), state: String(c.state), zip: String(c.zip).trim() };
+    } else if (c !== undefined) errors["fin.choice"] = "choice"; // a card was sent without the parent choosing to provide one
+  }
   if (Object.keys(errors).length) return json({ ok: false, error: "invalid", errors }, 422, origin);
 
   const now = new Date().toISOString();
@@ -327,7 +407,8 @@ async function submit(req: Request, origin: string | null) {
   // 1.3.0: the exact agreement text shown to the family (their language + English), hashed; stored encrypted, append-only.
   let agreements: any[] = [], evidenceRows: any[] = [], agreementSha = "";
   if (current) {
-    const recs = agreementTexts({ L: (I18N as any)[body.lang], EN: (I18N as any).en, data: { ...answers, __formVersion: FORM_VERSION }, acks: acksKept as any, lang: body.lang });
+    const recs = agreementTexts({ L: (I18N as any)[body.lang], EN: (I18N as any).en, data: { ...answers, __formVersion: FORM_VERSION }, acks: acksKept as any, lang: body.lang,
+      card: cardIn ? { name: cardIn.name, masked: maskPanPlain(cardIn.number), expM: cardIn.expM, expY: cardIn.expY } : null });
     for (const r of recs) {
       const sha = await sha256Hex(utf8(r.text));
       agreements.push({ kind: r.kind, version: r.version, language: r.language, status: r.status, sha256: sha, enSha256: await sha256Hex(utf8(r.textEn)) });
@@ -337,8 +418,11 @@ async function submit(req: Request, origin: string | null) {
     agreementSha = await sha256Hex(utf8(agreements.map((a) => a.sha256).join("|")));
   }
   const terms = current ? reportedTerms(answers) : null;
+  // Everything finalization needs is kept in the sealed payload (never the card), so a temporary failure can be retried exactly: the evidence
+  // rows (already encrypted, with their hashes), the upload-session binding, and the payment-source choice. No card number is ever in here.
+  const payment = current ? { choice: answers["fin.choice"] ?? null, cardIntended: Boolean(cardIn), followUpDue: cardIn ? null : followUpDue(answers["c.start"]) } : null;
   const payload = { answers, acks: acksKept, signatures, parent2Mode: p2mode, lang: body.lang, formVersion, submittedAt: now, userAgent: String(req.headers.get("user-agent") ?? "").slice(0, 200),
-    ...(current ? { contractVersion: CONTRACT.version, agreements, documents, terms } : {}) };
+    ...(current ? { contractVersion: CONTRACT.version, agreements, documents, terms, payment, evidence: evidenceRows, docAttach: { tokenHash, wanted: wanted.map(({ id, category }) => ({ id, category })) } } : {}) };
   const sealed = b64(await seal(keys, new TextEncoder().encode(JSON.stringify(payload)), PAYLOAD_AAD));
   const ip = (req.headers.get("x-forwarded-for") ?? req.headers.get("cf-connecting-ip") ?? "").split(",")[0].trim();
   const contactKey = primaryEmail(answers) || "tel:" + digits(answers["p1.cell"] || answers["p1.home"]);
@@ -352,17 +436,24 @@ async function submit(req: Request, origin: string | null) {
 
   // The application is now safely stored. Everything below is retryable, and a duplicate submission never rewrites anything.
   if (current && !res.duplicate) {
-    try {
-      if (documents.length) {
-        const att = await rpc("enrollment_docs_attach_p2", { p_token_hash: tokenHash, p_application: res.id, p_docs: wanted.map(({ id, category }) => ({ id, category })) });
-        if (!att?.ok) console.error("document attach failed for a stored application (reference logged):", res.reference);
+    // 1. the card (if any) goes into the restricted store BEFORE anything else, because it exists only in this request. Up to 3 tries.
+    if (cardIn) {
+      let stored = false;
+      for (let i = 0; i < 3 && !stored; i++) {
+        try {
+          const fk = await getFinKeys(), pan = cardIn.number;
+          const r = await rpc("enrollment_card_store_p2", { p_application: res.id, p_brand: brandOf(pan), p_last4: lastFour(pan),
+            p_pan_enc: b64(await seal(fk, utf8(pan), FIN_AAD(res.id, "pan"))),
+            p_display_enc: b64(await seal(fk, utf8(JSON.stringify({ name: cardIn.name, masked: maskPanPlain(pan), expM: cardIn.expM, expY: cardIn.expY, addr: cardIn.addr, city: cardIn.city, state: cardIn.state, zip: cardIn.zip })), FIN_AAD(res.id, "display"))),
+            p_consent_at: now, p_consent_sha: await sha256Hex(utf8(agreements.find((x) => x.kind === "financial-information")?.sha256 ?? "")) });
+          stored = Boolean(r?.ok);
+        } catch (e) { console.error("card store attempt failed:", errName(e)); }
       }
-      const counts: Record<string, number> = {}; for (const d of documents) counts[d.category] = (counts[d.category] ?? 0) + 1;
-      await rpc("enrollment_record_v130_p2", { p_application: res.id, p_agreements: evidenceRows, p_terms: terms, p_meta: {
-        agreement_sha256: agreementSha, contract_version: CONTRACT.version, contract_status: pendingSections().length ? "partial" : "final",
-        copay_status: copayStatus(answers), wt_ack_status: answers["ag.wt"] === "ack" ? "acknowledged" : "not_received", doc_summary: counts,
-        access: String(Boolean(primaryEmail(answers)) && (await flags()).parent_document_access) } });
-    } catch (e) { console.error("1.3.0 metadata step failed:", errName(e)); }
+      cardIn = null; delete body.card; // drop the card from memory as soon as it is stored (or has definitively failed)
+      if (!stored) console.error("card could not be stored for a saved application (reference logged):", res.reference);
+    }
+    // 2. evidence + document association: idempotent and retried by the sweep until it succeeds (never silently omitted)
+    await finalizeApplication({ id: res.id, finalize_status: "pending", finalize_attempts: 0 }, payload);
   }
   const finished = res.duplicate && res.status?.pdf === "generated" && res.status?.staff === "sent";
   if (!finished) background(processApplication(res.reference));
@@ -540,6 +631,7 @@ async function cleanup(limit: number) {
     const items: { id: string; path: string }[] = (await rpc("enrollment_cleanup_candidates_p2", { p_limit: limit })) ?? [];
     for (const it of items) { try { await storageDelete(it.path); await rpc("enrollment_doc_deleted_p2", { p_doc: it.id }); n++; } catch (e) { console.error("cleanup item failed:", errName(e)); } }
   } catch { /* 1.3.0 migration not applied: nothing to clean */ }
+  try { await rpc("enrollment_card_purge_due_p2", { p_limit: 25 }); } catch { /* migration 2 not applied, or nothing due */ }
   return n;
 }
 
@@ -551,6 +643,7 @@ Deno.serve(async (req) => {
   try {
     if (path.endsWith("/admin")) return await admin(req, origin);
     if (path.endsWith("/sweep")) { await req.body?.cancel(); background(sweep(3).then(() => cleanup(20))); return json({ ok: true, queued: true }, 202, origin); }
+    if (path.endsWith("/financial/status")) { await req.body?.cancel(); if (origin !== allowedOrigin()) return json({ ok: false }, 403, origin); return json({ ok: true, enabled: await cardCollectionOn() }, 200, origin); }
     if (path.endsWith("/upload/session")) return await uploadSession(req, origin);
     if (path.endsWith("/upload/file")) return await uploadFile(req, origin);
     if (path.endsWith("/upload/remove")) return await uploadRemove(req, origin);
