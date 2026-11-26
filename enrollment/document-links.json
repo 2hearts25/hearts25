@@ -98,6 +98,38 @@
       }
     },
     {
+      "id": "allergy-management-emergency-care-plan",
+      "category": "policies",
+      "status": "available",
+      "object": "Allergy Management and Emergency Care Plan.pdf",
+      "reference": "H2H-13",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "copy": {
+        "en": {
+          "title": "Allergy Management and Emergency Care Plan",
+          "description": "Allergy management and individualized emergency care planning information for families whose children have allergies or require allergy-related care arrangements."
+        },
+        "es": {
+          "title": "Plan de manejo de alergias y atención de emergencia",
+          "description": "Información sobre el manejo de alergias y la planificación individualizada de la atención de emergencia para familias cuyos hijos tienen alergias o requieren arreglos de cuidado relacionados con alergias."
+        },
+        "fr": {
+          "title": "Gestion des allergies et plan de soins d’urgence",
+          "description": "Renseignements sur la gestion des allergies et la planification individualisée des soins d’urgence pour les familles dont les enfants ont des allergies ou nécessitent des mesures de soins liées aux allergies."
+        },
+        "ar": {
+          "title": "إدارة الحساسية وخطة الرعاية في حالات الطوارئ",
+          "description": "معلومات عن إدارة الحساسية والتخطيط الفردي للرعاية في حالات الطوارئ للأسر التي لدى أطفالها حساسية أو يحتاجون إلى ترتيبات رعاية متعلقة بالحساسية."
+        },
+        "sw": {
+          "title": "Usimamizi wa Mzio na Mpango wa Huduma ya Dharura",
+          "description": "Taarifa kuhusu usimamizi wa mzio na upangaji wa huduma ya dharura kwa kila mtoto, kwa familia ambazo watoto wao wana mzio au wanahitaji mipango ya malezi inayohusiana na mzio."
+        }
+      }
+    },
+    {
       "id": "community-resources",
       "category": "resources",
       "status": "available",

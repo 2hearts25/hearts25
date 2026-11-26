@@ -104,6 +104,7 @@ const portalByLocale = Object.fromEntries(languages.map(language => {
   const documents = documentManifest.documents.map(({copy,object,language:pdfLanguage,effectiveDate,...document}) => {
     const url = document.status === 'available' && object ? documentBase + object.split('/').map(encodeURIComponent).join('/') : null;
     const metadata = [
+      document.reference,
       pdfLanguage && `${ui.pdfLanguage}: ${languageNames.of(pdfLanguage)}`,
       document.revision,
       effectiveDate && `${ui.effective} ${dates.format(new Date(effectiveDate))}`
