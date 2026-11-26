@@ -48,7 +48,8 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['h.diet', 'h.dietDesc', 'h.dietModified', 'h.avoid', 'fe.noFeed', 'h.other'] });
   k.para('For medical foods or removal of an entire food group, retain a physician’s written instructions. For religious or cultural special diets, retain the parent’s signed and dated instructions unless the diet is part of the center’s program.');
   k.section(10, 'Development and individual care information');
-  k.printFields({ ids: ['h.devDelay', 'h.devDesc', 'pe.devInfo', 'pe.fears', 'pe.fearReaction', 'pe.comfort', 'pe.angerTriggers', 'pe.frustration', 'pe.negBehavior', 'pe.more', 'pe.routines', 'po.care', 'h.accom', 'h.services', 'h.serviceProv', 'fe.drinks', 'fe.amount', 'fe.fav', 'fe.dislike', 'fe.seat'] });
+  k.printFields({ ids: ['h.devDelay', 'h.devDesc', 'pe.devInfo', 'pe.fears', 'pe.fearReaction', 'pe.comfort', 'pe.angerTriggers', 'pe.frustration', 'pe.negBehavior', 'pe.more', 'pe.routines', 'po.care', 'h.accom', 'h.services', 'h.serviceProv', 'fe.infant', 'fe.drinks', 'fe.amount', 'fe.fav', 'fe.dislike', 'fe.seat'] });
+  k.para('Infant feeding instructions (children under 18 months on the start date) are the parent’s written instructions under OAC 5180:2-12-23. The parent must update them whenever the child’s feeding requirements change. Written instructions from the child’s physician, physician assistant or nurse practitioner are kept separately where required (for example, foods other than formula or breast milk for an infant under four months).', { size: 8.5, color: [0.36, 0.4, 0.48] });
   k.printFields({ prefix: 'sl.' });
 
   k.section(11, 'Health documentation and immunization status');
@@ -78,7 +79,20 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['et.choice', 'et.denyAction'] });
   k.para('The parent signature below applies to the selected authorization.');
 
-  k.section(13, 'Parent acknowledgement of accuracy and receipt of policies and procedures');
+  k.section(13, 'Topical products and lotions authorization');
+  k.para('Written parental permission for topical products and lotions such as sunscreen, diaper cream, insect repellent and lotion (OAC 5180:2-12-25). The parent chose to give or refuse permission. Staff apply a product only as the parent’s written instructions and the manufacturer’s instructions allow, only if the child has used it before, and only from its original container labeled with the child’s name.', { size: 8.5, color: [0.36, 0.4, 0.48] });
+  k.printFields({ ids: ['tp.choice', 'tp.instructions'] });
+  if (d['tp.choice'] === 'authorize') {
+    const f = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date(meta.submittedAt));
+    const g = t => +f.find(p => p.type === t).value; const y = g('year'), m = g('month'), dd = g('day');
+    const e = new Date(Date.UTC(y + 1, m - 1, dd)); if (e.getUTCMonth() !== m - 1) e.setUTCDate(0);
+    const pad = n => String(n).padStart(2, '0');
+    k.kv('Date signed (parent signature below)', `${pad(m)}/${pad(dd)}/${y}`);
+    k.kv('Authorization expires', `${pad(e.getUTCMonth() + 1)}/${pad(e.getUTCDate())}/${e.getUTCFullYear()} (12 months after the signature date, the longest period Ohio allows, unless the parent withdraws or changes it sooner in writing)`);
+  } else if (d['tp.choice'] === 'deny') k.kv('Staff may apply topical products?', 'No — the parent does not authorize the application of topical products.');
+  k.para('The parent signature below applies to the selected authorization.');
+
+  k.section(14, 'Parent acknowledgement of accuracy and receipt of policies and procedures');
   const acked = new Set(meta.acks || []);
   const handbook = d['ag.handbook'];
   k.printFields({ ids: ['ag.handbook'], pendingIf: (id, v) => v === 'pending' });
@@ -87,16 +101,17 @@ export async function buildOhioPdf({ lib, fonts, schema, en, data, meta }) {
   k.para('The parent attests that the information in this application is accurate. The form is to be reviewed with the parent 12 months after this acknowledgement.', { size: 9 });
   await k.signatures({ heading: 'Parent signature' });
 
-  k.section(14, 'Program acknowledgement of completion');
+  k.section(15, 'Program acknowledgement of completion');
   k.para('The program administrator or designee attests that this form was reviewed for completeness and signed by the parent/guardian. It must be complete before the child receives care.', { size: 9 });
   k.kv('Administrator review status', 'PENDING — awaiting administrator or designee review', { pending: true });
   k.signLine('Program administrator / designee signature', 'Date');
 
-  k.section(15, 'Annual review');
+  k.section(16, 'Annual review');
   k.para('Parent/guardian and administrator/designee initial and date at each annual review or update (OAC 5180:2-12-15).', { size: 9 });
   k.annualTable(3);
 
-  k.section(16, 'Outstanding state-required documentation');
+  k.section(17, 'Outstanding state-required documentation');
+  if (d['tp.choice'] === 'authorize') outstanding.push('Topical products — before first use, confirm each product is in its original container labeled with the child’s name, the child has used it before, and a practitioner’s written instructions are on file if the parent’s instructions exceed or differ from the manufacturer’s (OAC 5180:2-12-25)');
   for (const line of outstanding) k.tick(line, false);
   for (const id of ['d.immun', 'd.conscienceScope', 'd.conscienceVaccines', 'd.conscienceText', 'd.hcp', 'd.diet', 'd.med']) if (d[id] !== undefined) k.printed.add(id);
   return k.finish();

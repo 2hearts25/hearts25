@@ -82,6 +82,9 @@ export default {
     "financial": "Optional. You may give a credit or debit card for future financial arrangements. This step never stops you from submitting your application."
   },
   "f": {
+    "fe.infant": "Infant Feeding Instructions",
+    "tp.choice": "Topical product authorization",
+    "tp.instructions": "Topical Products and Application Instructions",
     "ins.status": "Health insurance coverage",
     "ins.plan": "Insurance company or health plan",
     "ins.member": "Member or policy ID number",
@@ -112,6 +115,7 @@ export default {
     "fin.notice": "Card information notice"
   },
   "o": {
+    "tp.choice": { "authorize": "I authorize Heart to Heart to apply the products identified in my instructions.", "deny": "I do not authorize the application of topical products." },
     "ins.status": {
       "private": "Private or employer health plan",
       "medicaid": "Medicaid or a Medicaid managed care plan",
@@ -151,10 +155,12 @@ export default {
     }
   },
   "acks": {
+    "topical": "I authorize Heart to Heart to apply the topical products described in my instructions, as written, for up to 12 months from the date I sign this application. I understand I must tell the center in writing if the products or instructions change.",
     "pending": "I understand that items marked pending, and contract sections marked “Not yet in effect”, will be provided for my review, and that submitting this application does not guarantee a place.",
     "school": "I request transportation between my child’s school and the center as described, authorize Heart to Heart to transport my child once the Director confirms it is available, and confirm the details I gave are correct. I understand this authorization is valid for one academic school year."
   },
   "err": {
+    "phoneNeeded": "Enter at least one valid telephone number (home, cell or work) for this parent or guardian.",
     "upload": "Please upload this file again.",
     "money": "Enter an amount such as 15 or 15.00.",
     "tooMany": "Too many files for this document type.",
@@ -254,5 +260,22 @@ export default {
         "This contract and your child’s enrollment are not final until the Director or Administrator reviews your application and signs. Submitting this application does not guarantee a place."
       ]
     }
+  },
+  "fh": {
+    "fe.infant": "Please describe your child’s feeding requirements, including the type of food, formula or breast milk, the amount per feeding, feeding times or frequency, and any special preparation or feeding instructions. If your child’s physician, physician assistant or nurse practitioner gave written feeding instructions, say so here and bring them before your child’s first day. These instructions must be updated whenever your child’s feeding requirements change: tell us and give us the new instructions in writing. If your child is under four months old, any food other than formula or breast milk requires written instructions from the child’s physician, physician assistant or nurse practitioner.",
+    "tp.instructions": "Please identify any topical products you authorize Heart to Heart to apply to your child, such as sunscreen, diaper cream, insect repellent or lotion. Include the product name, when it may be applied and any special instructions or restrictions. This permission is valid for 12 months from the date you sign, unless you withdraw or change it sooner in writing. Bring each product in its original container labeled with your child’s name; your child must have used the product before. If your instructions differ from the manufacturer’s, written instructions from a health care practitioner are also needed."
+  },
+  "mediaConsent": {
+    "title": "Photography, Video and Media Authorization",
+    "paragraphs": [
+      "Your permissions remain effective while your child is enrolled at Heart to Heart Enrichment Center unless you change or withdraw them.",
+      "You may change or withdraw either permission at any time by notifying the Director in writing, including by email.",
+      "Upon receipt of your withdrawal, Heart to Heart will discontinue new uses covered by the withdrawn permission and make reasonable efforts to remove applicable material from digital platforms under its control.",
+      "Previously distributed printed materials, independently shared content and records required to be retained may not be fully recoverable.",
+      "Heart to Heart will not publish your child's name or other identifying personal information alongside photographs or videos used for marketing purposes.",
+      "All photographs and videos will be used in a professional and appropriate manner.",
+      "Permission for internal educational and developmental use is separate from permission for public marketing and promotional use.",
+      "Declining or withdrawing marketing permission will not affect your child's enrollment, eligibility, care or participation in center activities."
+    ]
   }
 };

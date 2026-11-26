@@ -82,6 +82,9 @@ export default {
     "financial": "Opcional. Puede proporcionar una tarjeta de crédito o débito para futuros arreglos financieros. Este paso nunca le impide enviar su solicitud."
   },
   "f": {
+    "fe.infant": "Instrucciones de alimentación del bebé",
+    "tp.choice": "Autorización de productos tópicos",
+    "tp.instructions": "Productos tópicos e instrucciones de aplicación",
     "ins.status": "Cobertura de seguro médico",
     "ins.plan": "Compañía de seguros o plan de salud",
     "ins.member": "Número de miembro o de póliza",
@@ -112,6 +115,7 @@ export default {
     "fin.notice": "Aviso sobre la información de la tarjeta"
   },
   "o": {
+    "tp.choice": { "authorize": "Autorizo a Heart to Heart a aplicar los productos indicados en mis instrucciones.", "deny": "No autorizo la aplicación de productos tópicos." },
     "ins.status": {
       "private": "Plan de salud privado o del empleador",
       "medicaid": "Medicaid o un plan de atención administrada de Medicaid",
@@ -151,10 +155,12 @@ export default {
     }
   },
   "acks": {
+    "topical": "Autorizo a Heart to Heart a aplicar los productos tópicos descritos en mis instrucciones, tal como están escritas, durante un máximo de 12 meses desde la fecha en que firmo esta solicitud. Entiendo que debo informar por escrito al centro si cambian los productos o las instrucciones.",
     "pending": "Entiendo que los elementos marcados como pendientes, y las secciones del contrato marcadas “Aún no vigente”, se me entregarán para revisarlos, y que enviar esta solicitud no garantiza un lugar.",
     "school": "Solicito transporte entre la escuela de mi hijo/a y el centro como se describe, autorizo a Heart to Heart a transportar a mi hijo/a una vez que la directora confirme que está disponible y confirmo que los datos que di son correctos. Entiendo que esta autorización es válida por un año escolar académico."
   },
   "err": {
+    "phoneNeeded": "Ingrese al menos un número de teléfono válido (de casa, celular o trabajo) para este padre, madre o tutor.",
     "upload": "Vuelva a subir este archivo.",
     "money": "Escriba un monto como 15 o 15.00.",
     "tooMany": "Demasiados archivos para este tipo de documento.",
@@ -254,5 +260,22 @@ export default {
         "Este contrato y la inscripción de su hijo/a no son definitivos hasta que la directora o administradora revise su solicitud y firme. Enviar esta solicitud no garantiza un lugar."
       ]
     }
+  },
+  "fh": {
+    "fe.infant": "Describa los requisitos de alimentación de su hijo, incluido el tipo de alimento, fórmula o leche materna, la cantidad por toma, los horarios o la frecuencia de las tomas y cualquier instrucción especial de preparación o alimentación. Si el médico, el asistente médico o el enfermero de práctica avanzada de su hijo le dio instrucciones de alimentación por escrito, indíquelo aquí y tráigalas antes del primer día. Estas instrucciones deben actualizarse cada vez que cambien las necesidades de alimentación de su hijo: avísenos y entréguenos las nuevas instrucciones por escrito. Si su hijo tiene menos de cuatro meses, cualquier alimento que no sea fórmula o leche materna requiere instrucciones escritas de su médico, asistente médico o enfermero de práctica avanzada.",
+    "tp.instructions": "Indique los productos tópicos que autoriza a Heart to Heart a aplicar a su hijo, como protector solar, crema para el pañal, repelente de insectos o loción. Incluya el nombre del producto, cuándo puede aplicarse y cualquier instrucción o restricción especial. Este permiso es válido por 12 meses a partir de la fecha en que firme, salvo que lo retire o lo cambie antes por escrito. Traiga cada producto en su envase original con el nombre de su hijo; su hijo ya debe haberlo usado antes. Si sus instrucciones difieren de las del fabricante, también se necesitan instrucciones escritas de un profesional de la salud."
+  },
+  "mediaConsent": {
+    "title": "Autorización de fotografía, video y medios",
+    "paragraphs": [
+      "Sus permisos siguen vigentes mientras su hijo esté inscrito en Heart to Heart Enrichment Center, a menos que los cambie o retire.",
+      "Puede cambiar o retirar cualquiera de los permisos en cualquier momento si avisa por escrito a la Dirección, incluso por correo electrónico.",
+      "Al recibir su solicitud de retiro, Heart to Heart dejará de realizar nuevos usos cubiertos por el permiso retirado y hará esfuerzos razonables para eliminar el material correspondiente de las plataformas digitales que controla.",
+      "Es posible que no se puedan recuperar por completo los materiales impresos ya distribuidos, el contenido compartido de forma independiente y los registros que deban conservarse.",
+      "Heart to Heart no publicará el nombre de su hijo ni otra información personal que lo identifique junto a fotografías o videos utilizados para fines de marketing.",
+      "Todas las fotografías y videos se usarán de manera profesional y apropiada.",
+      "El permiso para el uso educativo y de desarrollo interno es independiente del permiso para marketing y promoción públicos.",
+      "Rechazar o retirar el permiso de marketing no afectará la inscripción, elegibilidad, cuidado ni participación de su hijo en las actividades del centro."
+    ]
   }
 };

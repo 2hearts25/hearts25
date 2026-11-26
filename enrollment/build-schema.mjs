@@ -138,6 +138,9 @@ export const schema = {
       F('h.accom', 'textna', { x: 1000, r: 1, src: 'NEW2,A§9', pdf: 'ohio' }),
       YNR('h.services', { r: 1, src: 'NEW2,A§9', pdf: 'ohio' }),
       F('h.serviceProv', 'textna', { x: 600, r: yes('h.services'), s: yes('h.services'), src: 'NEW2,A§9', pdf: 'ohio' }),
+      // M-3 (OAC 5180:2-12-25(A)(1)(e)): written parental permission for topical products and lotions. Neither choice is preselected.
+      R('tp.choice', ['authorize', 'deny'], { r: 1, src: 'M-3,OAC 5180:2-12-25', pdf: 'ohio' }),
+      TA('tp.instructions', { r: eq('tp.choice', 'authorize'), s: eq('tp.choice', 'authorize'), x: 1000, src: 'M-3,OAC 5180:2-12-25', pdf: 'ohio' }),
       // Health insurance (B§10): every field optional; no Social Security number is ever requested.
       R('ins.status', ['private', 'medicaid', 'other', 'none', 'applied', 'later'], { src: 'B§10', pdf: 'h2h' }),
       T('ins.plan', { x: 100, s: insHas, src: 'B§10', pdf: 'h2h' }),
@@ -196,6 +199,8 @@ export const schema = {
       TA('pe.helpful', { src: 'P8,A§11', pdf: 'fam' }),
     ] },
     { id: 'daily', fields: [
+      // M-2 (OAC 5180:2-12-23(B)): written feeding instructions for an infant (under 18 months on the start date).
+      TA('fe.infant', { r: fn('infantAge'), s: fn('infantAge'), x: 1500, src: 'M-2,OAC 5180:2-12-23', pdf: 'fam' }),
       F('fe.drinks', 'checks', { o: ['milk', 'formula', 'juice', 'water'], src: 'P6,A§12', pdf: 'fam' }),
       TA('fe.amount', { x: 400, src: 'P6,A§12', pdf: 'fam' }),
       TA('fe.fav', { x: 400, src: 'P6,A§12', pdf: 'fam' }),
@@ -275,6 +280,7 @@ export const schema = {
     { id: 'accuracy', src: 'NEW2,P6,A§20' },
     { id: 'esign', src: 'A§20' },
     { id: 'emtrans', src: 'NEW2,P5,A§13' },
+    { id: 'topical', s: eq('tp.choice', 'authorize'), src: 'M-3,OAC 5180:2-12-25' },
     { id: 'pickup', s: yes('pu.has'), src: 'P13,A§8' },
     { id: 'school', s: schoolOn, src: 'P14,A§14' },
     { id: 'media', src: 'P11,A§18' },
@@ -283,7 +289,7 @@ export const schema = {
     { id: 'pending', src: 'P1,P9,A§15,A§16' },
   ],
   // Computed predicates referenced by ['fn', name]: health-care-plan trigger (OAC 5180:2-12-15(D)).
-  fns: { hcpNeeded: any(yes('h.allergyAction'), yes('h.chronic'), all(yes('h.meds'), yes('h.medsAtCare'))) },
+  fns: { infantAge: ['ageUnder', 'c.dob', 'c.start', 18], hcpNeeded: any(yes('h.allergyAction'), yes('h.chronic'), all(yes('h.meds'), yes('h.medsAtCare'))) },
 };
 
 await writeFile(new URL('./schema.json', import.meta.url), JSON.stringify(schema, null, 1) + '\n');

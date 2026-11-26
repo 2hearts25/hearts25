@@ -9,7 +9,7 @@ export const MONEY_RE = /^\$?\s?(\d{1,3})(\.\d{1,2})?$/; // weekly copayment as 
 export function evalCond(c, d, schema) {
   if (c === undefined || c === null || c === 0 || c === false) return false;
   if (c === 1 || c === true) return true;
-  const [op, a, b] = c;
+  const [op, a, b, n] = c;
   switch (op) {
     case 'eq': return d[a] === b;
     case 'has': return Array.isArray(d[a]) && d[a].includes(b);
@@ -17,6 +17,10 @@ export function evalCond(c, d, schema) {
     case 'any': return c.slice(1).some(x => evalCond(x, d, schema));
     case 'not': return !evalCond(a, d, schema);
     case 'fn': return evalCond(schema.fns[a], d, schema);
+    case 'ageUnder': { // child (date of birth a) is younger than n months on the reference date b — Ohio "infant" = under 18 months (OAC 5180:2-12-01)
+      const dob = parseDate(d[a]), ref = parseDate(d[b]); if (!dob || !ref) return false;
+      const lim = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth() - n, ref.getUTCDate())); return dob > lim;
+    }
     case 'cfg': return Boolean(schema.cfg && schema.cfg[a]); // server-side switch shipped inside the schema (agreements.mjs)
     default: throw new Error('bad condition ' + op);
   }
@@ -97,13 +101,14 @@ export function validate(raw, schema, { today } = {}) {
     const qualifies = r => r && r.adult === 'yes' && r.canResp === 'yes' && !parentRel.test(norm(r.rel)) && !parentNames.includes(norm(r.name));
     if (rows.length && !rows.some(qualifies)) errors.ec = 'nonParent';
   }
-  // Phone is the chosen contact method → a valid cell or home number is required (the child's home phone counts when "same as" is ticked).
+  // M-1: every listed parent/guardian needs at least one valid telephone number — home, cell or work — whatever the preferred contact method.
+  // (The child's home phone counts when "same as child's" is ticked; a work number counts only while it is shown.)
   for (const p of ['p1', 'p2']) {
     if (p === 'p2' && data['p2.has'] !== 'yes') continue;
-    if (data[p + '.contactPath'] !== 'phone') continue;
     const ok = v => typeof v === 'string' && !empty(v) && !checkValue({ t: 'tel', v: 'phone' }, v, data);
     const home = data[p + '.sameHome'] === true ? data['c.phone'] : data[p + '.home'];
-    if (!ok(data[p + '.cell']) && !ok(home)) errors[p + '.cell'] = 'phoneNeeded';
+    const work = data[p + '.workNA'] === true ? undefined : data[p + '.workPhone'];
+    if (!ok(data[p + '.cell']) && !ok(home) && !ok(work)) errors[p + '.cell'] = 'phoneNeeded';
   }
   if (shown('p2.has') && data['p2.has'] === 'yes') { /* parent 2 block validated through shown() above */ }
   return { errors };

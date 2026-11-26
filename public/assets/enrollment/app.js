@@ -126,9 +126,11 @@ function control(f, { get, set, ctx, path, cond }) {
   const invalid = !!err;
   const required = f.r !== undefined && (cond ? cond(f.r) : fieldRequired(f, S.data, schema));
   const label = ctx.label;
+  const help = tr.fh?.[f.id] ? h('p', { class: 'help', id: 'help-' + id }, tr.fh[f.id]) : null; // optional per-field guidance (fe.infant, tp.instructions)
   const describedBy = invalid ? 'err-' + id : undefined;
   const text = (type, extra = {}) => h('div', { class: 'field' },
     h('label', { for: id }, label, reqMark(required)),
+    help,
     (type === 'textarea' ? h('textarea', { id, maxlength: f.x, rows: 4, dir: 'auto' }, get() ?? '') : h('input', { id, type, maxlength: f.x, autocomplete: f.ac && f.ac !== 'off' ? f.ac : (f.ac === 'off' ? 'off' : undefined), dir: ['email', 'tel', 'date', 'time'].includes(type) ? 'ltr' : 'auto', value: get() ?? '', ...extra })),
     err);
   const wire = el => {

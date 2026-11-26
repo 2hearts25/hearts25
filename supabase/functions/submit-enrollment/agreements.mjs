@@ -10,6 +10,7 @@
 //               signature" notice; no draft wording, amount or deadline is shown or agreed.
 
 export const FORM_VERSION = '1.3.0-E2';
+export const MEDIA_CONSENT_VERSION = 'MEDIA-R1';
 
 export const POLICIES = {
   attendance: { id: 'attendance', title: 'Absent Days and Attendance Policy', revision: 'approved 2026-11-24', effectiveDate: '2026-11-24', approvedBy: 'Management, 11/24/2026' },

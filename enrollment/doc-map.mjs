@@ -27,7 +27,7 @@ const exact = {
   'up.immun': B, 'up.physical': B, 'up.hcp': B, 'up.med': B, 'up.diet': B, 'd.separate': B,
 };
 const prefix = [ // first match wins; p2.* is classified like p1.*
-  ['p1.', O], ['ec', O], ['h.', O], ['d.', O], ['et.', O],
+  ['p1.', O], ['ec', O], ['h.', O], ['d.', O], ['et.', O], ['tp.', O],
   // 1.3.0: insurance (kept OUT of the Ohio PDF), other uploads, PFCC copayment agreement, late pickup
   ['ins.', H], ['up.', H], ['pf.', H], ['lp.', H], ['fin.', H],
   ['pu', H], ['f.', H], ['pe.', H], ['fe.', B], ['sl.', B], ['po.', H], ['st.', H], ['m.', H], ['ag.', H],
@@ -40,7 +40,7 @@ export const docsOf = id => {
 };
 export const ackDocs = {
   accuracy: B, esign: B,                       // statements the signer makes about the whole application
-  emtrans: O, conscience: O,                    // state-form items
+  emtrans: O, topical: O, conscience: O,                    // state-form items
   pickup: H, school: H, media: H, receipts: H, pending: H,  // centre agreements (pending names the center contract and documents, so it prints only in the center PDF)
 };
 export const inDoc = (id, doc) => docsOf(id).includes(doc);

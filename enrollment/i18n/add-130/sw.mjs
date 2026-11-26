@@ -82,6 +82,9 @@ export default {
     "financial": "Ya hiari. Unaweza kutoa kadi ya mkopo au ya malipo kwa mipango ya kifedha ya baadaye. Hatua hii haikuzuii kamwe kuwasilisha ombi lako."
   },
   "f": {
+    "fe.infant": "Maelekezo ya kulisha mtoto mchanga",
+    "tp.choice": "Idhini ya bidhaa za kupaka",
+    "tp.instructions": "Bidhaa za kupaka na maelekezo ya upakaji",
     "ins.status": "Bima ya afya",
     "ins.plan": "Kampuni ya bima au mpango wa afya",
     "ins.member": "Namba ya mwanachama au ya sera",
@@ -112,6 +115,7 @@ export default {
     "fin.notice": "Taarifa kuhusu maelezo ya kadi"
   },
   "o": {
+    "tp.choice": { "authorize": "Ninaiidhinisha Heart to Heart kupaka bidhaa zilizotajwa katika maelekezo yangu.", "deny": "Siidhinishi upakaji wa bidhaa za kupaka." },
     "ins.status": {
       "private": "Mpango wa afya binafsi au wa mwajiri",
       "medicaid": "Medicaid au mpango wa huduma unaosimamiwa na Medicaid",
@@ -151,10 +155,12 @@ export default {
     }
   },
   "acks": {
+    "topical": "Ninaiidhinisha Heart to Heart kupaka bidhaa za kupaka zilizoelezwa katika maelekezo yangu kama yalivyoandikwa, kwa muda usiozidi miezi 12 tangu tarehe ninayosaini ombi hili. Ninaelewa kwamba lazima nikijulishe kituo kwa maandishi bidhaa au maelekezo yakibadilika.",
     "pending": "Ninaelewa kwamba vipengele vilivyowekwa alama ya kusubiri, na sehemu za mkataba zilizowekwa alama “Bado haitumiki”, nitapewa nivipitie, na kwamba kutuma ombi hili hakuhakikishi nafasi.",
     "school": "Ninaomba usafiri kati ya shule ya mtoto wangu na kituo kama ilivyoelezwa, ninaidhinisha Heart to Heart kumsafirisha mtoto wangu baada ya Mkurugenzi kuthibitisha kwamba unapatikana, na ninathibitisha kwamba taarifa nilizotoa ni sahihi. Ninaelewa kwamba idhini hii ni halali kwa mwaka mmoja wa masomo."
   },
   "err": {
+    "phoneNeeded": "Weka angalau namba moja halali ya simu (nyumbani, ya mkononi au ya kazini) kwa mzazi au mlezi huyu.",
     "upload": "Tafadhali pakia faili hili tena.",
     "money": "Weka kiasi kama 15 au 15.00.",
     "tooMany": "Faili ni nyingi mno kwa aina hii ya nyaraka.",
@@ -254,5 +260,22 @@ export default {
         "Mkataba huu na usajili wa mtoto wako si wa mwisho hadi Mkurugenzi au Msimamizi apitie ombi lako na kusaini. Kutuma ombi hili hakuhakikishi nafasi."
       ]
     }
+  },
+  "fh": {
+    "fe.infant": "Tafadhali elezea mahitaji ya ulishaji wa mtoto wako, ikiwemo aina ya chakula, maziwa ya fomula au maziwa ya mama, kiasi kwa kila mlo, nyakati au mara za kulisha, na maelekezo yoyote maalum ya maandalizi au ulishaji. Ikiwa daktari, msaidizi wa daktari au muuguzi bingwa wa mtoto wako alitoa maelekezo ya ulishaji kwa maandishi, taja hapa na uyalete kabla ya siku ya kwanza. Maelekezo haya lazima yasasishwe kila mahitaji ya ulishaji ya mtoto wako yanapobadilika: tujulishe na utupatie maelekezo mapya kwa maandishi. Ikiwa mtoto wako ana chini ya miezi minne, chakula chochote kisicho fomula au maziwa ya mama kinahitaji maelekezo ya maandishi kutoka kwa daktari, msaidizi wa daktari au muuguzi bingwa wake.",
+    "tp.instructions": "Tafadhali taja bidhaa za kupaka unazoidhinisha Heart to Heart kumpaka mtoto wako, kama vile kinga ya jua, krimu ya nepi, dawa ya kufukuza wadudu au losheni. Jumuisha jina la bidhaa, wakati inapoweza kupakwa na maelekezo au vikwazo vyovyote maalum. Idhini hii ni halali kwa miezi 12 tangu tarehe utakayosaini, isipokuwa uiondoe au uibadilishe mapema kwa maandishi. Leta kila bidhaa kwenye kifungashio chake cha asili chenye jina la mtoto wako; mtoto wako lazima awe ameshaitumia hapo awali. Ikiwa maelekezo yako yanatofautiana na ya mtengenezaji, maelekezo ya maandishi kutoka kwa mtaalamu wa afya pia yanahitajika."
+  },
+  "mediaConsent": {
+    "title": "Idhini ya upigaji picha, video na matumizi ya vyombo vya habari",
+    "paragraphs": [
+      "Idhini zako zinaendelea kutumika wakati mtoto wako amesajiliwa katika Heart to Heart Enrichment Center, isipokuwa uzibadilishe au uziondoe.",
+      "Unaweza kubadilisha au kuondoa idhini yoyote wakati wowote kwa kumjulisha Mkurugenzi kwa maandishi, ikiwemo kwa barua pepe.",
+      "Baada ya kupokea taarifa ya kuondoa idhini, Heart to Heart itasitisha matumizi mapya yanayohusika na idhini iliyoondolewa na kufanya juhudi zinazofaa kuondoa maudhui husika kwenye majukwaa ya kidijitali inayodhibiti.",
+      "Huenda isiwezekane kurejesha kikamilifu machapisho yaliyosambazwa awali, maudhui yaliyoshirikiwa na wengine kwa kujitegemea, au kumbukumbu zinazopaswa kuhifadhiwa.",
+      "Heart to Heart haitachapisha jina la mtoto wako au taarifa nyingine binafsi zinazomtambulisha pamoja na picha au video zinazotumika kwa masoko.",
+      "Picha na video zote zitatumiwa kwa njia ya kitaalamu na inayofaa.",
+      "Idhini ya matumizi ya ndani kwa ajili ya elimu na ukuaji wa mtoto ni tofauti na idhini ya masoko na matangazo kwa umma.",
+      "Kukataa au kuondoa idhini ya masoko hakutaathiri usajili, ustahiki, huduma au ushiriki wa mtoto wako katika shughuli za kituo."
+    ]
   }
 };

@@ -443,7 +443,7 @@ async function submit(req: Request, origin: string | null) {
   // 1.3.0: the exact agreement text shown to the family (their language + English), hashed; stored encrypted, append-only.
   let agreements: any[] = [], evidenceRows: any[] = [], agreementSha = "";
   if (current) {
-    const recs = agreementTexts({ L: (I18N as any)[body.lang], EN: (I18N as any).en, data: { ...answers, __formVersion: FORM_VERSION }, acks: acksKept as any, lang: body.lang,
+    const recs = agreementTexts({ L: (I18N as any)[body.lang], EN: (I18N as any).en, data: { ...answers, __formVersion: FORM_VERSION }, acks: acksKept as any, lang: body.lang, mediaVersion: body.mediaVersion,
       card: cardIn ? { name: cardIn.name, masked: maskPanPlain(cardIn.number), expM: cardIn.expM, expY: cardIn.expY } : null });
     for (const r of recs) {
       const sha = await sha256Hex(utf8(r.text));

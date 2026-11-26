@@ -82,6 +82,9 @@ export default {
     "financial": "Facultatif. Vous pouvez fournir une carte de crédit ou de débit pour de futurs arrangements financiers. Cette étape ne vous empêche jamais d’envoyer votre demande."
   },
   "f": {
+    "fe.infant": "Instructions d’alimentation du nourrisson",
+    "tp.choice": "Autorisation d’utiliser des produits topiques",
+    "tp.instructions": "Produits topiques et instructions d’application",
     "ins.status": "Couverture d’assurance maladie",
     "ins.plan": "Compagnie d’assurance ou régime de santé",
     "ins.member": "Numéro de membre ou de police",
@@ -112,6 +115,7 @@ export default {
     "fin.notice": "Avis sur les renseignements de carte"
   },
   "o": {
+    "tp.choice": { "authorize": "J’autorise Heart to Heart à appliquer les produits indiqués dans mes instructions.", "deny": "Je n’autorise pas l’application de produits topiques." },
     "ins.status": {
       "private": "Régime de santé privé ou de l’employeur",
       "medicaid": "Medicaid ou un régime de soins gérés Medicaid",
@@ -151,10 +155,12 @@ export default {
     }
   },
   "acks": {
+    "topical": "J’autorise Heart to Heart à appliquer les produits topiques décrits dans mes instructions, tels qu’écrits, pendant 12 mois au plus à compter de la date de signature de cette demande. Je comprends que je dois signaler par écrit au centre tout changement de produit ou d’instructions.",
     "pending": "Je comprends que les éléments marqués en attente, ainsi que les sections du contrat marquées « Pas encore en vigueur », me seront remis pour examen, et que l’envoi de cette demande ne garantit pas une place.",
     "school": "Je demande le transport entre l’école de mon enfant et le centre comme décrit, j’autorise Heart to Heart à transporter mon enfant une fois que la directrice aura confirmé qu’il est disponible, et je confirme que les renseignements donnés sont exacts. Je comprends que cette autorisation est valable pour une année scolaire."
   },
   "err": {
+    "phoneNeeded": "Saisissez au moins un numéro de téléphone valide (domicile, portable ou travail) pour ce parent ou tuteur.",
     "upload": "Veuillez téléverser ce fichier de nouveau.",
     "money": "Saisissez un montant comme 15 ou 15.00.",
     "tooMany": "Trop de fichiers pour ce type de document.",
@@ -254,5 +260,22 @@ export default {
         "Ce contrat et l’inscription de votre enfant ne sont définitifs qu’après l’examen de votre demande et la signature de la directrice ou de l’administratrice. L’envoi de cette demande ne garantit pas une place."
       ]
     }
+  },
+  "fh": {
+    "fe.infant": "Décrivez les besoins alimentaires de votre enfant : type d’aliment, de lait maternisé ou de lait maternel, quantité par repas, heures ou fréquence des repas, et toute consigne particulière de préparation ou d’alimentation. Si le médecin, l’assistant médical ou l’infirmier praticien de votre enfant a donné des instructions écrites, indiquez-le ici et apportez-les avant le premier jour. Ces instructions doivent être mises à jour chaque fois que les besoins alimentaires de votre enfant changent : prévenez-nous et remettez-nous les nouvelles instructions par écrit. Pour un enfant de moins de quatre mois, tout aliment autre que le lait maternisé ou le lait maternel exige des instructions écrites de son médecin, assistant médical ou infirmier praticien.",
+    "tp.instructions": "Indiquez les produits topiques que vous autorisez Heart to Heart à appliquer à votre enfant, comme la crème solaire, la crème pour le change, l’anti-moustiques ou la lotion. Précisez le nom du produit, quand il peut être appliqué et toute consigne ou restriction particulière. Cette autorisation est valable 12 mois à compter de la date de votre signature, sauf si vous la retirez ou la modifiez plus tôt par écrit. Apportez chaque produit dans son contenant d’origine portant le nom de votre enfant ; votre enfant doit déjà l’avoir utilisé auparavant. Si vos instructions diffèrent de celles du fabricant, des instructions écrites d’un professionnel de santé sont aussi nécessaires."
+  },
+  "mediaConsent": {
+    "title": "Autorisation de photographie, de vidéo et d’utilisation des médias",
+    "paragraphs": [
+      "Vos autorisations restent valables tant que votre enfant est inscrit à Heart to Heart Enrichment Center, sauf si vous les modifiez ou les retirez.",
+      "Vous pouvez modifier ou retirer l’une ou l’autre autorisation à tout moment en avisant la direction par écrit, y compris par courriel.",
+      "Dès réception de votre retrait, Heart to Heart cessera toute nouvelle utilisation couverte par l’autorisation retirée et fera des efforts raisonnables pour supprimer les contenus concernés des plateformes numériques qu’il contrôle.",
+      "Les documents imprimés déjà distribués, les contenus partagés indépendamment et les dossiers devant être conservés peuvent ne pas être entièrement récupérables.",
+      "Heart to Heart ne publiera pas le nom de votre enfant ni d’autres renseignements personnels permettant de l’identifier avec les photos ou vidéos utilisées à des fins de marketing.",
+      "Toutes les photos et vidéos seront utilisées de manière professionnelle et appropriée.",
+      "L’autorisation d’utilisation interne à des fins éducatives et de développement est distincte de l’autorisation de marketing et de promotion auprès du public.",
+      "Refuser ou retirer l’autorisation de marketing n’aura aucune incidence sur l’inscription, l’admissibilité, la prise en charge ou la participation de votre enfant aux activités du centre."
+    ]
   }
 };

@@ -4,7 +4,7 @@
 import { createKit } from './pdf-kit.mjs';
 import { visibleAcks } from './core.mjs';
 import { ackDocs, H2H } from './doc-map.mjs';
-import { CONTRACT, POLICIES, LATE_PICKUP, pendingSections } from './agreements.mjs';
+import { CONTRACT, POLICIES, LATE_PICKUP, pendingSections, MEDIA_CONSENT_VERSION } from './agreements.mjs';
 import { contractView, copayStatus } from './evidence.mjs';
 
 export const H2H_TITLE = 'Heart to Heart Enrichment Center — Internal Enrollment Records';
@@ -47,7 +47,7 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   k.printFields({ ids: ['h.allergy', 'h.allergyTypes', 'h.allergyDesc', 'h.allergyAction', 'h.chronic', 'h.chronicNeeds', 'h.chronicDesc', 'h.procedureDesc', 'h.meds', 'h.medsDesc', 'h.medsAtCare', 'h.diet', 'h.dietDesc', 'h.dietModified', 'h.avoid', 'h.accom', 'h.services', 'h.serviceProv'] });
   k.para('The state-required health record, health care plan status and immunization status are in the Ohio enrollment records.', { size: 8.5, color: [0.36, 0.4, 0.48] });
   k.section(10, 'Feeding preferences');
-  k.printFields({ ids: ['fe.drinks', 'fe.amount', 'fe.fav', 'fe.dislike', 'fe.noFeed', 'fe.seat'] });
+  k.printFields({ ids: ['fe.infant', 'fe.drinks', 'fe.amount', 'fe.fav', 'fe.dislike', 'fe.noFeed', 'fe.seat'] });
   k.section(11, 'Sleeping routines');
   k.printFields({ prefix: 'sl.' });
   k.section(12, 'Potty training and diapering');
@@ -74,9 +74,15 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
   if (!k.printFields({ ids: ['ag.staffReviewed'] })) k.kv('Administration review reported by parent', 'Pending / not reported', { pending: true });
   k.para('Administrator or designee: record which materials were reviewed and note remaining items. The parent signature records the answers provided.');
   k.signLine('Administrator or designee acknowledgment', 'Date');
+  const media = meta.v130?.agreements?.find(a => a.kind === 'media-consent' && a.version === MEDIA_CONSENT_VERSION);
   k.section(20, 'Internal photography consent');
+  if (media) {
+    k.sub(en.mediaConsent.title);
+    for (const text of en.mediaConsent.paragraphs) k.para(text);
+    k.kv('Media authorization revision', media.version);
+  }
   k.printFields({ ids: ['m.internal'] });
-  k.kv('Consent wording', `Exact wording shown above (English). Signed with online form ${meta.formVersion}; the parent viewed it in ${meta.languageName || meta.language}.`);
+  k.kv('Consent wording', `English record. Signed with online form ${meta.formVersion}; the parent viewed it in ${meta.languageName || meta.language}.`);
   k.section(21, 'External marketing and photography consent');
   k.printFields({ ids: ['m.marketing'] });
   k.para('Marketing consent is optional and is never a condition of enrollment.', { size: 8.5, color: [0.36, 0.4, 0.48] });

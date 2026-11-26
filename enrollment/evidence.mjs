@@ -1,7 +1,7 @@
 // Builds the exact agreement text presented to a family (in their language AND in English) for form 1.3.0-E2.
 // The SAME function renders the contract on screen (app.js) and builds the signed evidence on the server, so the stored text
 // is the text the parent saw. The server stores it encrypted with a SHA-256 hash; it is never regenerated for an old application.
-import { CONTRACT, POLICIES } from './agreements.mjs';
+import { CONTRACT, MEDIA_CONSENT_VERSION, POLICIES } from './agreements.mjs';
 
 // Structured view of the contract for one language: used by the browser to render and by the server to record.
 export function contractView(L, data) {
@@ -23,7 +23,7 @@ const lines = v => [`${v.title} — ${v.version}`, ...v.sections.flatMap(s => [`
 const choice = (L, id, v) => (v === undefined ? '' : `${L.f[id]}: ${typeof v === 'boolean' ? (v ? L.ui.yes : L.ui.no) : (L.o[id]?.[v] ?? L.o._?.[v] ?? v)}`);
 
 // Returns one record per agreement. `text` = family language, `textEn` = English source of the same agreement.
-export function agreementTexts({ L, EN, data, acks = [], lang, card = /** @type {null | { name: string, masked: string, expM: string, expY: string }} */ (null) }) {
+export function agreementTexts({ L, EN, data, acks = [], lang, mediaVersion, card = /** @type {null | { name: string, masked: string, expM: string, expY: string }} */ (null) }) {
   const both = fn => ({ text: fn(L), textEn: fn(EN) });
   const pfcc = data['c.payment'] === 'pfcc';
   const contract = both(X => [lines(contractView(X, data)),
@@ -37,12 +37,16 @@ export function agreementTexts({ L, EN, data, acks = [], lang, card = /** @type 
   const fin = both(X => provided
     ? [X.steps.financial, `${X.f['fin.choice']}: ${X.o['fin.choice'].provide}`, `${X.ui.finName}: ${card.name}`, `${X.ui.finNumber}: ${card.masked}`, `${X.ui.finExpM}/${X.ui.finExpY}: ${card.expM}/${card.expY}`, choice(X, 'fin.consent', data['fin.consent'])].join('\n')
     : [X.steps.financial, X.ui.finNoticeP1, X.ui.finNoticeP2, `${X.f['fin.choice']}: ${X.o['fin.choice'].skip}`, `${X.f['fin.notice']}: ${X.o['fin.notice'].continued}`].join('\n'));
+  const media = both(X => [X.mediaConsent.title, ...X.mediaConsent.paragraphs,
+    ...['m.internal', 'm.marketing'].map(id => choice(X, id, data[id])), X.acks.media].join('\n'));
   const ack = both(X => acks.map(a => '[x] ' + X.acks[a]).join('\n'));
   return [
     { kind: 'contract', version: CONTRACT.version, language: lang, status: CONTRACT.sections.every(s => s.status === 'final') ? 'final' : 'partial', ...contract },
     { kind: 'withdrawal-termination', version: POLICIES.withdrawal.revision, language: lang, status: data['ag.wt'] === 'ack' ? 'acknowledged' : 'not_received', ...wt },
     { kind: 'financial-information', version: CONTRACT.version, language: lang, status: provided ? 'card_provided_consented' : data['fin.notice'] === 'continued' ? 'no_card_acknowledged' : 'not_received', ...fin },
     { kind: 'attendance', version: POLICIES.attendance.revision, language: lang, status: data['ag.absenceAck'] === true ? 'acknowledged' : 'not_acknowledged', ...att },
+    ...(mediaVersion === MEDIA_CONSENT_VERSION && acks.includes('media')
+      ? [{ kind: 'media-consent', version: MEDIA_CONSENT_VERSION, language: lang, status: 'choices_recorded', ...media }] : []),
     { kind: 'acknowledgments', version: 'form ' + (data.__formVersion || ''), language: lang, status: 'accepted', ...ack },
   ];
 }

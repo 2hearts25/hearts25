@@ -35,6 +35,8 @@ export const sample130 = {
   'ins.status': 'medicaid', 'ins.plan': 'Example Medicaid Plan (synthetic)', 'ins.member': 'SYN-0000-1234', 'ins.holder': 'فاطمة الأحمد (اختبار)', 'ins.holderRel': 'Mother',
   'up.insFront': [SAMPLE_DOC_IDS.insFront], 'up.immun': [SAMPLE_DOC_IDS.immun], 'up.custody': [SAMPLE_DOC_IDS.custody], 'd.separate': true,
   'lp.ack': true, 'fin.choice': 'skip', 'fin.notice': 'continued', 'ag.wt': 'ack', 'pf.auth': 'pending', 'pf.copay': 'amount', 'pf.copayAmt': '12.50', 'pf.dueDay': 'fri', 'pf.ack': true,
+  // 1.3.0-E2 corrections (M-3): topical-product authorization
+  'tp.choice': 'authorize', 'tp.instructions': 'Sunscreen (Example SPF 50, synthetic): may be applied before outdoor play. Diaper cream (Example brand): at each diaper change. No lotion.',
 };
 export const sampleDocs130 = [
   { id: SAMPLE_DOC_IDS.immun, category: 'immunization', mime: 'application/pdf', bytes: 81234, sha256: 'a'.repeat(64) },
