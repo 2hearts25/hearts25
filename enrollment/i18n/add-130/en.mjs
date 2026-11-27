@@ -84,6 +84,7 @@ export default {
   "f": {
     "fe.infant": "Infant Feeding Instructions",
     "tp.choice": "Topical product authorization",
+    "nl.choice": "Monthly newsletter",
     "tp.instructions": "Topical Products and Application Instructions",
     "ins.status": "Health insurance coverage",
     "ins.plan": "Insurance company or health plan",
@@ -116,6 +117,7 @@ export default {
   },
   "o": {
     "tp.choice": { "authorize": "I authorize Heart to Heart to apply the products identified in my instructions.", "deny": "I do not authorize the application of topical products." },
+    "nl.choice": { "yes": "Yes, I would like to receive the Heart to Heart monthly newsletter.", "no": "No, I prefer not to receive the monthly newsletter." },
     "ins.status": {
       "private": "Private or employer health plan",
       "medicaid": "Medicaid or a Medicaid managed care plan",
@@ -161,6 +163,7 @@ export default {
   },
   "err": {
     "phoneNeeded": "Enter at least one valid telephone number (home, cell or work) for this parent or guardian.",
+    "nlEmail": "To receive the newsletter, enter a parent or guardian email address on the Parent information step, or choose No.",
     "upload": "Please upload this file again.",
     "money": "Enter an amount such as 15 or 15.00.",
     "tooMany": "Too many files for this document type.",
@@ -260,6 +263,12 @@ export default {
         "This contract and your child’s enrollment are not final until the Director or Administrator reviews your application and signs. Submitting this application does not guarantee a place."
       ]
     }
+  },
+  "nl": {
+    "heading": "Stay Connected with Heart to Heart",
+    "lead": "Receive our monthly newsletter featuring center news, upcoming events, enrollment updates, community resources and helpful information for your family.",
+    "note": "You may unsubscribe at any time. Your choice will not affect your child's enrollment, eligibility or care.",
+    "version": "NL-1.0"
   },
   "fh": {
     "fe.infant": "Please describe your child’s feeding requirements, including the type of food, formula or breast milk, the amount per feeding, feeding times or frequency, and any special preparation or feeding instructions. If your child’s physician, physician assistant or nurse practitioner gave written feeding instructions, say so here and bring them before your child’s first day. These instructions must be updated whenever your child’s feeding requirements change: tell us and give us the new instructions in writing. If your child is under four months old, any food other than formula or breast milk requires written instructions from the child’s physician, physician assistant or nurse practitioner.",

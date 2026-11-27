@@ -171,6 +171,16 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
     }
   }
   k.para('This record never contains a security code (CVV), PIN or magnetic-stripe data, and never the full card number. This application did NOT process a payment, verify the card with a card network, or charge anything, and sets up no recurring billing. No advance payment is required. Heart to Heart will ask for the family’s separate written permission before any charge. Acceptance of the contract, permission to keep card information, and authorization of future charges are three separate things; only the first two are recorded here.', { size: 8.5, color: [0.36, 0.4, 0.48] });
+  // ---- optional monthly newsletter (marketing preference). Printed in this document ONLY; marketing contact data is kept in a separate private register. ----
+  const nlc = d['nl.choice'];
+  k.section(30, 'Monthly newsletter subscription (optional)');
+  k.printFields({ ids: ['nl.choice'] });
+  k.kv('Subscription status', nlc === 'yes' ? 'SUBSCRIBED to the monthly newsletter' : nlc === 'no' ? 'DECLINED — not subscribed' : 'NO SELECTION — treated as no newsletter consent');
+  k.kv('Date recorded', meta.submittedAtEastern || meta.submittedAt);
+  k.kv('Source', 'Online enrollment application (form ' + meta.formVersion + ')');
+  k.kv('Preferred language', meta.languageName || meta.language);
+  k.kv('Consent wording version', en.nl.version);
+  k.para(en.nl.heading + ' — ' + en.nl.lead + ' ' + en.nl.note, { size: 8.5, color: [0.36, 0.4, 0.48] });
   const acked = new Set(meta.acks || []);
   k.section(null, 'Signing acknowledgments, electronic signatures and administrator fields');
   for (const a of visibleAcks(d, schema)) if (ackDocs[a.id].includes(H2H)) k.tick(en.acks[a.id], acked.has(a.id));

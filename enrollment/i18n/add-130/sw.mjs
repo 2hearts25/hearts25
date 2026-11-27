@@ -84,6 +84,7 @@ export default {
   "f": {
     "fe.infant": "Maelekezo ya kulisha mtoto mchanga",
     "tp.choice": "Idhini ya bidhaa za kupaka",
+    "nl.choice": "Jarida la kila mwezi",
     "tp.instructions": "Bidhaa za kupaka na maelekezo ya upakaji",
     "ins.status": "Bima ya afya",
     "ins.plan": "Kampuni ya bima au mpango wa afya",
@@ -116,6 +117,7 @@ export default {
   },
   "o": {
     "tp.choice": { "authorize": "Ninaiidhinisha Heart to Heart kupaka bidhaa zilizotajwa katika maelekezo yangu.", "deny": "Siidhinishi upakaji wa bidhaa za kupaka." },
+    "nl.choice": { "yes": "Ndiyo, ningependa kupokea jarida la kila mwezi la Heart to Heart.", "no": "Hapana, napendelea kutopokea jarida la kila mwezi." },
     "ins.status": {
       "private": "Mpango wa afya binafsi au wa mwajiri",
       "medicaid": "Medicaid au mpango wa huduma unaosimamiwa na Medicaid",
@@ -161,6 +163,7 @@ export default {
   },
   "err": {
     "phoneNeeded": "Weka angalau namba moja halali ya simu (nyumbani, ya mkononi au ya kazini) kwa mzazi au mlezi huyu.",
+    "nlEmail": "Ili kupokea jarida, weka barua pepe ya mzazi au mlezi katika hatua ya taarifa za wazazi, au chagua Hapana.",
     "upload": "Tafadhali pakia faili hili tena.",
     "money": "Weka kiasi kama 15 au 15.00.",
     "tooMany": "Faili ni nyingi mno kwa aina hii ya nyaraka.",
@@ -260,6 +263,12 @@ export default {
         "Mkataba huu na usajili wa mtoto wako si wa mwisho hadi Mkurugenzi au Msimamizi apitie ombi lako na kusaini. Kutuma ombi hili hakuhakikishi nafasi."
       ]
     }
+  },
+  "nl": {
+    "heading": "Endelea Kuwasiliana na Heart to Heart",
+    "lead": "Pokea jarida letu la kila mwezi lenye habari za kituo, matukio yajayo, taarifa za usajili, rasilimali za jamii na taarifa muhimu kwa familia yako.",
+    "note": "Unaweza kujiondoa wakati wowote. Chaguo lako halitaathiri usajili, ustahiki au malezi ya mtoto wako.",
+    "version": "NL-1.0"
   },
   "fh": {
     "fe.infant": "Tafadhali elezea mahitaji ya ulishaji wa mtoto wako, ikiwemo aina ya chakula, maziwa ya fomula au maziwa ya mama, kiasi kwa kila mlo, nyakati au mara za kulisha, na maelekezo yoyote maalum ya maandalizi au ulishaji. Ikiwa daktari, msaidizi wa daktari au muuguzi bingwa wa mtoto wako alitoa maelekezo ya ulishaji kwa maandishi, taja hapa na uyalete kabla ya siku ya kwanza. Maelekezo haya lazima yasasishwe kila mahitaji ya ulishaji ya mtoto wako yanapobadilika: tujulishe na utupatie maelekezo mapya kwa maandishi. Ikiwa mtoto wako ana chini ya miezi minne, chakula chochote kisicho fomula au maziwa ya mama kinahitaji maelekezo ya maandishi kutoka kwa daktari, msaidizi wa daktari au muuguzi bingwa wake.",

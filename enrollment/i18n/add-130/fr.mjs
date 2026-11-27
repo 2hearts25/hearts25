@@ -84,6 +84,7 @@ export default {
   "f": {
     "fe.infant": "Instructions d’alimentation du nourrisson",
     "tp.choice": "Autorisation d’utiliser des produits topiques",
+    "nl.choice": "Bulletin mensuel",
     "tp.instructions": "Produits topiques et instructions d’application",
     "ins.status": "Couverture d’assurance maladie",
     "ins.plan": "Compagnie d’assurance ou régime de santé",
@@ -116,6 +117,7 @@ export default {
   },
   "o": {
     "tp.choice": { "authorize": "J’autorise Heart to Heart à appliquer les produits indiqués dans mes instructions.", "deny": "Je n’autorise pas l’application de produits topiques." },
+    "nl.choice": { "yes": "Oui, je souhaite recevoir le bulletin mensuel de Heart to Heart.", "no": "Non, je préfère ne pas recevoir le bulletin mensuel." },
     "ins.status": {
       "private": "Régime de santé privé ou de l’employeur",
       "medicaid": "Medicaid ou un régime de soins gérés Medicaid",
@@ -161,6 +163,7 @@ export default {
   },
   "err": {
     "phoneNeeded": "Saisissez au moins un numéro de téléphone valide (domicile, portable ou travail) pour ce parent ou tuteur.",
+    "nlEmail": "Pour recevoir le bulletin, saisissez une adresse e-mail de parent ou tuteur à l’étape des informations sur les parents, ou choisissez Non.",
     "upload": "Veuillez téléverser ce fichier de nouveau.",
     "money": "Saisissez un montant comme 15 ou 15.00.",
     "tooMany": "Trop de fichiers pour ce type de document.",
@@ -260,6 +263,12 @@ export default {
         "Ce contrat et l’inscription de votre enfant ne sont définitifs qu’après l’examen de votre demande et la signature de la directrice ou de l’administratrice. L’envoi de cette demande ne garantit pas une place."
       ]
     }
+  },
+  "nl": {
+    "heading": "Restez en contact avec Heart to Heart",
+    "lead": "Recevez notre bulletin mensuel : nouvelles du centre, événements à venir, informations sur les inscriptions, ressources communautaires et conseils utiles pour votre famille.",
+    "note": "Vous pouvez vous désabonner à tout moment. Votre choix n’aura aucune incidence sur l’inscription, l’admissibilité ou la garde de votre enfant.",
+    "version": "NL-1.0"
   },
   "fh": {
     "fe.infant": "Décrivez les besoins alimentaires de votre enfant : type d’aliment, de lait maternisé ou de lait maternel, quantité par repas, heures ou fréquence des repas, et toute consigne particulière de préparation ou d’alimentation. Si le médecin, l’assistant médical ou l’infirmier praticien de votre enfant a donné des instructions écrites, indiquez-le ici et apportez-les avant le premier jour. Ces instructions doivent être mises à jour chaque fois que les besoins alimentaires de votre enfant changent : prévenez-nous et remettez-nous les nouvelles instructions par écrit. Pour un enfant de moins de quatre mois, tout aliment autre que le lait maternisé ou le lait maternel exige des instructions écrites de son médecin, assistant médical ou infirmier praticien.",

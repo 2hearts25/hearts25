@@ -3069,7 +3069,18 @@
   },
   {
    "id": "sign",
-   "fields": []
+   "fields": [
+    {
+     "id": "nl.choice",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "src": "NL-1",
+     "pdf": "h2h"
+    }
+   ]
   }
  ],
  "acks": [

@@ -110,6 +110,11 @@ export function validate(raw, schema, { today } = {}) {
     const work = data[p + '.workNA'] === true ? undefined : data[p + '.workPhone'];
     if (!ok(data[p + '.cell']) && !ok(home) && !ok(work)) errors[p + '.cell'] = 'phoneNeeded';
   }
+  // NL-1.0: a "Yes" to the monthly newsletter reuses the parent email already entered; it cannot be honored without one. "No"/no selection never needs one.
+  if (data['nl.choice'] === 'yes') {
+    const em = [data['p1.email'], data['p2.has'] === 'yes' ? data['p2.email'] : undefined].find(v => typeof v === 'string' && !empty(v) && EMAIL_RE.test(v.trim()));
+    if (!em) errors['nl.choice'] = 'nlEmail';
+  }
   if (shown('p2.has') && data['p2.has'] === 'yes') { /* parent 2 block validated through shown() above */ }
   return { errors };
 }

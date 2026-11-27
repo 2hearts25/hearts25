@@ -29,7 +29,7 @@ const exact = {
 const prefix = [ // first match wins; p2.* is classified like p1.*
   ['p1.', O], ['ec', O], ['h.', O], ['d.', O], ['et.', O], ['tp.', O],
   // 1.3.0: insurance (kept OUT of the Ohio PDF), other uploads, PFCC copayment agreement, late pickup
-  ['ins.', H], ['up.', H], ['pf.', H], ['lp.', H], ['fin.', H],
+  ['ins.', H], ['nl.', H], ['up.', H], ['pf.', H], ['lp.', H], ['fin.', H],
   ['pu', H], ['f.', H], ['pe.', H], ['fe.', B], ['sl.', B], ['po.', H], ['st.', H], ['m.', H], ['ag.', H],
 ];
 export const docsOf = id => {

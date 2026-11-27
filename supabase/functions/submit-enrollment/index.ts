@@ -229,6 +229,24 @@ async function financialForPdf(row: any, payload: any) {
   return out;
 }
 
+// Optional monthly newsletter (consent wording NL-1.0). Written to the private marketing register, which holds only the email address and the consent
+// evidence and is NOT linked to the application, child, health or financial records. No selection is no consent and makes no call. Best effort
+// (3 tries): a failure is logged and never blocks, delays or alters the enrollment; the choice is also in the signed Heart to Heart PDF.
+async function recordNewsletter(keys: any, applicationId: string, answers: Record<string, any>, lang: string) {
+  const choice = answers["nl.choice"];
+  if (choice !== "yes" && choice !== "no") return;
+  const email = String(primaryEmail(answers) || "").trim().toLowerCase();
+  if (!email) return;
+  const L: any = (I18N as any)[lang]?.nl, wording = [L?.heading, L?.lead, (I18N as any)[lang]?.o?.["nl.choice"]?.[choice], L?.note].join("\n");
+  for (let i = 0; i < 3; i++) {
+    try {
+      const r = await rpc("marketing_record_p3", { p_email: email, p_choice: choice, p_language: lang, p_source: "enrollment-application", p_version: L?.version ?? "NL-1.0",
+        p_sha: await sha256Hex(utf8(wording)), p_event_key: await hmacHex(keys, "newsletter", applicationId) });
+      if (r?.ok) return;
+    } catch (e) { console.error("newsletter register attempt failed:", errName(e)); }
+  }
+}
+
 async function processApplication(reference: string, opts: { force?: boolean } = {}) {
   const row = await rpc("enrollment_get_p1", { p_reference: reference });
   if (!row) return { ok: false, error: "not found" };
@@ -490,6 +508,8 @@ async function submit(req: Request, origin: string | null) {
     }
     // 2. evidence + document association: idempotent and retried by the sweep until it succeeds (never silently omitted)
     await finalizeApplication({ id: res.id, finalize_status: "pending", finalize_attempts: 0 }, payload);
+    // 3. optional newsletter register (separate from every child, health and financial record)
+    await recordNewsletter(keys, res.id, answers, body.lang);
   }
   const finished = res.duplicate && res.status?.pdf === "generated" && res.status?.staff === "sent";
   if (!finished) background(processApplication(res.reference));

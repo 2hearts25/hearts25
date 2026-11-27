@@ -273,7 +273,10 @@ export const schema = {
       R('fin.notice', ['continued'], { r: eq('fin.choice', 'skip'), s: eq('fin.choice', 'skip'), src: 'B§financial', pdf: 'h2h' }),
     ] },
     { id: 'review', fields: [] },
-    { id: 'sign', fields: [] },
+    // Optional monthly newsletter (marketing): shown on the signing page after the signatures, before Submit. Never required; no selection = no consent.
+    { id: 'sign', fields: [
+      R('nl.choice', ['yes', 'no'], { src: 'NL-1', pdf: 'h2h' }),
+    ] },
   ],
   // Acknowledgments the signer ticks one by one (each stored with the signature). `s` = shown condition.
   acks: [

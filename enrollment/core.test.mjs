@@ -11,7 +11,7 @@ const good = () => ({
   'h.provNone':true,'h.allergy':'no','h.chronic':'no','h.devDelay':'no','h.meds':'no','h.diet':'no','h.avoid':'N/A','h.history':'N/A','h.other':'N/A','h.accom':'N/A','h.services':'no',
   'd.immun':'pending','pe.devInfo':'N/A','pe.routines':'N/A','po.trained':'no','po.diaperAck':true,'et.choice':'give',
   'ag.contractAck':true,'ag.absenceAck':true,'ag.handbook':'pending','ag.resCommunity':'pending','ag.transIn':'pending','ag.transWithin':'pending','ag.transOut':'pending','m.internal':'yes','m.marketing':'no',
-  'ag.wt':'ack','pf.auth':'pending','pf.copay':'unknown','pf.ack':true,'lp.ack':true,'fin.choice':'skip','fin.notice':'continued',
+  'ag.wt':'ack','pf.auth':'pending','pf.copay':'unknown','pf.ack':true,'lp.ack':true,'fin.choice':'skip','fin.notice':'continued','tp.choice':'deny',
 });
 let n = 0; const t = (name, fn) => { fn(); n++; console.log('ok', name); };
 t('baseline valid', () => assert.deepEqual(validate(good(), schema, { today }).errors, {}));

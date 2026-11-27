@@ -84,6 +84,7 @@ export default {
   "f": {
     "fe.infant": "Instrucciones de alimentación del bebé",
     "tp.choice": "Autorización de productos tópicos",
+    "nl.choice": "Boletín mensual",
     "tp.instructions": "Productos tópicos e instrucciones de aplicación",
     "ins.status": "Cobertura de seguro médico",
     "ins.plan": "Compañía de seguros o plan de salud",
@@ -116,6 +117,7 @@ export default {
   },
   "o": {
     "tp.choice": { "authorize": "Autorizo a Heart to Heart a aplicar los productos indicados en mis instrucciones.", "deny": "No autorizo la aplicación de productos tópicos." },
+    "nl.choice": { "yes": "Sí, deseo recibir el boletín mensual de Heart to Heart.", "no": "No, prefiero no recibir el boletín mensual." },
     "ins.status": {
       "private": "Plan de salud privado o del empleador",
       "medicaid": "Medicaid o un plan de atención administrada de Medicaid",
@@ -161,6 +163,7 @@ export default {
   },
   "err": {
     "phoneNeeded": "Ingrese al menos un número de teléfono válido (de casa, celular o trabajo) para este padre, madre o tutor.",
+    "nlEmail": "Para recibir el boletín, ingrese un correo electrónico del padre, madre o tutor en el paso de información de los padres, o elija No.",
     "upload": "Vuelva a subir este archivo.",
     "money": "Escriba un monto como 15 o 15.00.",
     "tooMany": "Demasiados archivos para este tipo de documento.",
@@ -260,6 +263,12 @@ export default {
         "Este contrato y la inscripción de su hijo/a no son definitivos hasta que la directora o administradora revise su solicitud y firme. Enviar esta solicitud no garantiza un lugar."
       ]
     }
+  },
+  "nl": {
+    "heading": "Manténgase en contacto con Heart to Heart",
+    "lead": "Reciba nuestro boletín mensual con noticias del centro, próximos eventos, novedades sobre inscripciones, recursos comunitarios e información útil para su familia.",
+    "note": "Puede cancelar su suscripción en cualquier momento. Su elección no afectará la inscripción, la elegibilidad ni el cuidado de su hijo o hija.",
+    "version": "NL-1.0"
   },
   "fh": {
     "fe.infant": "Describa los requisitos de alimentación de su hijo, incluido el tipo de alimento, fórmula o leche materna, la cantidad por toma, los horarios o la frecuencia de las tomas y cualquier instrucción especial de preparación o alimentación. Si el médico, el asistente médico o el enfermero de práctica avanzada de su hijo le dio instrucciones de alimentación por escrito, indíquelo aquí y tráigalas antes del primer día. Estas instrucciones deben actualizarse cada vez que cambien las necesidades de alimentación de su hijo: avísenos y entréguenos las nuevas instrucciones por escrito. Si su hijo tiene menos de cuatro meses, cualquier alimento que no sea fórmula o leche materna requiere instrucciones escritas de su médico, asistente médico o enfermero de práctica avanzada.",

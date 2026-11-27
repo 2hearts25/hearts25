@@ -606,6 +606,17 @@ function signatureProblem(role) {
   return s.png ? '' : t('sigTooSmall');
 }
 
+// Optional monthly newsletter (NL-1.0): two mutually exclusive choices, neither preselected; no selection means no newsletter consent.
+function newsletterBlock() {
+  const n = tr.nl, cur = S.data['nl.choice'];
+  const err = S.errors['nl.choice'];
+  return h('fieldset', { class: 'field card', id: 'f-nl-choice', tabindex: '-1', 'aria-describedby': 'nl-lead nl-note', 'aria-invalid': err ? 'true' : undefined },
+    h('legend', {}, n.heading),
+    h('p', { class: 'help', id: 'nl-lead' }, n.lead),
+    ['yes', 'no'].map(v => h('label', { class: 'opt' }, h('input', { type: 'radio', name: 'nl-choice', id: 'nl-' + v, value: v, checked: cur === v, onchange: () => { S.data['nl.choice'] = v; refresh('nl-' + v); } }), h('span', {}, tr.o['nl.choice'][v]))),
+    h('p', { class: 'help', id: 'nl-note' }, n.note),
+    err ? h('p', { class: 'err', role: 'alert' }, msg(err)) : null);
+}
 function renderSign(step) {
   const hasP2 = S.data['p2.has'] === 'yes';
   const nodes = [h('h2', { tabindex: '-1', id: 'step-h' }, t('signHeading')), h('p', { class: 'help' }, t('signLead')), S.summary ? summaryNode(S.summary) : null];
@@ -622,6 +633,7 @@ function renderSign(step) {
       S.errors.parent2Mode ? h('p', { class: 'err' }, msg('required')) : null));
     if (S.parent2Mode === 'now') nodes.push(signerBlock('parent2', t('parent2Heading')));
   }
+  nodes.push(newsletterBlock());
   if (S.submitMessage) nodes.push(h('p', { class: 'errsum', role: 'alert' }, S.submitMessage));
   nodes.push(h('div', { class: 'hp', 'aria-hidden': 'true' }, h('label', {}, 'Website', h('input', { type: 'text', name: 'hp', id: 'hp', tabindex: '-1', autocomplete: 'off' }))));
   nodes.push(h('div', { class: 'nav' }, h('button', { type: 'button', class: 'button secondary', onclick: () => goto('review') }, t('back')), h('span', { class: 'spacer' }),
