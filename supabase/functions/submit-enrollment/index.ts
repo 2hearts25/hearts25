@@ -254,7 +254,7 @@ async function captureContacts(applicationId: string, answers: Record<string, an
     const email = String(answers[`${p}.email`] || "").trim().toLowerCase();
     if (!email) continue;
     try {
-      await rpc("contact_capture_p4", { p: { gated: "true", email, name: answers[`${p}.name`] || null, phone: answers[`${p}.cell`] || answers[`${p}.home`] || null, language: lang, source: "enrollment-application",
+      await rpc("contact_capture_p4", { p: { gated: "true", email, name: answers[`${p}.name`] || null, phone: answers[`${p}.cell`] || answers[`${p}.home`] || answers[`${p}.workPhone`] || null, language: lang, source: "enrollment-application",
         roles: ["parent_guardian", "applicant"], relationship: { kind: "enrollment", status: "pending", ref: "app:" + String(applicationId).slice(0, 8) } } });
     } catch (e) { console.error("contact capture failed:", errName(e)); }
   }
@@ -523,9 +523,9 @@ async function submit(req: Request, origin: string | null) {
     await finalizeApplication({ id: res.id, finalize_status: "pending", finalize_attempts: 0 }, payload);
     // 3. optional newsletter register (separate from every child, health and financial record)
     await recordNewsletter(keys, res.id, answers, body.lang);
-    // 4. adult contact register (flag-gated in the database; never blocks or alters the enrollment). A new application is a PENDING applicant, never active.
-    await captureContacts(res.id, answers, body.lang);
   }
+  // Adult contact capture applies to both accepted application versions, including the live legacy form. No legacy newsletter consent is inferred.
+  if (!res.duplicate) await captureContacts(res.id, answers, body.lang);
   const finished = res.duplicate && res.status?.pdf === "generated" && res.status?.staff === "sent";
   if (!finished) background(processApplication(res.reference));
   background(sweep(2)); // opportunistically finish any older unfinished application
