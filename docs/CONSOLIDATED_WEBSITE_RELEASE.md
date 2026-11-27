@@ -17,18 +17,20 @@ The cap is 16 MiB of base64 attachment content per message, leaving room for ema
 
 Staff accounts and portal activation are no longer prerequisites. Publish the updated five-language Privacy Policy at the same cutover as uploads. The [targeted integration run](https://github.com/2hearts25/hearts25/actions/runs/45646144722) verified the real Edge Function, encrypted upload attachment, inventory, rejection of unvalidated uploads, restricted SQL permissions and lost-receipt recovery without duplicate delivery. A local packet check covered size splitting and quarantine exclusion.
 
-The following SQL is for a separately authorized cutover. Keep all flags off until their dependencies are ready. Run through the production SQL editor and verify the returned state. Allow up to 30 seconds for function flag cache refresh.
+The following SQL is for a separately authorized cutover. The three flags enrollment_v130, enrollment_uploads and parent_document_access MUST be activated together, as one coordinated step at production publication of this ZIP, never individually and never before the site is live. The 1.3.0 form, document uploads and parent document retrieval depend on one another (a 1.3.0 submission is refused until enrollment_v130 is on, uploads are only meaningful with the 1.3.0 form, and the Parent Portal retrieval needs parent_document_access). Run through the production SQL editor and verify the returned state. Allow up to 30 seconds for function flag cache refresh.
 
 ~~~sql
--- At coordinated publication of the approved ZIP
+-- At coordinated publication of the approved ZIP: all three together, in one statement
 update website_private.feature_flags
 set enabled = true, updated_at = now()
-where key in ('enrollment_v130', 'parent_document_access', 'enrollment_uploads');
+where key in ('enrollment_v130', 'enrollment_uploads', 'parent_document_access');
 
 select public.enrollment_flags_p2();
 ~~~
 
-Leave financial_card_collection off, with no request to collect full card numbers in production. See PAYMENT_CARD_SECURITY_CHECKLIST.md. The optional financial flow, insurance questions and supporting-document assets are included in the consolidated package.
+Flags that must NOT change at this cutover: the active communications flags (comms_capture, comms_resend_sync, comms_critical_send) stay exactly as they are in production (ON) and are not touched by any step here. These stay OFF: staff_document_access, financial_card_collection and comms_newsletter_send (automated newsletter sending). After the statement, confirm from the returned state that exactly these three changed.
+
+Leave staff_document_access and financial_card_collection off, with no request to collect full card numbers in production. See PAYMENT_CARD_SECURITY_CHECKLIST.md. The optional financial flow, insurance questions and supporting-document assets are included in the consolidated package.
 
 ## Publication and verification
 

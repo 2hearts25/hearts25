@@ -24,15 +24,18 @@ Tables `website_private.contact_channel_consents` and `contact_channel_consent_e
 * "Mobile" is taken from the cell-phone field; real line-type lookup belongs to the future SMS provider.
 * A new granted number does not revoke older granted numbers.
 * SMS/consent wording needs legal review before any texting is enabled.
-* `enrollment/test/targeted-comms-fn.mjs` Resend-sync test fails because its mock uses non-UUID segment IDs while the live function (already on origin, from the earlier session) requires UUIDs. Test-fixture issue, not a product defect; not changed here.
-* `tools/check-site.py` and `tools/check-registration.py` are legacy checks of the pre-1.3 registration form markup and fail on unrelated assertions.
+* Closeout (accepted at commit 0325ea8): the Resend-sync test fixtures were corrected (UUID segment/topic IDs, and the second "all contacts" segment the function now also pushes). `targeted-comms-fn.mjs` now passes (13 checks). Test files only; no product code changed.
+* Legacy checks `tools/check-site.py` and `tools/check-registration.py`: OBSOLETE. They assert the pre-1.2 inquiry-form markup (`data-kind` forms on /enrollment/ and /register/). /enrollment/ is now an informational page and /register/ is the JavaScript enrollment application (`#enroll-app`), so the assertions cannot hold; `check-site.py` passes its link, image-alt, language and direction checks up to that assertion. Coverage is provided by the targeted and end-to-end suites. Files kept for history and marked OBSOLETE; not run in release verification.
 * `targeted-ui-newsletter.py` was replaced by `targeted-ui-comms-consent.py` because the newsletter block moved.
+
+## Deferred to the SMS implementation phase
+Telephone-only contact architecture, mobile number verification, historical telephone consent management and SMS legal review. Website and enrollment application development is frozen after this closeout.
 
 ## Future deployment sequence (after management authorization and Netlify credit reset)
 1. Apply migration `20261127150000_communication_consents.sql`.
 2. Deploy Edge Functions `submit-enrollment` (backward compatible) and `communications`.
 3. Publish the website (`website-dist/`).
-4. No feature-flag changes are required; do not change production flags.
+4. Production flags: leave the active communications flags unchanged. The only flag change in the whole release is the coordinated activation of enrollment_v130, enrollment_uploads and parent_document_access together at publication (see CONSOLIDATED_WEBSITE_RELEASE.md). staff_document_access, financial_card_collection and comms_newsletter_send stay off.
 5. Then submit sitemap.xml to search engines.
 Rollback: redeploy previous site and functions; the new tables are additive and can remain.
 

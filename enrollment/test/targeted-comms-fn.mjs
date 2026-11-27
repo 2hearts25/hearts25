@@ -33,7 +33,7 @@ const mock = createServer(async (req, res) => {
 await new Promise(r => mock.listen(MP, '127.0.0.1', r));
 const whsec = 'whsec_' + randomBytes(24).toString('base64');
 const env = { ...process.env, SUPABASE_URL: `http://127.0.0.1:${MP}`, SUPABASE_SERVICE_ROLE_KEY: 'svc', COMMS_RESEND_KEY: 're_test_key_123456', COMMS_RESEND_URL: `http://127.0.0.1:${MP}/resend`, COMMS_TOKEN_SECRET: randomBytes(32).toString('hex'),
-  COMMS_WEBHOOK_SECRET: whsec, COMMS_CRON_SECRET: randomBytes(24).toString('hex'), COMMS_RESEND_SEGMENT_ID: 'seg_1', COMMS_RESEND_TOPIC_ID: 'top_1', COMMS_PUBLIC_URL: `http://127.0.0.1:${FP}/`, DENO_SERVE_ADDRESS: `tcp:127.0.0.1:${FP}` };
+  COMMS_WEBHOOK_SECRET: whsec, COMMS_CRON_SECRET: randomBytes(24).toString('hex'), COMMS_RESEND_SEGMENT_ID: 'aaaaaaaa-1111-4111-8111-111111111111', COMMS_RESEND_TOPIC_ID: 'bbbbbbbb-2222-4222-8222-222222222222', COMMS_PUBLIC_URL: `http://127.0.0.1:${FP}/`, DENO_SERVE_ADDRESS: `tcp:127.0.0.1:${FP}` };
 const fn = spawn(DENO, ['run', '-A', '--no-lock', new URL('../../supabase/functions/communications/index.ts', import.meta.url).pathname].filter(Boolean), { env, stdio: ['ignore', 'pipe', 'pipe'] });
 let log = ''; fn.stdout.on('data', d => log += d); fn.stderr.on('data', d => log += d);
 const base = `http://127.0.0.1:${FP}/`;
@@ -94,7 +94,7 @@ try {
   await t('Resend sync: flag OFF skipped; ON pushes ONLY consented contacts (with segment + topic), idempotent; unsubscribe is pushed; register wins over a provider re-subscribe', async () => {
     assert.equal((await adm('sync')).body.skipped, 'flag_off'); await flag('comms_resend_sync', true);
     const s = await adm('sync'); assert.ok(s.body.synced >= 1 && s.body.failed === 0); const pushed = [...R.contacts.values()].map(c => c.email);
-    assert.ok(pushed.includes('imp.two@example.com') && !pushed.includes('imp.one@example.com') && !pushed.includes('brand.new@example.com'), 'non-consented contacts are never uploaded'); assert.deepEqual(R.contacts.get('rc_1').segments, [{ id: 'seg_1' }]);
+    assert.ok(pushed.includes('imp.two@example.com') && !pushed.includes('imp.one@example.com') && !pushed.includes('brand.new@example.com'), 'non-consented contacts are never uploaded'); assert.deepEqual(R.contacts.get('rc_1').segments, [{ id: 'aaaaaaaa-1111-4111-8111-111111111111' }, { id: 'bee4c6d7-4ff3-4f59-b166-4b4dc973963a' }]);
     assert.equal((await adm('sync')).body.synced, 0, 'nothing left to push (no duplicate creates)');
     const two = await C('imp.two@example.com'); await adm('marketing', { id: two.id, op: 'unsubscribe' }); await adm('sync'); const rc = [...R.contacts.values()].find(c => c.email === 'imp.two@example.com'); assert.equal(rc.unsubscribed, true, 'unsubscribe pushed');
     rc.unsubscribed = false; const rec = await adm('reconcile'); assert.equal(rec.body.pushed_unsubscribes, 1); assert.equal(rc.unsubscribed, true, 'stale provider subscription is overridden'); assert.equal((await C('imp.two@example.com')).status, 'unsubscribed', 'never restored in the register');
@@ -119,7 +119,7 @@ try {
     assert.equal((await adm('campaign_run', { id: cid })).body.error, 'sending_disabled'); assert.equal(R.broadcasts.length, 0);
     await flag('comms_newsletter_send', true); await q("update website_private.marketing_contacts set status='subscribed' where email='fran.fan@example.com'"); await q("update website_private.marketing_contacts set deliverability='ok' where email='imp.one@example.com'");
     const [a, b] = await Promise.all([adm('campaign_run', { id: cid }), adm('campaign_run', { id: cid })]); assert.equal([a, b].filter(x => x.body.ok).length, 1, 'exactly one run'); assert.equal(R.broadcasts.length, 1); assert.equal(R.sends.length, 1);
-    assert.equal(R.broadcasts[0].segment_id, 'seg_1'); assert.equal(R.broadcasts[0].topic_id, 'top_1'); assert.ok(R.broadcasts[0].html.includes('{{{RESEND_UNSUBSCRIBE_URL}}}'));
+    assert.equal(R.broadcasts[0].segment_id, 'aaaaaaaa-1111-4111-8111-111111111111'); assert.equal(R.broadcasts[0].topic_id, 'bbbbbbbb-2222-4222-8222-222222222222'); assert.ok(R.broadcasts[0].html.includes('{{{RESEND_UNSUBSCRIBE_URL}}}'));
     const row = (await q('select status, recipients_at_send, resend_broadcast_id from website_private.campaigns where id=$1', [cid]))[0]; assert.equal(row.status, 'sent'); assert.ok(row.recipients_at_send >= 1); assert.equal((await adm('campaign_run', { id: cid })).body.error, 'nothing_due');
     await flag('comms_newsletter_send', false);
   });

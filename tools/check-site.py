@@ -1,3 +1,4 @@
+# OBSOLETE (closeout 0325ea8): asserts pre-1.2 inquiry-form markup; superseded by the targeted and end-to-end suites. Not run in release verification.
 
 from html.parser import HTMLParser
 from pathlib import Path
