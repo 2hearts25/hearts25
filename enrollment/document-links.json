@@ -130,6 +130,38 @@
       }
     },
     {
+      "id": "individual-allergy-care-record",
+      "category": "policies",
+      "status": "available",
+      "object": "Individual Allergy Care Record.pdf",
+      "reference": "H2H-13",
+      "language": "en-US",
+      "revision": "v1.1",
+      "effectiveDate": "2026-12-01",
+      "copy": {
+        "en": {
+          "title": "Individual Allergy Care Record",
+          "description": "A supplemental blank form for documenting a child’s individual allergies, symptoms, avoidance requirements and emergency care instructions. It does not replace the Ohio DCY 01236 Child Medical/Physical Care Plan."
+        },
+        "es": {
+          "title": "Registro individual de atención de alergias",
+          "description": "Formulario complementario en blanco para documentar las alergias individuales de un niño, sus síntomas, los requisitos de evitación y las instrucciones de atención de emergencia. No sustituye el Plan de atención médica/física del niño de Ohio (DCY 01236)."
+        },
+        "fr": {
+          "title": "Fiche individuelle de soins pour allergies",
+          "description": "Formulaire complémentaire vierge pour consigner les allergies individuelles d’un enfant, ses symptômes, les mesures d’évitement et les consignes de soins d’urgence. Il ne remplace pas le plan de soins médicaux/physiques de l’enfant de l’Ohio (DCY 01236)."
+        },
+        "ar": {
+          "title": "سجل الرعاية الفردي للحساسية",
+          "description": "نموذج تكميلي فارغ لتوثيق حساسية الطفل الفردية وأعراضها ومتطلبات تجنّب المسبّبات وتعليمات الرعاية في حالات الطوارئ. وهو لا يحلّ محل خطة الرعاية الطبية/البدنية للطفل في ولاية أوهايو (DCY 01236)."
+        },
+        "sw": {
+          "title": "Rekodi ya Mtu Binafsi ya Huduma ya Mzio",
+          "description": "Fomu ya ziada tupu ya kuandika mzio wa mtoto binafsi, dalili, mahitaji ya kuepuka vichochezi na maelekezo ya huduma ya dharura. Haichukui nafasi ya Mpango wa Huduma ya Kimatibabu/Kimwili wa Mtoto wa Ohio (DCY 01236)."
+        }
+      }
+    },
+    {
       "id": "community-resources",
       "category": "resources",
       "status": "available",

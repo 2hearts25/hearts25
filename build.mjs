@@ -134,13 +134,13 @@ function header(language, page, slug, {tour, register, portal, virtualNav}) {
   ].join('');
   const tuition = overrides[language]?.['tuition-assistance']?.title ?? pages['tuition-assistance'].title;
   const information = [
+    portal,
     navLink('about',t.nav[5]),
     navLink('our-day',t.nav[1]),
     navLink('family-support',t.nav[3]),
     navLink('tuition-assistance',tuition),
     navLink('community',t.footer[6]),
     navLink('faq',t.nav[6]),
-    portal,
     virtualNav
   ];
   const more = list([...information,navLink('request-information',info)]);

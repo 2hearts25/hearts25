@@ -1,6 +1,6 @@
 // Child enrollment application (form 1.3.0-E2). Multi-step, five languages, finger or typed signature, optional document uploads.
 // Privacy: answers live ONLY in memory (this tab). Nothing is written to localStorage, sessionStorage, cookies or the URL.
-import { validate, settle, stepShown, fieldShown, fieldRequired, visibleAcks } from './core.js';
+import { validate, settle, stepShown, fieldShown, fieldRequired, visibleAcks, adultPhone } from './core.js';
 import { CONTRACT, POLICIES } from './agreements.js';
 import { contractView } from './evidence.js';
 import { validateCard, normalizePan, brandOf, maskPan } from './financial.js';
@@ -497,6 +497,37 @@ function renderIntro() {
 function nextStepId(id) { const v = visibleSteps().map(s => s.id); return v[Math.min(v.indexOf(id) + 1, v.length - 1)]; }
 function prevStepId(id) { const v = visibleSteps().map(s => s.id); return v[Math.max(v.indexOf(id) - 1, 0)]; }
 
+// ---------- Communication Preferences and Authorization (COMMS-1.0) ----------
+// Two independent checkboxes per listed adult (never preselected, never required), then the optional newsletter choice (NL-1.0, unchanged meaning).
+// Leaving this step records an explicit "reviewed, not authorized" (false) for every unchecked box; an unchecked box is never consent.
+function commsStep(step) {
+  const out = [h('h2', { tabindex: '-1', id: 'step-h' }, t('cmHeading')), h('p', { class: 'help' }, t('cmLead')), h('p', { class: 'help' }, t('cmLead2'))];
+  if (S.summary) out.push(summaryNode(S.summary));
+  const adults = ['p1'].concat(S.data['p2.has'] === 'yes' ? ['p2'] : []);
+  const who = (p, i) => (S.data[p + '.name'] || '').trim() || t('cmAdult', { n: i + 1 });
+  const typeName = k => t(k === 'mobile' ? 'cmMobile' : k === 'home' ? 'cmHome' : 'cmWork');
+  const block = (kind) => adults.map((p, i) => {
+    const f = step.fields.find(x => x.id === p + (kind === 'tel' ? '.authTel' : '.authEmail'));
+    const wrap = h('div', { class: 'card' });
+    if (adults.length > 1) wrap.append(h('h4', {}, who(p, i)));
+    wrap.append(control(f, { get: () => S.data[f.id], set: v => { S.data[f.id] = v; }, ctx: { label: labelOf(f.id), optId: f.id }, path: f.id }));
+    if (kind === 'tel') { const ap = adultPhone(S.data, p); wrap.append(h('p', { class: 'help' }, ap ? t('cmAppTel', { v: ap.number, k: typeName(ap.type) }) : t('cmAppTelNo'))); }
+    else { const em = (S.data[p + '.email'] || '').trim(); wrap.append(h('p', { class: 'help' }, em ? t('cmAppMail', { v: em }) : t('cmAppMailNo'))); }
+    return wrap;
+  });
+  out.push(h('h3', {}, t('cmTelHeading')), ...block('tel'), h('p', { class: 'help' }, t('cmTelNote')));
+  out.push(h('h3', {}, t('cmMailHeading')), ...block('mail'));
+  out.push(newsletterBlock());
+  out.push(h('h3', {}, t('cmPrefHeading')), h('p', {}, t('cmPref1')), h('p', {}, t('cmPref2')), h('p', {}, t('cmPref3')));
+  out.push(navRow(step, () => {
+    for (const p of adults) for (const k of ['.authTel', '.authEmail']) S.data[p + k] = S.data[p + k] === true;   // reviewed: unchecked = not authorized
+    const errs = errorsForStep(step);
+    if (Object.keys(errs).length) { S.errors = errs; S.summary = summaryOf(errs, step); render({ focusSummary: true }); return; }
+    const target = S.returnToReview ? 'review' : nextStepId(step.id); S.returnToReview = false; goto(target);
+  }));
+  return out;
+}
+
 function renderStep(step) {
   const nodes = [h('h2', { tabindex: '-1', id: 'step-h' }, tr.steps[step.id])];
   if (tr.stepHelp[step.id]) nodes.push(h('p', { class: 'help' }, tr.stepHelp[step.id]));
@@ -510,6 +541,7 @@ function renderStep(step) {
   }
   if (step.id === 'contract') nodes.push(contractBlock());
   if (S.summary) nodes.push(summaryNode(S.summary));
+  if (step.id === 'comms') { nodes.splice(0, nodes.length, ...commsStep(step)); return nodes; }
   nodes.push(...fieldsFor(step));
   nodes.push(navRow(step, () => {
     if (step.id === 'financial') { financialNext(step); return; }
@@ -548,7 +580,8 @@ function renderReview(step) {
       }
       const v = showValue(f, S.data[f.id]);
       if (v === null && f.r === undefined) continue;
-      dl.append(h('dt', {}, labelOf(f.id)), h('dd', { class: v === null ? 'muted' : '' }, v ?? t('notAnswered')));
+      const cm = /^(p[12])\.auth(Tel|Email)$/.exec(f.id), dtl = cm ? ((S.data[cm[1] + '.name'] || '').trim() || t('cmAdult', { n: cm[1] === 'p1' ? 1 : 2 })) + ' — ' + t(cm[2] === 'Tel' ? 'cmShortTel' : 'cmShortMail') : labelOf(f.id);
+      dl.append(h('dt', {}, dtl), h('dd', { class: v === null ? 'muted' : '' }, v ?? t('notAnswered')));
     }
     sec.append(h('div', { class: 'head' }, h('h3', {}, tr.steps[st.id]), h('button', { type: 'button', class: 'linkish', onclick: () => { S.returnToReview = true; goto(st.id); } }, t('edit'))), dl);
   }
@@ -614,7 +647,7 @@ function newsletterBlock() {
     h('legend', {}, n.heading),
     h('p', { class: 'help', id: 'nl-lead' }, n.lead),
     ['yes', 'no'].map(v => h('label', { class: 'opt' }, h('input', { type: 'radio', name: 'nl-choice', id: 'nl-' + v, value: v, checked: cur === v, onchange: () => { S.data['nl.choice'] = v; refresh('nl-' + v); } }), h('span', {}, tr.o['nl.choice'][v]))),
-    h('p', { class: 'help', id: 'nl-note' }, n.note),
+    h('p', { class: 'help', id: 'nl-note' }, t('cmNlUnsub')),
     err ? h('p', { class: 'err', role: 'alert' }, msg(err)) : null);
 }
 function renderSign(step) {
@@ -633,7 +666,6 @@ function renderSign(step) {
       S.errors.parent2Mode ? h('p', { class: 'err' }, msg('required')) : null));
     if (S.parent2Mode === 'now') nodes.push(signerBlock('parent2', t('parent2Heading')));
   }
-  nodes.push(newsletterBlock());
   if (S.submitMessage) nodes.push(h('p', { class: 'errsum', role: 'alert' }, S.submitMessage));
   nodes.push(h('div', { class: 'hp', 'aria-hidden': 'true' }, h('label', {}, 'Website', h('input', { type: 'text', name: 'hp', id: 'hp', tabindex: '-1', autocomplete: 'off' }))));
   nodes.push(h('div', { class: 'nav' }, h('button', { type: 'button', class: 'button secondary', onclick: () => goto('review') }, t('back')), h('span', { class: 'spacer' }),

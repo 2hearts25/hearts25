@@ -64,6 +64,18 @@ export function settle(data, schema) {
   return cur;
 }
 
+// The telephone number a COMMS-1.0 text/telephone authorization applies to for adult p: the cell number (type "mobile") when valid, otherwise the home number,
+// otherwise the work number. Only a "mobile" number can ever be used for future automated text messages. Returns null when the adult has no valid number.
+export function adultPhone(data, p) {
+  const ok = v => typeof v === 'string' && v.trim() !== '' && PHONE_RE.test(v.trim()) && digits(v).length >= 10 && digits(v).length <= 15;
+  if (ok(data[p + '.cell'])) return { number: data[p + '.cell'].trim(), type: 'mobile' };
+  const home = data[p + '.sameHome'] === true ? data['c.phone'] : data[p + '.home'];
+  if (ok(home)) return { number: home.trim(), type: 'home' };
+  const work = data[p + '.workNA'] === true ? undefined : data[p + '.workPhone'];
+  if (ok(work)) return { number: work.trim(), type: 'work' };
+  return null;
+}
+
 export function validate(raw, schema, { today } = {}) {
   const data = settle(raw, schema);
   const errors = {};
@@ -109,6 +121,13 @@ export function validate(raw, schema, { today } = {}) {
     const home = data[p + '.sameHome'] === true ? data['c.phone'] : data[p + '.home'];
     const work = data[p + '.workNA'] === true ? undefined : data[p + '.workPhone'];
     if (!ok(data[p + '.cell']) && !ok(home) && !ok(work)) errors[p + '.cell'] = 'phoneNeeded';
+  }
+  // COMMS-1.0: an authorization applies to ONE adult's own contact detail. A checked box without a valid number / email for that same adult is rejected.
+  // Unchecked is never consent and never an error. (Nothing here is required.)
+  for (const p of ['p1', 'p2']) {
+    if (p === 'p2' && data['p2.has'] !== 'yes') continue;
+    if (data[p + '.authTel'] === true && !adultPhone(data, p)) errors[p + '.authTel'] = 'authTelNeeded';
+    if (data[p + '.authEmail'] === true && !(typeof data[p + '.email'] === 'string' && !empty(data[p + '.email']) && EMAIL_RE.test(data[p + '.email'].trim()))) errors[p + '.authEmail'] = 'authEmailNeeded';
   }
   // NL-1.0: a "Yes" to the monthly newsletter reuses the parent email already entered; it cannot be honored without one. "No"/no selection never needs one.
   if (data['nl.choice'] === 'yes') {

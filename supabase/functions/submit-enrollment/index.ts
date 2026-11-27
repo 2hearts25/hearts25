@@ -8,7 +8,7 @@ import { PDFDocument, PDFHexString, PDFName, PDFOperator, rgb } from "npm:@canto
 import * as fontkit from "npm:fontkit@2.0.4"; // upstream build: the @pdf-lib/fork has a broken Arabic shaper under Deno
 // ---- 1.3.0-E2 modules
 import { buildEnrollmentPdfs, h2hFilename, ohioFilename } from "./pdf.mjs";
-import { validate, settle, visibleAcks } from "./core.mjs";
+import { validate, settle, visibleAcks, adultPhone } from "./core.mjs";
 import schema from "./schema.gen.ts";
 import en from "./en.gen.ts";
 import I18N from "./i18n.gen.ts";
@@ -249,13 +249,24 @@ async function recordNewsletter(keys: any, applicationId: string, answers: Recor
 
 // Adult guardian contact capture for the communications register. Names, email, phone and language ONLY - no child, health, custody or financial data.
 // The relationship is "pending applicant"; an administrator confirms active enrollment. Gated by flag comms_capture inside the database; failures are swallowed.
-async function captureContacts(applicationId: string, answers: Record<string, any>, lang: string) {
+async function captureContacts(keys: any, applicationId: string, answers: Record<string, any>, lang: string) {
+  const C: any = (I18N as any)[lang]?.comms ?? (I18N as any).en?.comms;
+  const wordingSha = C ? await sha256Hex(utf8([C.tel, C.telNote, C.mail].join("\n"))) : null;
   for (const p of ["p1", "p2"]) {
     const email = String(answers[`${p}.email`] || "").trim().toLowerCase();
-    if (!email) continue;
+    if (!email) continue; // the register is keyed by email: an adult with no email address is not captured (the authorization stays in the signed application and its PDF)
+    // COMMS-1.0: present only when the form version with the Communication Preferences step sent explicit booleans (legacy applications send none => "not recorded").
+    const tel = answers[`${p}.authTel`], mail = answers[`${p}.authEmail`];
+    let consents: Record<string, any> | undefined;
+    if (C && (typeof tel === "boolean" || typeof mail === "boolean")) {
+      const ap = adultPhone(answers, p);
+      consents = { version: C.version, sha: wordingSha, application_ref: "app:" + String(applicationId).slice(0, 8), event_key: await hmacHex(keys, "comms", applicationId + ":" + p) };
+      if (typeof tel === "boolean") consents.telephone = { choice: tel ? "granted" : "not_provided", number: ap?.number ?? null, type: ap?.type ?? "unknown" };
+      if (typeof mail === "boolean") consents.email = { choice: mail ? "granted" : "not_provided" };
+    }
     try {
       await rpc("contact_capture_p4", { p: { gated: "true", email, name: answers[`${p}.name`] || null, phone: answers[`${p}.cell`] || answers[`${p}.home`] || answers[`${p}.workPhone`] || null, language: lang, source: "enrollment-application",
-        roles: ["parent_guardian", "applicant"], relationship: { kind: "enrollment", status: "pending", ref: "app:" + String(applicationId).slice(0, 8) } } });
+        roles: ["parent_guardian", "applicant"], relationship: { kind: "enrollment", status: "pending", ref: "app:" + String(applicationId).slice(0, 8) }, ...(consents ? { consents } : {}) } });
     } catch (e) { console.error("contact capture failed:", errName(e)); }
   }
 }
@@ -525,7 +536,7 @@ async function submit(req: Request, origin: string | null) {
     await recordNewsletter(keys, res.id, answers, body.lang);
   }
   // Adult contact capture applies to both accepted application versions, including the live legacy form. No legacy newsletter consent is inferred.
-  if (!res.duplicate) await captureContacts(res.id, answers, body.lang);
+  if (!res.duplicate) await captureContacts(keys, res.id, answers, body.lang);
   const finished = res.duplicate && res.status?.pdf === "generated" && res.status?.staff === "sent";
   if (!finished) background(processApplication(res.reference));
   background(sweep(2)); // opportunistically finish any older unfinished application

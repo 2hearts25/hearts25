@@ -23,6 +23,8 @@ const exact = {
   'pe.angerTriggers': B, 'pe.frustration': B, 'pe.negBehavior': B, 'pe.more': B, 'pe.routines': B, 'po.care': B, 'fe.noFeed': B,
   // handbook receipt: the state form asks for receipt; the centre also keeps the detailed acknowledgment
   'ag.handbook': B,
+  // COMMS-1.0 communication authorizations belong to the Heart to Heart record ONLY; the state-required Ohio form is unchanged.
+  'p1.authTel': H, 'p1.authEmail': H,
   // 1.3.0: supporting health documents are state-record items, so their upload status prints in both documents (never the files).
   'up.immun': B, 'up.physical': B, 'up.hcp': B, 'up.med': B, 'up.diet': B, 'd.separate': B,
 };

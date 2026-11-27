@@ -88,7 +88,7 @@ try {
     assert.ok(await until(async () => (await appRow(ref))?.status === 'complete'), 'not completed; log:\n' + log.slice(-1500));
     const staff = mailsTo('hearttoheart3095@yahoo.com').filter(m => m.body.attachments?.length === 2).at(-1); assert.equal(staff.body.attachments.length, 2, 'exactly two PDFs');
     const o = text(Buffer.from(staff.body.attachments[0].content, 'base64')), h = text(Buffer.from(staff.body.attachments[1].content, 'base64'));
-    assert.match(h, /Monthly newsletter subscription \(optional\)/); assert.match(h, /SUBSCRIBED/); assert.match(h, /Consent wording version\s+NL-1\.0/); assert.match(h, /Source\s+Online enrollment application/); assert.match(h, /Date recorded/); assert.match(h, /Preferred language\s+(Español|Spanish)/i);
+    assert.match(h, /Monthly newsletter preference/); assert.match(h, /SUBSCRIBED/); assert.match(h, /NL-1\.0 \(newsletter\)/); assert.match(h, /Source\s+Online enrollment application/); assert.match(h, /Recorded \(authorization date and time\)/); assert.match(h, /Application language\s+(Español|Spanish)/i);
     assert.ok(!/newsletter/i.test(o), 'the newsletter preference is NOT in the Ohio PDF');
     assert.match(h, /Parent\/Provider Contract/); assert.match(h, /Administrator approval/); // existing content intact
   });

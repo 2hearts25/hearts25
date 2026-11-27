@@ -2,7 +2,7 @@
 // The Parent/Provider Contract is the final agreement section. Some of these records may also be requested during licensing or
 // Step Up To Quality reviews, so they are retained and available to authorized staff.
 import { createKit } from './pdf-kit.mjs';
-import { visibleAcks } from './core.mjs';
+import { visibleAcks, adultPhone } from './core.mjs';
 import { ackDocs, H2H } from './doc-map.mjs';
 import { CONTRACT, POLICIES, LATE_PICKUP, pendingSections, MEDIA_CONSENT_VERSION } from './agreements.mjs';
 import { contractView, copayStatus } from './evidence.mjs';
@@ -171,16 +171,32 @@ export async function buildH2hPdf({ lib, fonts, schema, en, data, meta }) {
     }
   }
   k.para('This record never contains a security code (CVV), PIN or magnetic-stripe data, and never the full card number. This application did NOT process a payment, verify the card with a card network, or charge anything, and sets up no recurring billing. No advance payment is required. Heart to Heart will ask for the family’s separate written permission before any charge. Acceptance of the contract, permission to keep card information, and authorization of future charges are three separate things; only the first two are recorded here.', { size: 8.5, color: [0.36, 0.4, 0.48] });
-  // ---- optional monthly newsletter (marketing preference). Printed in this document ONLY; marketing contact data is kept in a separate private register. ----
+  // ---- Communication Preferences and Authorization (COMMS-1.0) + optional monthly newsletter (NL-1.0). Printed in this document ONLY (the Ohio record is unchanged).
+  // Consent contact data is kept in a separate private register; this is the record tied to the signed application. An unchecked box is NOT consent.
+  const when = meta.submittedAtEastern || meta.submittedAt;
+  k.section(30, 'Communication Preferences and Authorization');
+  const adults = ['p1'].concat(d['p2.has'] === 'yes' ? ['p2'] : []);
+  adults.forEach((p, i) => {
+    k.sub(adults.length > 1 ? `Parent / guardian ${i + 1}: ${d[p + '.name'] || ''}` : `Parent / guardian: ${d[p + '.name'] || ''}`);
+    const st = v => v === true ? 'AUTHORIZED' : v === false ? 'NOT AUTHORIZED (box not checked — not consent)' : 'NOT RECORDED (this question was not presented or not answered)';
+    const ap = adultPhone(d, p);
+    k.kv('Telephone and text message authorization', st(d[p + '.authTel']), { pending: d[p + '.authTel'] !== true });
+    k.kv('Applies to telephone number', ap ? `${ap.number} (entered as ${ap.type === 'mobile' ? 'a cell/mobile number — the only kind usable for future automated texts' : ap.type === 'home' ? 'a home number' : 'a work number'})` : 'No valid telephone number entered');
+    k.kv('Operational email authorization', st(d[p + '.authEmail']), { pending: d[p + '.authEmail'] !== true });
+    k.kv('Applies to email address', d[p + '.email'] || 'No email address entered');
+    if (typeof d[p + '.authTel'] === 'boolean') k.printed.add(p + '.authTel'); if (typeof d[p + '.authEmail'] === 'boolean') k.printed.add(p + '.authEmail');
+  });
   const nlc = d['nl.choice'];
-  k.section(30, 'Monthly newsletter subscription (optional)');
   k.printFields({ ids: ['nl.choice'] });
-  k.kv('Subscription status', nlc === 'yes' ? 'SUBSCRIBED to the monthly newsletter' : nlc === 'no' ? 'DECLINED — not subscribed' : 'NO SELECTION — treated as no newsletter consent');
-  k.kv('Date recorded', meta.submittedAtEastern || meta.submittedAt);
-  k.kv('Source', 'Online enrollment application (form ' + meta.formVersion + ')');
-  k.kv('Preferred language', meta.languageName || meta.language);
-  k.kv('Consent wording version', en.nl.version);
+  k.kv('Monthly newsletter preference (NL-1.0, optional, separate from the above)', nlc === 'yes' ? 'SUBSCRIBED to the monthly newsletter' : nlc === 'no' ? 'DECLINED — not subscribed' : 'NO SELECTION — treated as no newsletter consent');
+  k.kv('Recorded (authorization date and time)', when);
+  k.kv('Source', 'Online enrollment application (form ' + meta.formVersion + '), recorded with the electronic signature(s) below');
+  k.kv('Application language', meta.languageName || meta.language);
+  k.kv('Consent wording versions', `${en.comms.version} (telephone/text, email) · ${en.nl.version} (newsletter)`);
+  k.para(en.comms.tel + ' ' + en.comms.telNote, { size: 8.5, color: [0.36, 0.4, 0.48] });
+  k.para(en.comms.mail, { size: 8.5, color: [0.36, 0.4, 0.48] });
   k.para(en.nl.heading + ' — ' + en.nl.lead + ' ' + en.nl.note, { size: 8.5, color: [0.36, 0.4, 0.48] });
+  k.para('Authorization may be changed or withdrawn by contacting the Director; every change is kept in a private consent history. Declining optional communications does not affect enrollment, eligibility or care, and essential care and safety communications are separate from newsletter preferences. No automated text messaging is active.', { size: 8.5, color: [0.36, 0.4, 0.48] });
   const acked = new Set(meta.acks || []);
   k.section(null, 'Signing acknowledgments, electronic signatures and administrator fields');
   for (const a of visibleAcks(d, schema)) if (ackDocs[a.id].includes(H2H)) k.tick(en.acks[a.id], acked.has(a.id));

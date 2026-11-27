@@ -290,6 +290,8 @@ async function admin(a: string, b: any, who: { email: string; can_manage: boolea
       await resend("/emails", "POST", { from: FROM(), reply_to: REPLY(), to: [c.email], subject: C.subject, html: wrapEmail(l, C.head, `<p>${esc(C.body)}</p><p style="margin:20px 0"><a href="${esc(link)}" style="background:#7a2e4d;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">${esc(C.button)}</a></p>`, contactBlock), text: `${C.head}\n\n${C.body}\n\n${link}` });
       return { ok: true, sent: true };
     }
+    case "consents": return await rpc("channel_consents_p5", { p_contact: b.id });
+    case "consent_set": need(who.can_manage); return await rpc("channel_consent_set_p5", { p_contact: b.id, p_channel: b.channel, p_action: b.op, p_destination: b.destination ?? null, p_type: b.type ?? null, p_actor: actor, p_evidence: b.evidence ?? null });
     case "deliverability": need(who.can_manage); return await rpc("contact_deliverability_p4", { p_id: b.id, p_value: b.value, p_actor: actor });
     case "import": need(who.can_manage); return await rpc("contact_import_p4", { p_rows: b.rows ?? [], p_dry: b.dry !== false, p_actor: actor, p_label: b.label ?? "import" });
     case "export": need(who.can_manage); return { ok: true, rows: await rpc("contact_export_p4", { p_filter: b.filter ?? {}, p_actor: actor }) };

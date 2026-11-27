@@ -2875,6 +2875,55 @@
    ]
   },
   {
+   "id": "comms",
+   "fields": [
+    {
+     "id": "p1.authTel",
+     "t": "check",
+     "src": "COMMS-1",
+     "pdf": "h2h"
+    },
+    {
+     "id": "p1.authEmail",
+     "t": "check",
+     "src": "COMMS-1",
+     "pdf": "h2h"
+    },
+    {
+     "id": "p2.authTel",
+     "t": "check",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "COMMS-1",
+     "pdf": "h2h"
+    },
+    {
+     "id": "p2.authEmail",
+     "t": "check",
+     "s": [
+      "eq",
+      "p2.has",
+      "yes"
+     ],
+     "src": "COMMS-1",
+     "pdf": "h2h"
+    },
+    {
+     "id": "nl.choice",
+     "t": "radio",
+     "o": [
+      "yes",
+      "no"
+     ],
+     "src": "NL-1",
+     "pdf": "h2h"
+    }
+   ]
+  },
+  {
    "id": "contract",
    "fields": [
     {
@@ -3069,18 +3118,7 @@
   },
   {
    "id": "sign",
-   "fields": [
-    {
-     "id": "nl.choice",
-     "t": "radio",
-     "o": [
-      "yes",
-      "no"
-     ],
-     "src": "NL-1",
-     "pdf": "h2h"
-    }
-   ]
+   "fields": []
   }
  ],
  "acks": [

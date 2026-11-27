@@ -1,3 +1,4 @@
+import comms from './add-comms/sw.mjs';
 import add from './add-130/sw.mjs';
 import { merge } from './merge.mjs';
 // Base wording (form 1.2.0-E1) + 1.3.0-E2 additions (add-130/). Later wording of a key overrides the base for the new form only.
@@ -362,4 +363,4 @@ const base = {
     phoneNeeded: "Weka namba ya simu ya mkononi au ya nyumbani, kwa sababu umechagua simu kuwa njia bora ya kukufikia.",
   },
 };
-export default merge(base, add);
+export default merge(merge(base, add), comms);

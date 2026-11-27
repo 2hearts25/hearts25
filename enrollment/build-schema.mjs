@@ -253,6 +253,16 @@ export const schema = {
       // Withdrawal and Termination Policy v1.1 (B§8): acknowledge receipt, or say it could not be opened (never recorded as received).
       R('ag.wt', ['ack', 'noaccess'], { r: 1, src: 'B§8', pdf: 'h2h' }),
     ] },
+    // Communication Preferences and Authorization (COMMS-1.0): its own step immediately BEFORE the Parent/Provider Contract. Nothing here is required,
+    // nothing is preselected, and an unchecked box is never consent. The two permissions are independent and are recorded per adult (p1/p2); the optional
+    // monthly newsletter (NL-1.0, moved here from the signing page, same meaning) stays a separate two-option choice.
+    { id: 'comms', fields: [
+      F('p1.authTel', 'check', { src: 'COMMS-1', pdf: 'h2h' }),
+      F('p1.authEmail', 'check', { src: 'COMMS-1', pdf: 'h2h' }),
+      F('p2.authTel', 'check', { s: yes('p2.has'), src: 'COMMS-1', pdf: 'h2h' }),
+      F('p2.authEmail', 'check', { s: yes('p2.has'), src: 'COMMS-1', pdf: 'h2h' }),
+      R('nl.choice', ['yes', 'no'], { src: 'NL-1', pdf: 'h2h' }),
+    ] },
     // The Parent/Provider Contract is its own step and the LAST page before Review and Sign (B§5, management 11/25/2026).
     { id: 'contract', fields: [
       // PFCC copayment agreement (B§6). The parent reports; Heart to Heart confirms later in a separate, versioned acknowledgment.
@@ -273,10 +283,8 @@ export const schema = {
       R('fin.notice', ['continued'], { r: eq('fin.choice', 'skip'), s: eq('fin.choice', 'skip'), src: 'B§financial', pdf: 'h2h' }),
     ] },
     { id: 'review', fields: [] },
-    // Optional monthly newsletter (marketing): shown on the signing page after the signatures, before Submit. Never required; no selection = no consent.
-    { id: 'sign', fields: [
-      R('nl.choice', ['yes', 'no'], { src: 'NL-1', pdf: 'h2h' }),
-    ] },
+    // Signing page (signatures + acknowledgments). The optional newsletter choice now lives in the 'comms' step.
+    { id: 'sign', fields: [] },
   ],
   // Acknowledgments the signer ticks one by one (each stored with the signature). `s` = shown condition.
   acks: [
