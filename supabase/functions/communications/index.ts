@@ -30,7 +30,7 @@ async function rpc(fn: string, args: Record<string, unknown> = {}) {
 // ---------- tokens (HMAC) for the emailed confirm / unsubscribe links ----------
 const enc = new TextEncoder();
 async function hmac(msg: string) {
-  const secret = env("COMMS_TOKEN_SECRET"); if (secret.length < 24) throw new Error("token secret not configured");
+  const secret = env("COMMS_TOKEN_SECRET"); if (secret.length < 24) { const signed = await rpc("comms_link_sign_p5", {p_message:msg}); if(typeof signed !== "string" || !/^[a-f0-9]{64}$/.test(signed)) throw new Error("token signing unavailable"); return signed; }
   const k = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return Array.from(new Uint8Array(await crypto.subtle.sign("HMAC", k, enc.encode(msg))), b => b.toString(16).padStart(2, "0")).join("");
 }
@@ -103,31 +103,56 @@ async function limited(key: string, limit: number, window: number) { try { retur
 const ipOf = (req: Request) => (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
 
 // ---------- Resend synchronization (register → Resend; the register always wins) ----------
-async function syncBatch(limit = 40) {
-  if (!(await rpc("comms_flag_p4", { p_key: "comms_resend_sync" }))) return { skipped: "flag_off" };
-  if (!resendOn()) return { skipped: "resend_not_configured" };
-  const rows = await rpc("resend_sync_batch_p4", { p_limit: limit }) as any[]; let ok = 0, failed = 0;
-  for (const r of rows) {
-    let rid: string | null = r.resend_contact_id, err: string | null = null;
-    try {
-      if (!rid) {
-        const body: any = { email: r.email, first_name: r.first_name ?? undefined, last_name: r.last_name ?? undefined, unsubscribed: false };
-        if (env("COMMS_RESEND_SEGMENT_ID")) body.segments = [{ id: env("COMMS_RESEND_SEGMENT_ID") }];
-        if (env("COMMS_RESEND_TOPIC_ID")) body.topics = [{ id: env("COMMS_RESEND_TOPIC_ID"), subscription: "opt_in" }];
-        let x = await resend("/contacts", "POST", body);
-        if (!x.ok && (x.status === 409 || x.status === 422)) { const g = await resend("/contacts/" + encodeURIComponent(r.email)); if (g.ok && g.data?.id) { rid = g.data.id; x = { ok: true, status: 200, data: g.data }; } }
-        if (!x.ok) err = "create " + x.status; else rid = rid ?? x.data?.id ?? null;
-        if (!err && rid && !r.unsubscribed) { /* newly created and subscribed: done */ }
-        else if (!err && rid && r.unsubscribed) { const p = await resend("/contacts/" + rid, "PATCH", { unsubscribed: true }); if (!p.ok) err = "patch " + p.status; }
-        else if (!err && rid) { const p = await resend("/contacts/" + rid, "PATCH", { unsubscribed: false, first_name: r.first_name ?? undefined, last_name: r.last_name ?? undefined }); if (!p.ok) err = "patch " + p.status; }
-      } else {
-        const p = await resend("/contacts/" + rid, "PATCH", { unsubscribed: r.unsubscribed, first_name: r.first_name ?? undefined, last_name: r.last_name ?? undefined }); if (!p.ok) err = "patch " + p.status;
-      }
-    } catch (e) { err = errName(e); }
-    await rpc("resend_sync_mark_p4", { p_id: r.id, p_resend_id: rid, p_unsub: r.unsubscribed, p_as_of: r.as_of, p_error: err });
-    err ? failed++ : ok++; await sleep(600); // Resend allows 2 requests/second
+async function syncContact(r: any,api: any,onOptout: any,segments: string[],topic: string) {
+  let rid=r.resend_contact_id??null;
+  const get=await api("/contacts/"+encodeURIComponent(r.email));
+  if(get.status===404){
+    if(r.unsubscribed)return {rid:null,unsub:true};
+    const created=await api("/contacts","POST",{email:r.email,first_name:r.first_name??undefined,last_name:r.last_name??undefined,unsubscribed:false,segments:segments.map(id=>({id})),topics:[{id:topic,subscription:"opt_in"}]});
+    if(!created.ok||!created.data?.id)throw Error("create "+created.status);
+    return {rid:created.data.id,unsub:false};
   }
-  return { synced: ok, failed };
+  if(!get.ok||!get.data?.id)throw Error("retrieve "+get.status);
+  rid=get.data.id;const path="/contacts/"+encodeURIComponent(rid);
+  let unsub=!!r.unsubscribed||get.data.unsubscribed===true;
+  if(!unsub){
+    const t=await api(path+"/topics");
+    if(!t.ok||!Array.isArray(t.data?.data)||t.data.has_more)throw Error("topics "+t.status);
+    const subscription=t.data.data.find((x: any)=>x.id===topic)?.subscription;
+    if(subscription!=="opt_in")unsub=true;
+  }
+  if(unsub&&!r.unsubscribed)await onOptout();
+  // Never set an existing provider contact to subscribed automatically: a provider opt-out wins.
+  if(unsub&&get.data.unsubscribed!==true){const p=await api(path,"PATCH",{unsubscribed:true});if(!p.ok)throw Error("unsubscribe "+p.status);}
+  const l=await api(path+"/segments");
+  if(!l.ok||!Array.isArray(l.data?.data)||l.data.has_more)throw Error("segments "+l.status);
+  const present=new Set(l.data.data.map((x: any)=>x.id));
+  for(const id of segments){
+    if(unsub&&present.has(id)){const x=await api(path+"/segments/"+id,"DELETE");if(!x.ok&&x.status!==404)throw Error("remove segment "+x.status);}
+    if(!unsub&&!present.has(id)){const x=await api(path+"/segments/"+id,"POST");if(!x.ok)throw Error("add segment "+x.status);}
+  }
+  return {rid,unsub};
+}
+const allSegment = () => env("COMMS_RESEND_ALL_SEGMENT_ID","bee4c6d7-4ff3-4f59-b166-4b4dc973963a");
+const commsSegments = () => [env("COMMS_RESEND_SEGMENT_ID"),allSegment()];
+async function syncBatch(limit = 15) {
+  if (!(await rpc("comms_flag_p4",{p_key:"comms_resend_sync"}))) return {skipped:"flag_off"};
+  if (!resendOn()) return {skipped:"resend_not_configured"};
+  const segments=commsSegments(), topic=env("COMMS_RESEND_TOPIC_ID");
+  if(segments.some(id=>!UUID_RE.test(id))||!UUID_RE.test(topic)||segments[0]===segments[1])return {skipped:"segments_not_configured"};
+  const rows=await rpc("resend_sync_batch_p4",{p_limit:Math.min(limit,15)}) as any[];
+  let synced=0,failed=0;
+  const api=async(path:string,method="GET",body?:unknown)=>{await sleep(650);return await resend(path,method,body)};
+  for(const r of rows){
+    let rid=r.resend_contact_id??null, unsub=!!r.unsubscribed, error:string|null=null;
+    try {
+      const out=await syncContact(r,api,async()=>await rpc("contact_delivery_event_p4",{p_event_id:null,p_type:"provider_unsubscribed",p_email:r.email,p_detail:"sync-consent-check"}),segments,topic);
+      rid=out.rid;unsub=out.unsub;
+    } catch(e){error=errName(e);}
+    await rpc("resend_sync_mark_p4",{p_id:r.id,p_resend_id:rid,p_unsub:unsub,p_as_of:r.as_of,p_error:error});
+    error?failed++:synced++;
+  }
+  return {synced,failed};
 }
 async function reconcile() {
   if (!resendOn()) return { skipped: "resend_not_configured" };
@@ -192,6 +217,18 @@ async function webhook(req: Request) {
   const raw = await req.text(); const id = await verifySvix(req, raw); if (!id) return json({ ok: false }, 401);
   let ev: any; try { ev = JSON.parse(raw); } catch { return json({ ok: false }, 400); }
   const type: string = ev.type ?? "", d = ev.data ?? {}, to = (Array.isArray(d.to) ? d.to[0] : d.to) ?? d.email ?? "";
+  if(type==="contact.topics.updated"){
+    const key=String(d.email??d.contact_id??d.id??"");
+    if(!key||!resendOn())return json({ok:false},503);
+    const contact=await resend("/contacts/"+encodeURIComponent(key));
+    if(!contact.ok||!contact.data?.email||!contact.data?.id)return json({ok:false},503);
+    await sleep(650);
+    const topics=await resend("/contacts/"+encodeURIComponent(contact.data.id)+"/topics");
+    if(!topics.ok||!Array.isArray(topics.data?.data)||topics.data.has_more)return json({ok:false},503);
+    const choice=topics.data.data.find((t:any)=>t.id===env("COMMS_RESEND_TOPIC_ID"))?.subscription;
+    if(choice==="opt_out"||contact.data.unsubscribed===true)await rpc("contact_delivery_event_p4",{p_event_id:id,p_type:"provider_unsubscribed",p_email:contact.data.email,p_detail:type});
+    return json({ok:true});
+  }
   if (type === "contact.updated" || type === "contact.deleted") { if (type === "contact.deleted" || d.unsubscribed === true) await rpc("contact_delivery_event_p4", { p_event_id: id, p_type: "provider_unsubscribed", p_email: d.email ?? "", p_detail: type }); return json({ ok: true }); }
   const map: Record<string, string> = { "email.delivered": "delivered", "email.bounced": "bounced", "email.failed": "failed", "email.complained": "bounced", "email.suppressed": "suppressed" };
   if (d.email_id && map[type]) await rpc("critical_delivery_event_p4", { p_email_id: d.email_id, p_status: map[type], p_error: d.bounce?.message ?? d.failed?.reason ?? type });
@@ -288,6 +325,21 @@ Deno.serve(async (req) => {
     const raw = await req.text(); if (raw.length > 2_000_000) return json({ ok: false, error: "too_large" }, 413, origin, true);
     let b: any = {}; try { b = raw ? JSON.parse(raw) : {}; } catch { return json({ ok: false, error: "bad_json" }, 400, origin, true); }
     if (b.action === "subscribe") return await publicSubscribe(req, b, origin);
+    // Dedicated signed maintenance path: never sends a newsletter or critical message.
+    if (b.action === "sync_tick") {
+      const proof=req.headers.get("x-cron-secret")??"";
+      if (!/^[0-9]{10}\.[a-f0-9]{64}$/.test(proof) || !(await rpc("comms_scheduler_verify_p5",{p_proof:proof}))) return json({ok:false},401,origin,true);
+      const groups=commsSegments(),topic=env("COMMS_RESEND_TOPIC_ID");
+      if(!resendOn()) return json({ok:false,error:"resend_not_configured"},503,origin,true);
+      const sg=await resend("/segments?limit=100"); await sleep(650);const tp=await resend("/topics");
+      const segmentIds=(sg.data?.data??[]).map((x:any)=>x.id),topicIds=(tp.data?.data??[]).map((x:any)=>x.id);
+      if(!sg.ok||!tp.ok||!groups.every(x=>segmentIds.includes(x))||!topicIds.includes(topic))return json({ok:false,error:"resend_configuration",segments_status:sg.status,topics_status:tp.status},503,origin,true);
+      const sign=await hmac("00000000-0000-4000-8000-000000000000|confirm|2000000000");
+      if(!sign||!env("COMMS_WEBHOOK_SECRET"))return json({ok:false,error:"missing_signing_configuration"},503,origin,true);
+      const queue=await rpc("contact_queue_run_p4",{p_limit:100});
+      const sync=await syncBatch(15);
+      return json({ok:true,provider_verified:true,segments_verified:groups.length,topic_verified:true,link_signing_verified:true,webhook_secret_configured:true,queue,sync},200,origin,true);
+    }
     if (b.action === "tick") { // scheduled maintenance: capture retries, Resend sync, draft for next month; sends only if the flags AND an approved, due campaign exist
       const sec = env("COMMS_CRON_SECRET"); if (sec.length < 24 || !safeEq(req.headers.get("x-cron-secret") ?? "", sec)) return json({ ok: false }, 401, origin, true);
       const out: Record<string, unknown> = { queue: await rpc("contact_queue_run_p4", { p_limit: 100 }), sync: await syncBatch(40), reconcile: b.reconcile ? await reconcile() : "skipped" };
