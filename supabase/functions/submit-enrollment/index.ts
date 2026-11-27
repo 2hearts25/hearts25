@@ -247,6 +247,19 @@ async function recordNewsletter(keys: any, applicationId: string, answers: Recor
   }
 }
 
+// Adult guardian contact capture for the communications register. Names, email, phone and language ONLY - no child, health, custody or financial data.
+// The relationship is "pending applicant"; an administrator confirms active enrollment. Gated by flag comms_capture inside the database; failures are swallowed.
+async function captureContacts(applicationId: string, answers: Record<string, any>, lang: string) {
+  for (const p of ["p1", "p2"]) {
+    const email = String(answers[`${p}.email`] || "").trim().toLowerCase();
+    if (!email) continue;
+    try {
+      await rpc("contact_capture_p4", { p: { gated: "true", email, name: answers[`${p}.name`] || null, phone: answers[`${p}.cell`] || answers[`${p}.home`] || null, language: lang, source: "enrollment-application",
+        roles: ["parent_guardian", "applicant"], relationship: { kind: "enrollment", status: "pending", ref: "app:" + String(applicationId).slice(0, 8) } } });
+    } catch (e) { console.error("contact capture failed:", errName(e)); }
+  }
+}
+
 async function processApplication(reference: string, opts: { force?: boolean } = {}) {
   const row = await rpc("enrollment_get_p1", { p_reference: reference });
   if (!row) return { ok: false, error: "not found" };
@@ -510,6 +523,8 @@ async function submit(req: Request, origin: string | null) {
     await finalizeApplication({ id: res.id, finalize_status: "pending", finalize_attempts: 0 }, payload);
     // 3. optional newsletter register (separate from every child, health and financial record)
     await recordNewsletter(keys, res.id, answers, body.lang);
+    // 4. adult contact register (flag-gated in the database; never blocks or alters the enrollment). A new application is a PENDING applicant, never active.
+    await captureContacts(res.id, answers, body.lang);
   }
   const finished = res.duplicate && res.status?.pdf === "generated" && res.status?.staff === "sent";
   if (!finished) background(processApplication(res.reference));

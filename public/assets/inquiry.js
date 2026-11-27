@@ -20,6 +20,7 @@ if (confirmation) {
     location.replace(new URL("../", location.href));
   }
 }
+const commsEndpoint = "https://zebeclcvrdmisnxkwode.supabase.co/functions/v1/communications";
 const inquiry = document.querySelector("[data-inquiry]");
 if (inquiry) {
   const { dataset, elements } = inquiry;
@@ -51,6 +52,13 @@ if (inquiry) {
       invalid.focus();
       return;
     }
+    const wantsNewsletter = Boolean(elements.newsletter && elements.newsletter.checked);
+    if (wantsNewsletter && !(elements.email && elements.email.value.trim())) {
+      message(dataset.invalid);
+      elements.email.setAttribute("aria-invalid", "true");
+      elements.email.focus();
+      return;
+    }
     message("");
     button.disabled = true;
     button.textContent = dataset.sending;
@@ -59,6 +67,7 @@ if (inquiry) {
       const data = Object.fromEntries(fields);
       data.interests = fields.getAll("interests");
       data.age ??= data.age_group;
+      delete data.newsletter; // the optional newsletter choice never travels with the inquiry itself
       data.policyVersion = "1.1.0-P0";
       const response = await fetch(dataset.endpoint, {
         method: "POST",
@@ -71,6 +80,11 @@ if (inquiry) {
         signal: AbortSignal.timeout(14000),
       });
       if (response.status === 201) {
+        if (wantsNewsletter) {
+          // Separate, best-effort request: starts the double opt-in (a confirmation email is sent). It never delays or changes the inquiry.
+          const source = dataset.kind === "tour" ? "website-tour" : dataset.kind === "information" ? "website-information" : "website-contact";
+          try { fetch(commsEndpoint, { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "subscribe", email: String(data.email || "").trim(), name: String(data.name || "").trim(), language: String(data.language || document.documentElement.lang || "en"), source }) }).catch(() => {}); } catch { /* best effort */ }
+        }
         sessionStorage.setItem("h2h-confirmation", dataset.success);
         location.assign(dataset.success);
         return;

@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { inquiryForm } from './inquiry-form.mjs';
 import { requestInfoForm } from './request-info-form.mjs';
 import { netlifyTourForm } from './netlify-tour-form.mjs';
+import { nlFooter } from './newsletter-site.mjs';
 
 const read = async file => JSON.parse((await readFile(new URL(file, import.meta.url), 'utf8')).replace(/^\uFEFF/, ''));
 const locales = await read('./locales.json');
@@ -163,6 +164,7 @@ function frame(language, slug, title, description, body, meta = {}) {
   const virtualNav = link(path(language,'virtual-tour'),virtualTour[language].title,current('virtual-tour',slug));
   const showMobileBar = !['register','enrollment','tour','contact','request-information',...confirmations,...privatePages].includes(slug);
   const foot = t.footer;
+  const showFooterNl = !privatePages.includes(slug) && !confirmations.includes(slug);
   const indexable = !nonIndexableSlugs.has(slug);
   const alternate = indexable ? languages.map(key => `<link rel="alternate" hreflang="${key}" href="${site + path(key, page)}">`).join('') + `<link rel="alternate" hreflang="x-default" href="${site + path('en', page)}">` : '';
   const socialAlternates = indexable ? languages.filter(key => key !== language).map(key => `<meta property="og:locale:alternate" content="${socialLocales[key]}">`).join('') : '';
@@ -175,7 +177,7 @@ ${indexable ? '' : '<meta name="robots" content="noindex,nofollow">'}
 <title>${escape(meta.fullTitle ?? (meta.metaTitle ?? title) + ' | ' + brand)}</title><meta name="description" content="${escape(description)}">
 ${indexable ? `<link rel="canonical" href="${url}">` + alternate : ''}
 <meta property="og:title" content="${escape(meta.fullTitle ?? meta.metaTitle ?? title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="${socialLocales[language]}">${socialAlternates}<meta property="og:site_name" content="${brand}"><meta property="og:image" content="${socialImage}"><meta property="og:image:alt" content="${escape(t.alts[0])}">${meta.jsonld ? '<script type="application/ld+json">' + JSON.stringify(meta.jsonld).replace(/</g,'\\u003c') + '</script>' : ''}
-<link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script>${privatePages.includes(slug) ? '' : '<script defer src="/assets/analytics.js"></script>'}${formScript}
+<link rel="stylesheet" href="/assets/site.css"><script defer src="/assets/language.js"></script>${showFooterNl ? '<script defer src="/assets/newsletter.js"></script>' : ''}${privatePages.includes(slug) ? '' : '<script defer src="/assets/analytics.js"></script>'}${formScript}
 </head><body${showMobileBar ? ' class="has-mobile-bar"' : ''}>
 ${link('#main',t.skip,'class="skip"')}
 ${header(language,page,slug,{tour,register,portal,virtualNav})}
@@ -185,7 +187,7 @@ ${suggestion}
 <div>${logo(language)}<address>${address}<br><a href="${tel}">${phone}</a><br>${escape(p0[language][10])}</address><p class="footer-rating">${link(path(language,'safety'),q.rating)}</p></div>
 <div><strong>${escape(foot[0])}</strong>${list([link(path(language,'about'),t.nav[5]),link(path(language,'programs'),t.nav[0]),link(path(language,'safety'),q.safety),link(path(language,'contact'),t.nav[7]),link(path(language,'community'),foot[6])])}</div>
 <div><strong>${escape(foot[1])}</strong>${list([portal,link(path(language,'register'),registrations[language].title),link(path(language,'tour'),t.tour),virtualNav,link(path(language,'request-information'),p0[language][0]),link(path(language,'parents'),foot[5]),link(path(language,'privacy'),foot[2]),link(path(language,'accessibility'),foot[3]),link(path(language,'nondiscrimination'),policyLabels[language])])}${dropdown(language,page)}</div>
-</div></footer>${showMobileBar ? `<div class="mobile-bar">${button(tel,t.call,true)}${tour}</div>` : ''}
+</div>${showFooterNl ? nlFooter(language, escape) : ''}</footer>${showMobileBar ? `<div class="mobile-bar">${button(tel,t.call,true)}${tour}</div>` : ''}
 </body></html>`;
 }
 

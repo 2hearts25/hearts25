@@ -1,3 +1,4 @@
+import { nlOptIn } from './newsletter-site.mjs';
 
 const copy = {
   en: ['Request a tour','Your name','Phone number','Email address (optional)','Child’s age group','Preferred start month','Preferred time','Morning','Afternoon','Either','How did you hear about us?','Notes (optional)','Please share only general scheduling information.','Select an option','Not sure','Send tour request'],
@@ -24,7 +25,7 @@ export function netlifyTourForm({language,path,locales,escape,copy:form,endpoint
 <label>${escape(heard)}<input name="heard_about_us" maxlength="100" dir="auto"></label>
 <label>${escape(notes)}<textarea name="notes" maxlength="500" rows="3" dir="auto" aria-describedby="tour-notes-hint"></textarea></label>
 <p id="tour-notes-hint">${escape(hint)}</p>
-<input type="hidden" name="language" value="${language}"><label class="consent"><input type="checkbox" name="consent" required>${escape(form.consent)}</label><p class="form-status" role="status" tabindex="-1" hidden></p><a href="${path(language,'privacy')}">${escape(locales[language].footer[2])}</a>
+<input type="hidden" name="language" value="${language}">${nlOptIn(language, escape)}<label class="consent"><input type="checkbox" name="consent" required>${escape(form.consent)}</label><p class="form-status" role="status" tabindex="-1" hidden></p><a href="${path(language,'privacy')}">${escape(locales[language].footer[2])}</a>
 <button class="button" type="submit" disabled>${escape(send)}</button>
 </form>
 </section>`;

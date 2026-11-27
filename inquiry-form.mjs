@@ -1,4 +1,5 @@
 
+import { nlOptIn } from './newsletter-site.mjs';
 export function inquiryForm({copy, language, kind, path, locales, escape, action, registration, information}) {
   const {enroll, tour, contact, name, email, phone, preferred, age, time, placeholder,
     unsure, soon, next, later, consent, submit, sending, invalid, error, limited} = copy;
@@ -20,6 +21,7 @@ ${kind !== 'contact' ? `<label>${escape(age)}<select name="age"${information ? "
 <label>${escape(time)}<select name="timeframe">${options([['',placeholder],['soon',soon],['1-3-months',next],['later',later],['unsure',unsure]],'')}</select></label>` : ''}
 ${information ? `<fieldset><legend>${escape(information[3])}</legend>${information[6].split('|').map((label,index)=>`<label class="consent"><input type="checkbox" name="interests" value="${index}">${escape(label)}</label>`).join('')}</fieldset><label>${escape(information[4])}<textarea name="questions" maxlength="500" aria-describedby="questions-note"></textarea></label><p id="questions-note">${escape(information[5])}</p>` : ''}
 <div hidden aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+${registration ? '' : nlOptIn(language, escape)}
 <label class="consent"><input type="checkbox" name="consent" required><span>${escape(registration?.consent ?? consent)}</span></label>
 <a href="${path(language,'privacy')}">${escape(locales[language].footer[2])}</a>
 <p class="form-status" role="status" tabindex="-1" hidden></p>

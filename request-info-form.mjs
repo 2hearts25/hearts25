@@ -1,4 +1,5 @@
 // Standalone "Request More Information" form markup (v1.2.0). Posts through the existing inquiry pipeline (kind=information).
+import { nlOptIn } from './newsletter-site.mjs';
 export function requestInfoForm({ copy, ui, language, path, locales, escape, action }) {
   const options = items => items.map(([value, label, selected]) => `<option value="${escape(value)}"${selected ? ' selected' : ''}>${escape(label)}</option>`).join('');
   const ages = ['infant-toddler', 'preschool', 'school-age'].map((value, i) => [value, locales[language].cards[i][0]]);
@@ -18,6 +19,7 @@ export function requestInfoForm({ copy, ui, language, path, locales, escape, act
 <label>${escape(ui.questions)}<textarea name="questions" maxlength="500" rows="4" dir="auto"></textarea></label>
 <p class="help">${escape(ui.privacyNote)}</p>
 <div hidden aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+${nlOptIn(language, escape)}
 <label class="consent"><input type="checkbox" name="consent" required><span>${escape(copy.consent)} *</span></label>
 <a href="${path(language, 'privacy')}">${escape(locales[language].footer[2])}</a>
 <p class="form-status" role="status" tabindex="-1" hidden></p>

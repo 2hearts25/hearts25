@@ -93,21 +93,22 @@ try {
     assert.match(h, /Parent\/Provider Contract/); assert.match(h, /Administrator approval/); // existing content intact
   });
   await t('backend: same email again → no duplicate contact (case/space-insensitive)', async () => {
-    await submit(NL('yes', { 'p1.email': 'PARENT.EXAMPLE@example.com' })); const c = await reg(); assert.equal(c.length, 1); assert.equal((await evs()).length, 2);
+    await submit(NL('yes', { 'p1.email': 'PARENT.EXAMPLE@example.com' })); const c = await reg(); assert.equal(c.length, 1); assert.equal((await evs()).length, 1, 'a repeated Yes adds no duplicate consent event');
     assert.equal((await q("select count(*)::int n from website_private.marketing_contacts where email='parent.example@example.com'"))[0].n, 1);
   });
-  await t('backend: "No" for a subscribed email → unsubscribed; later enrollment with NO selection leaves it unsubscribed', async () => {
-    await submit(NL('no', { 'p1.email': 'parent.example@example.com' })); let c = (await reg())[0]; assert.equal(c.status, 'unsubscribed'); assert.ok(c.unsubscribed_at);
+  await t('backend: an application "No" cannot unsubscribe an already-subscribed address (unverified); real unsubscribe sticks; no selection never changes it', async () => {
+    await submit(NL('no', { 'p1.email': 'parent.example@example.com' })); let c = (await reg())[0]; assert.equal(c.status, 'subscribed', 'one person cannot change another person\'s preference through a public form');
+    assert.equal((await pg.rpc('marketing_unsubscribe_p3', { p_email: 'parent.example@example.com', p_source: 'unsubscribe-link' })).action, 'unsubscribed');
     await submit(NL(undefined, { 'p1.email': 'parent.example@example.com' })); c = (await reg())[0]; assert.equal(c.status, 'unsubscribed', 'no selection never changes the preference'); assert.equal((await reg()).length, 1);
   });
-  await t('backend: unsubscribed preference preserved until a FRESH explicit "Yes"', async () => {
-    await submit(NL('no', { 'p1.email': 'parent.example@example.com' })); assert.equal((await reg())[0].status, 'unsubscribed');
-    await submit(NL('yes', { 'p1.email': 'parent.example@example.com' })); const c = (await reg())[0]; assert.equal(c.status, 'subscribed'); assert.equal(c.unsubscribed_at, null);
-    assert.deepEqual((await evs()).map(e => e.event).slice(-2), ['declined', 'opt_in'], 'explicit no keeps the unsubscribe; only the fresh yes resubscribes');
+  await t('backend: unsubscribed preference preserved; an application "Yes" only REQUESTS confirmation; verified fresh consent resubscribes', async () => {
+    await submit(NL('yes', { 'p1.email': 'parent.example@example.com' })); let c = (await reg())[0]; assert.equal(c.status, 'unsubscribed', 'not resubscribed by an unverified form');
+    assert.ok((await evs()).some(e => e.event === 'confirm_requested'));
+    assert.equal((await pg.rpc('contact_verified_p4', { p_id: c.id, p_action: 'confirm', p_lang: 'es', p_event_key: 'ver-1' })).ok, true); c = (await reg())[0]; assert.equal(c.status, 'subscribed');
   });
-  await t('backend: no selection → NO contact, NO event, enrollment still completes', async () => {
+  await t('backend: no selection → NO consent event and never subscribed; enrollment still completes', async () => {
     const before = (await reg()).length, ev0 = (await evs()).length; const ref = await submit(NL(undefined, { 'p1.email': 'nobody@example.com' }));
-    assert.equal((await reg()).length, before); assert.equal((await evs()).length, ev0); assert.equal((await q("select 1 from website_private.marketing_contacts where email='nobody@example.com'")).length, 0);
+    assert.equal((await evs()).length, ev0, 'no consent event'); const nb = (await q("select status from website_private.marketing_contacts where email='nobody@example.com'"))[0]; assert.ok(!nb || nb.status === 'none', 'never subscribed (the adult may be captured as a contact when capture is ON, with no newsletter consent)'); assert.ok((await reg()).length - before <= 1);
     assert.ok(await until(async () => (await appRow(ref))?.status === 'complete'), 'delivered');
     const staff = mailsTo('hearttoheart3095@yahoo.com').filter(m => m.body.attachments?.length === 2).at(-1); const h = text(Buffer.from(staff.body.attachments[1].content, 'base64'));
     assert.match(h, /NO SELECTION — treated as no newsletter consent/);
@@ -119,9 +120,21 @@ try {
     const d = NL('yes'); delete d['p1.email']; d['p1.contactPath'] = 'phone'; const n0 = (await reg()).length;
     const r = await post('', body130(d)); assert.equal(r.status, 422); assert.equal((await r.json()).errors['nl.choice'], 'nlEmail'); assert.equal((await reg()).length, n0);
   });
-  await t('privacy: register is separate — no application/child/health/financial columns, RLS on, no client access', async () => {
+  await t('communications capture: flag OFF → no contacts; ON → both guardians captured as PENDING applicants regardless of newsletter choice; enrollment still completes; no child data copied', async () => {
+    const em = async e => (await q(`select c.*, (select string_agg(r.kind||':'||r.status, ',') from website_private.contact_relationships r where r.contact_id=c.id) rel from website_private.marketing_contacts c where c.email=$1`, [e]))[0];
+    await q("update website_private.feature_flags set enabled=false where key='comms_capture'"); await submit(NL(undefined, { 'p1.email': 'cap.off@example.com' })); assert.equal(await em('cap.off@example.com'), undefined, 'flag off → nothing captured');
+    await q("update website_private.feature_flags set enabled=true where key='comms_capture'");
+    const ref = await submit(NL(undefined, { 'p1.email': 'cap.one@example.com', 'p1.name': 'Casey Capture', 'p2.email': 'cap.two@example.com', 'p2.name': 'Drew Capture' }));
+    assert.ok(await until(async () => (await appRow(ref))?.status === 'complete'), 'enrollment completed');
+    const a = await em('cap.one@example.com'), b = await em('cap.two@example.com'); assert.ok(a && b, 'both guardians captured');
+    assert.equal(a.rel, 'enrollment:pending'); assert.equal(b.rel, 'enrollment:pending'); assert.equal(a.status, 'none', 'no newsletter choice → not subscribed'); assert.equal(a.last_name, 'Capture');
+    assert.ok(!JSON.stringify(a).includes('Child'), 'no child information in the contact register');
+    await submit(NL('yes', { 'p1.email': 'cap.three@example.com' })); assert.equal((await em('cap.three@example.com')).status, 'subscribed', 'explicit Yes from a signed application on a NEW address subscribes');
+    await q("update website_private.feature_flags set enabled=false where key='comms_capture'");
+  });
+  await t('privacy: register is separate — no application/child/health/custody/financial columns (adult name and phone are now part of the contact register), RLS on, no client access', async () => {
     const cols = (await q("select column_name from information_schema.columns where table_schema='website_private' and table_name in ('marketing_contacts','marketing_consent_events')")).map(r => r.column_name).join(',');
-    assert.ok(!/application|child|reference|health|card|financial|name|phone/.test(cols), cols);
+    assert.ok(!/application|child|reference|health|card|financial|custody|allerg|medical/.test(cols), cols);
     const rls = await q("select relname, relrowsecurity from pg_class where relname in ('marketing_contacts','marketing_consent_events')"); assert.ok(rls.every(r => r.relrowsecurity));
     assert.equal((await q("select has_table_privilege('anon','website_private.marketing_contacts','select') a, has_table_privilege('authenticated','website_private.marketing_contacts','select') b, has_function_privilege('anon','public.marketing_record_p3(text,text,text,text,text,text,text)','execute') c"))[0].a, false);
     const g = (await q("select has_table_privilege('authenticated','website_private.marketing_contacts','select') b, has_function_privilege('anon','public.marketing_record_p3(text,text,text,text,text,text,text)','execute') c, has_function_privilege('service_role','public.marketing_record_p3(text,text,text,text,text,text,text)','execute') d"))[0]; assert.equal(g.b, false); assert.equal(g.c, false); assert.equal(g.d, true);
